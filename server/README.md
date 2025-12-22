@@ -57,7 +57,7 @@ Set these in `.env` (or supply via the Docker compose env). Example values are n
 | ----------------| --------------------------------------------------------- | ---------------------------------------- |
 | NODE_ENV        | development                                               | Runtime environment                      |
 | PORT            | 3000                                                      | API listen port                          |
-| DATABASE_URL    | postgresql://postgres:password@localhost:5432/SaveTheServe| Prisma connection string                 |
+| DATABASE_URL    | postgresql://avnadmin:<AIVEN_PASSWORD>@pg-3caf94a7-raktimbanerjee05-a043.k.aivencloud.com:16172/defaultdb?sslmode=require | Prisma connection string (Aiven managed Postgres) |
 | REDIS_URL       | redis://:redis123@localhost:6379                         | Redis connection string (optional local) |
 | JWT_SECRET      | change-me                                                 | JWT signing key                          |
 | JWT_EXPIRES_IN  | 7d                                                        | Token lifetime                           |
@@ -69,13 +69,18 @@ Sample .env
 ```
 NODE_ENV=development
 PORT=3000
-DATABASE_URL=postgresql://postgres:password@localhost:5432/SaveTheServe
+DATABASE_URL=postgresql://avnadmin:<AIVEN_PASSWORD>@pg-3caf94a7-raktimbanerjee05-a043.k.aivencloud.com:16172/defaultdb?sslmode=require
 REDIS_URL=redis://:redis123@localhost:6379
 JWT_SECRET=change-me
 JWT_EXPIRES_IN=7d
 ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
 LOG_LEVEL=info
 ```
+
+Database notes
+--------------
+- Aiven requires TLS; keep `sslmode=require` in `DATABASE_URL`.
+- Replace `<AIVEN_PASSWORD>` with your actual service password from the Aiven console.
 
 Development Workflow
 --------------------
