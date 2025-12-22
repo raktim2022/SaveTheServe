@@ -126,6 +126,30 @@ class AdminService {
   }
 
   /**
+   * Get user statistics
+   */
+  async getUserStats() {
+    try {
+      const totalUsers = await UserModel.count();
+      const verifiedUsers = await UserModel.count({ is_verified: true });
+      const ngoCount = await UserModel.count({ role: 'NGO' });
+      const restaurantCount = await UserModel.count({ role: 'RESTAURANT' });
+      const adminCount = await UserModel.count({ role: 'ADMIN' });
+      
+      return {
+        total: totalUsers,
+        verified: verifiedUsers,
+        pending: totalUsers - verifiedUsers,
+        ngos: ngoCount,
+        restaurants: restaurantCount,
+        admins: adminCount
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
    * Get all users for admin management
    */
   async getAllUsers(page = 1, limit = 10, filters = {}) {

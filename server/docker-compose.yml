@@ -50,9 +50,9 @@ services:
     container_name: savetheserve-api
     restart: unless-stopped
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       PORT: 3000
-      DATABASE_URL: postgresql://postgres:Raktim05@@postgres:5432/SaveTheServe?schema=public
+      DATABASE_URL: ${DATABASE_URL:-postgresql://username:password@localhost:5432/savetheserve}
       REDIS_URL: redis://:redis123@redis:6379
       JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}

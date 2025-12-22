@@ -240,9 +240,9 @@ export const foodListingsFilterSchema = Joi.object({
       'number.min': 'Limit must be at least 1',
       'number.max': 'Limit must not exceed 50'
     }),
-  status: Joi.string().valid('AVAILABLE', 'EXPIRED', 'FULFILLED').optional()
+  status: Joi.string().valid('AVAILABLE', 'REQUESTED', 'PICKED').optional()
     .messages({
-      'any.only': 'Status must be one of AVAILABLE, EXPIRED, FULFILLED'
+      'any.only': 'Status must be one of AVAILABLE, REQUESTED, PICKED'
     }),
   foodType: Joi.string().min(2).max(50).optional()
     .messages({

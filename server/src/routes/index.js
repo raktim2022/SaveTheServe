@@ -44,6 +44,7 @@ router.get('/', (req, res) => {
 // Mount route modules
 router.use('/auth', authRoutes);
 router.use('/admin', adminRoutes);
+router.use('/users', adminRoutes); // Users route points to admin for now
 router.use('/ngos', ngoRoutes);
 router.use('/restaurants', donorRoutes);
 router.use('/food', foodRoutes);

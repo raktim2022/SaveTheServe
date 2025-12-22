@@ -12,30 +12,57 @@ export const DEFAULT_MAP_CONFIG = {
 
 /**
  * Get user's current location
+ * @param {Object} options - Geolocation options
  * @returns {Promise<{latitude: number, longitude: number}>}
  */
-export const getCurrentLocation = () => {
+export const getCurrentLocation = (options = {}) => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
       reject(new Error('Geolocation is not supported by your browser'));
       return;
     }
 
+    const defaultOptions = {
+      enableHighAccuracy: true,
+      timeout: 15000, // Increased to 15 seconds
+      maximumAge: 300000, // Allow cached location up to 5 minutes
+    };
+
+    const geoOptions = { ...defaultOptions, ...options };
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         resolve({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+          timestamp: position.timestamp,
         });
       },
       (error) => {
-        reject(error);
+        let errorMessage = 'Failed to get location';
+        
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = 'Location access denied. Please enable location permissions in your browser settings.';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = 'Location information is unavailable. Please check your GPS or internet connection.';
+            break;
+          case error.TIMEOUT:
+            errorMessage = 'Location request timed out. Please try again or check your connection.';
+            break;
+          default:
+            errorMessage = error.message || 'Unknown location error occurred.';
+            break;
+        }
+        
+        const enhancedError = new Error(errorMessage);
+        enhancedError.code = error.code;
+        enhancedError.originalError = error;
+        reject(enhancedError);
       },
-      {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0,
-      }
+      geoOptions
     );
   });
 };

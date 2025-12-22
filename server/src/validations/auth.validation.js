@@ -23,17 +23,28 @@ export const authValidationSchemas = {
 
     password: Joi.string()
       .min(8)
+      .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]'))
       .required()
       .messages({
         'string.min': 'Password must be at least 8 characters long',
+        'string.pattern.base': 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
         'any.required': 'Password is required',
       }),
 
+    confirmPassword: Joi.string()
+      .valid(Joi.ref('password'))
+      .required()
+      .messages({
+        'any.only': 'Confirm password must match password',
+        'any.required': 'Confirm password is required',
+      }),
+
     phone: Joi.string()
-      .pattern(new RegExp('^[+]?[1-9]\\d{1,14}$'))
+      .pattern(new RegExp('^[+]?[0-9]{10,15}$'))
+      .allow('', null)
       .optional()
       .messages({
-        'string.pattern.base': 'Please provide a valid phone number',
+        'string.pattern.base': 'Please provide a valid phone number (10-15 digits)',
       }),
 
     role: Joi.string()
@@ -41,6 +52,70 @@ export const authValidationSchemas = {
       .default('RESTAURANT')
       .messages({
         'any.only': 'Role must be either ADMIN, NGO, or RESTAURANT',
+      }),
+
+    // Organization details
+    organizationName: Joi.string()
+      .min(2)
+      .max(100)
+      .optional()
+      .messages({
+        'string.min': 'Organization name must be at least 2 characters long',
+        'string.max': 'Organization name cannot exceed 100 characters',
+      }),
+
+    description: Joi.string()
+      .max(500)
+      .optional()
+      .allow('')
+      .messages({
+        'string.max': 'Description cannot exceed 500 characters',
+      }),
+
+    // Location details
+    address: Joi.string()
+      .min(10)
+      .max(200)
+      .optional()
+      .messages({
+        'string.min': 'Address must be at least 10 characters long',
+        'string.max': 'Address cannot exceed 200 characters',
+      }),
+
+    latitude: Joi.number()
+      .min(-90)
+      .max(90)
+      .optional()
+      .messages({
+        'number.min': 'Latitude must be between -90 and 90',
+        'number.max': 'Latitude must be between -90 and 90',
+      }),
+
+    longitude: Joi.number()
+      .min(-180)
+      .max(180)
+      .optional()
+      .messages({
+        'number.min': 'Longitude must be between -180 and 180',
+        'number.max': 'Longitude must be between -180 and 180',
+      }),
+
+    // NGO specific
+    coverageRadiusKm: Joi.number()
+      .min(1)
+      .max(100)
+      .optional()
+      .messages({
+        'number.min': 'Coverage radius must be at least 1 km',
+        'number.max': 'Coverage radius cannot exceed 100 km',
+      }),
+
+    // Restaurant specific
+    shopType: Joi.string()
+      .max(50)
+      .optional()
+      .messages({
+        'string.max': 'Shop type cannot exceed 50 characters',
       }),
   }),
 
@@ -63,10 +138,30 @@ export const authValidationSchemas = {
 
   // Email verification
   verifyEmail: Joi.object({
-    token: Joi.string()
+    userId: Joi.alternatives()
+      .try(
+        Joi.string().required(),
+        Joi.number().required()
+      )
       .required()
       .messages({
-        'any.required': 'Verification token is required',
+        'any.required': 'User ID is required',
+      }),
+    email: Joi.string()
+      .email()
+      .required()
+      .messages({
+        'string.email': 'Please provide a valid email address',
+        'any.required': 'Email is required',
+      }),
+    code: Joi.string()
+      .length(6)
+      .pattern(/^[0-9]+$/)
+      .required()
+      .messages({
+        'string.length': 'Verification code must be 6 digits',
+        'string.pattern.base': 'Verification code must contain only numbers',
+        'any.required': 'Verification code is required',
       }),
   }),
 
@@ -156,10 +251,10 @@ export const authValidationSchemas = {
       }),
 
     phone: Joi.string()
-      .pattern(new RegExp('^[+]?[1-9]\\d{1,14}$'))
+      .pattern(new RegExp('^[+]?[0-9]{10,15}$'))
       .optional()
       .messages({
-        'string.pattern.base': 'Please provide a valid phone number',
+        'string.pattern.base': 'Please provide a valid phone number (10-15 digits)',
       }),
 
     // Don't allow role changes through profile update

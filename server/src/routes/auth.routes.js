@@ -47,6 +47,16 @@ router.post(
 );
 
 /**
+ * @route   GET /api/auth/test-email
+ * @desc    Test email service configuration
+ * @access  Public (for debugging)
+ */
+router.get(
+  '/test-email',
+  authController.testEmail
+);
+
+/**
  * @route   POST /api/auth/forgot-password
  * @desc    Request password reset
  * @access  Public

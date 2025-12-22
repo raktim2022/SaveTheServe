@@ -206,8 +206,8 @@ class DonorService {
       const [
         totalFoodListings,
         activeFoodListings,
-        expiredFoodListings,
-        fulfilledRequests
+        pickedFoodListings,
+        requestedRequests
       ] = await Promise.all([
         FoodListingModel.count({ where: { restaurantId: restaurant.id } }),
         FoodListingModel.count({ 
@@ -219,13 +219,13 @@ class DonorService {
         FoodListingModel.count({ 
           where: { 
             restaurantId: restaurant.id,
-            status: 'EXPIRED' 
+            status: 'PICKED' 
           }
         }),
         FoodListingModel.count({ 
           where: { 
             restaurantId: restaurant.id,
-            status: 'FULFILLED' 
+            status: 'REQUESTED' 
           }
         })
       ]);
@@ -233,8 +233,8 @@ class DonorService {
       return {
         totalFoodListings,
         activeFoodListings,
-        expiredFoodListings,
-        fulfilledRequests,
+        pickedFoodListings,
+        requestedRequests,
         restaurant
       };
     } catch (error) {

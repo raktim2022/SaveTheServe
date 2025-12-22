@@ -93,6 +93,26 @@ export const verifyEmail = async (token) => {
 };
 
 /**
+ * Verify email with code
+ * @param {Object} verificationData - { userId, email, code }
+ * @returns {Promise<Object>} Verification result
+ */
+export const verifyEmailCode = async (verificationData) => {
+  const response = await axios.post('/auth/verify-email', verificationData);
+  return response.data;
+};
+
+/**
+ * Resend verification code
+ * @param {Object} resendData - { email, userId }
+ * @returns {Promise<Object>} Resend result
+ */
+export const resendVerification = async (resendData) => {
+  const response = await axios.post('/auth/resend-verification', resendData);
+  return response.data;
+};
+
+/**
  * Refresh authentication token
  * @returns {Promise<Object>} New token
  */
@@ -111,6 +131,8 @@ export default {
   forgotPassword,
   resetPassword,
   verifyEmail,
+  verifyEmailCode,
+  resendVerification,
   refreshToken,
 };
 

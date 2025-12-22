@@ -37,8 +37,9 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Handle 401 Unauthorized
-    if (error.response?.status === 401) {
+    // Handle 401 Unauthorized (only for actual auth failures)
+    if (error.response?.status === 401 && error.response?.data?.message?.includes('token')) {
+      console.log('Auth token invalid, redirecting to login');
       removeToken();
       if (typeof window !== 'undefined') {
         window.location.href = '/login';

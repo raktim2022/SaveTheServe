@@ -22,7 +22,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-6">
           <Link href="/" className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-600 to-secondary-500 text-white font-bold flex items-center justify-center shadow-brand-card">
+            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-primary-600 to-secondary-500 text-white font-bold flex items-center justify-center shadow-brand-card">
               S
             </div>
             <div>
@@ -43,8 +43,11 @@ export default function Navbar() {
             {user ? (
               <>
                 <span className="text-sm text-slate-600">Hi, {user.name}</span>
-                <Link href="/profile" className="text-sm font-semibold text-primary-700 hover:text-primary-800">
-                  Profile
+                <Link href={
+                  user.role === 'ADMIN' ? `/admin/${user.id}` :
+                  user.role === 'RESTAURANT' ? `/donor/${user.id}` : `/ngo/${user.id}`
+                } className="text-sm font-semibold text-primary-700 hover:text-primary-800">
+                  Dashboard
                 </Link>
                 <Button size="sm" variant="outline" onClick={logout} className="border-slate-200 text-slate-700 hover:bg-primary-50">
                   Logout

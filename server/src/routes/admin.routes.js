@@ -35,6 +35,9 @@ router.delete('/:id', adminController.deleteAdmin);
  * User Management Routes
  */
 
+// Get user statistics
+router.get('/users/stats', adminController.getUserStats);
+
 // Get all users
 router.get('/users/all', adminController.getAllUsers);
 

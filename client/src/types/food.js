@@ -3,10 +3,9 @@
  */
 
 export const FOOD_STATUS = {
-  AVAILABLE: 'available',
-  RESERVED: 'reserved',
-  COMPLETED: 'completed',
-  EXPIRED: 'expired',
+  AVAILABLE: 'AVAILABLE',
+  REQUESTED: 'REQUESTED',
+  PICKED: 'PICKED',
 };
 
 export const FOOD_CATEGORIES = {

@@ -122,7 +122,7 @@ export default function HomePage() {
                   </div>
                 ))}
               </div>
-              <div className="rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 text-white p-4 flex items-center justify-between">
+              <div className="rounded-xl bg-linear-to-r from-primary-600 to-primary-700 text-white p-4 flex items-center justify-between">
                 <div>
                   <p className="text-sm text-primary-100">Impact tracker</p>
                   <p className="text-xl font-semibold">46,820 meals delivered</p>
@@ -173,7 +173,7 @@ export default function HomePage() {
         </section>
 
         {/* Impact */}
-        <section id="impact" className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary-700 to-primary-600 text-white p-10">
+        <section id="impact" className="relative overflow-hidden rounded-3xl bg-linear-to-r from-primary-700 to-primary-600 text-white p-10">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="space-y-4">
               <p className="text-sm font-semibold text-primary-100 uppercase tracking-wide">Impact dashboard</p>

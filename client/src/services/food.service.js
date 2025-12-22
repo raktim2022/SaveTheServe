@@ -10,8 +10,14 @@ import axios from '@/lib/axios';
  * @returns {Promise<Object>} Food listings with pagination
  */
 export const getFoodListings = async (params = {}) => {
-  const response = await axios.get('/food', { params });
-  return response.data;
+  try {
+    const response = await axios.get('/food', { params });
+    return response.data;
+  } catch (error) {
+    console.error('Food service error:', error);
+    // Return empty result instead of throwing
+    return { data: [], success: false, message: 'Failed to fetch food listings' };
+  }
 };
 
 /**
@@ -101,12 +107,22 @@ export const getFoodStats = async () => {
 };
 
 /**
- * Mark food as expired
+ * Get my food listings (current user's listings)
+ * @param {Object} params - Query parameters
+ * @returns {Promise<Object>} Current user's food listings
+ */
+export const getMyFoodListings = async (params = {}) => {
+  const response = await axios.get('/food/my-listings', { params });
+  return response.data;
+};
+
+/**
+ * Mark food as picked
  * @param {string} id - Food listing ID
  * @returns {Promise<Object>} Updated food listing
  */
-export const markAsExpired = async (id) => {
-  const response = await axios.patch(`/food/${id}/expire`);
+export const markAsPicked = async (id) => {
+  const response = await axios.patch(`/food/${id}/pick`);
   return response.data;
 };
 
@@ -120,6 +136,7 @@ export default {
   getFoodByRestaurant,
   uploadFoodImage,
   getFoodStats,
-  markAsExpired,
+  getMyFoodListings,
+  markAsPicked,
 };
 

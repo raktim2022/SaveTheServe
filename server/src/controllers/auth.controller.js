@@ -1,5 +1,6 @@
 import { AuthService } from '../services/auth.service.js';
 import { validationResult } from 'express-validator';
+import emailService from '../services/email.service.js';
 
 const authService = new AuthService();
 
@@ -77,23 +78,20 @@ export class AuthController {
    */
   async verifyEmail(req, res, next) {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          success: false,
-          message: 'Validation failed',
-          errors: errors.array(),
-        });
-      }
-
-      const { token } = req.body;
-      const result = await authService.verifyEmail(token);
+      console.log('📧 Verify email request body:', req.body);
+      
+      // Joi validation is handled by middleware, so we don't need validationResult here
+      const { userId, email, code } = req.body;
+      console.log('✅ Processing verification for:', { userId, email, code });
+      
+      const result = await authService.verifyEmailWithCode(userId, email, code);
 
       res.json({
         success: true,
         message: result.message,
       });
     } catch (error) {
+      console.error('❌ Email verification error:', error.message);
       next(error);
     }
   }
@@ -331,14 +329,38 @@ export class AuthController {
         type: 'email-verification',
       });
 
-      // In production, send email
-      // await emailService.sendVerificationEmail(email, verificationToken);
+      // Send verification email
+      const emailSent = await emailService.sendVerificationEmail(
+        email, 
+        verificationToken, 
+        user.name
+      );
 
       res.json({
         success: true,
-        message: 'Verification email sent successfully',
+        message: emailSent 
+          ? 'Verification email sent successfully' 
+          : 'Failed to send verification email. Please try again.',
+        emailSent,
         // Remove in production
         ...(process.env.NODE_ENV === 'development' && { verificationToken }),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Test email service
+   * GET /api/auth/test-email
+   */
+  async testEmail(req, res, next) {
+    try {
+      const result = await emailService.testConnection();
+      
+      res.json({
+        success: result.success,
+        message: result.message,
       });
     } catch (error) {
       next(error);

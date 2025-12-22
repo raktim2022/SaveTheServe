@@ -59,13 +59,15 @@ export const hasAnyRole = (user, roles) => {
 export const getDashboardRoute = (user) => {
   if (!user) return '/login';
   
+  const userId = user.id;
+  
   switch (user.role) {
     case USER_ROLES.ADMIN:
-      return '/admin';
+      return `/admin/${userId}`;
     case USER_ROLES.NGO:
-      return '/ngo';
+      return `/ngo/${userId}`;
     case USER_ROLES.RESTAURANT:
-      return '/donor';
+      return `/donor/${userId}`;
     default:
       return '/';
   }

@@ -134,6 +134,18 @@ class AdminController {
   }
 
   /**
+   * Get user statistics
+   */
+  async getUserStats(req, res) {
+    try {
+      const stats = await adminService.getUserStats();
+      return responseHelper.success(res, stats, 'User statistics retrieved successfully');
+    } catch (error) {
+      return responseHelper.error(res, error.message);
+    }
+  }
+
+  /**
    * Get all users
    */
   async getAllUsers(req, res) {

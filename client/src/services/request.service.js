@@ -88,23 +88,23 @@ export const cancelRequest = async (id) => {
 
 /**
  * Get requests by NGO
- * @param {string} ngoId - NGO ID
+ * @param {string} ngoId - NGO ID (not used since auth provides user context)
  * @param {Object} params - Query parameters
  * @returns {Promise<Object>} Requests
  */
 export const getRequestsByNGO = async (ngoId, params = {}) => {
-  const response = await axios.get(`/requests/ngo/${ngoId}`, { params });
+  const response = await axios.get(`/requests/my-requests`, { params });
   return response.data;
 };
 
 /**
  * Get requests by restaurant
- * @param {string} restaurantId - Restaurant ID
+ * @param {string} restaurantId - Restaurant ID (not used since auth provides user context)
  * @param {Object} params - Query parameters
  * @returns {Promise<Object>} Requests
  */
 export const getRequestsByRestaurant = async (restaurantId, params = {}) => {
-  const response = await axios.get(`/requests/restaurant/${restaurantId}`, { params });
+  const response = await axios.get(`/requests/incoming`, { params });
   return response.data;
 };
 
@@ -114,6 +114,32 @@ export const getRequestsByRestaurant = async (restaurantId, params = {}) => {
  */
 export const getRequestStats = async () => {
   const response = await axios.get('/requests/stats');
+  return response.data;
+};
+
+/**
+ * Get my requests (current user's requests)
+ * @param {Object} params - Query parameters
+ * @returns {Promise<Object>} Current user's requests
+ */
+export const getMyRequests = async (params = {}) => {
+  try {
+    const response = await axios.get('/requests/my-requests', { params });
+    return response.data;
+  } catch (error) {
+    console.error('Request service error:', error);
+    // Return empty result instead of throwing
+    return { data: [], success: false, message: 'Failed to fetch requests' };
+  }
+};
+
+/**
+ * Get incoming requests (for restaurants)
+ * @param {Object} params - Query parameters
+ * @returns {Promise<Object>} Incoming requests
+ */
+export const getIncomingRequests = async (params = {}) => {
+  const response = await axios.get('/requests/incoming', { params });
   return response.data;
 };
 
@@ -129,5 +155,7 @@ export default {
   getRequestsByNGO,
   getRequestsByRestaurant,
   getRequestStats,
+  getMyRequests,
+  getIncomingRequests,
 };
 

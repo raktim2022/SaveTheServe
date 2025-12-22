@@ -2,29 +2,32 @@
  * Application constants
  */
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
 export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
   REGISTER: '/register',
   FORGOT_PASSWORD: '/forgot-password',
-  
+};
+
+// Helper functions for dynamic routes
+export const getDynamicRoutes = (userId) => ({
   // NGO Routes
-  NGO_DASHBOARD: '/ngo',
-  NGO_REQUESTS: '/ngo/requests',
-  NGO_HISTORY: '/ngo/history',
+  NGO_DASHBOARD: `/ngo/${userId}`,
+  NGO_REQUESTS: `/ngo/${userId}/requests`,
+  NGO_HISTORY: `/ngo/${userId}/history`,
   
   // Donor Routes
-  DONOR_DASHBOARD: '/donor',
-  DONOR_FOOD_LISTINGS: '/donor/food-listings',
-  DONOR_PICKUPS: '/donor/pickups',
+  DONOR_DASHBOARD: `/donor/${userId}`,
+  DONOR_FOOD_LISTINGS: `/donor/${userId}/food-listings`,
+  DONOR_PICKUPS: `/donor/${userId}/pickups`,
   
   // Admin Routes
-  ADMIN_DASHBOARD: '/admin',
-  ADMIN_USERS: '/admin/users',
-  ADMIN_REPORTS: '/admin/reports',
-};
+  ADMIN_DASHBOARD: `/admin/${userId}`,
+  ADMIN_USERS: `/admin/${userId}/users`,
+  ADMIN_REPORTS: `/admin/${userId}/reports`,
+});
 
 export const USER_ROLES = {
   ADMIN: 'admin',
@@ -33,10 +36,9 @@ export const USER_ROLES = {
 };
 
 export const FOOD_STATUS = {
-  AVAILABLE: 'available',
-  RESERVED: 'reserved',
-  COMPLETED: 'completed',
-  EXPIRED: 'expired',
+  AVAILABLE: 'AVAILABLE',
+  REQUESTED: 'REQUESTED',
+  PICKED: 'PICKED',
 };
 
 export const REQUEST_STATUS = {

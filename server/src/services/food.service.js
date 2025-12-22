@@ -333,22 +333,11 @@ class FoodService {
   }
 
   /**
-   * Mark food as expired
+   * Mark food as picked (no longer available)
    */
-  async markAsExpired(foodId, userId = null) {
+  async markAsPicked(foodId, userId = null) {
     try {
-      return await this.updateFoodStatus(foodId, 'EXPIRED', userId);
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  /**
-   * Mark food as fulfilled
-   */
-  async markAsFulfilled(foodId, userId = null) {
-    try {
-      return await this.updateFoodStatus(foodId, 'FULFILLED', userId);
+      return await this.updateFoodStatus(foodId, 'PICKED', userId);
     } catch (error) {
       throw error;
     }
@@ -435,22 +424,19 @@ class FoodService {
       const [
         totalFoodListings,
         availableFood,
-        expiredFood,
-        fulfilledFood,
+        pickedFood,
         expiringInNext24Hours
       ] = await Promise.all([
         FoodListingModel.count(),
         FoodListingModel.count({ where: { status: 'AVAILABLE' } }),
-        FoodListingModel.count({ where: { status: 'EXPIRED' } }),
-        FoodListingModel.count({ where: { status: 'FULFILLED' } }),
+        FoodListingModel.count({ where: { status: 'PICKED' } }),
         this.getExpiringFood(24)
       ]);
 
       return {
         totalFoodListings,
         availableFood,
-        expiredFood,
-        fulfilledFood,
+        pickedFood,
         expiringInNext24Hours: expiringInNext24Hours.length
       };
     } catch (error) {
@@ -472,7 +458,7 @@ class FoodService {
         throw new Error('Quantity cannot be negative');
       }
 
-      const status = newQuantity === 0 ? 'FULFILLED' : foodListing.status;
+      const status = newQuantity === 0 ? 'PICKED' : foodListing.status;
 
       const updatedFoodListing = await FoodListingModel.update(foodId, {
         quantity: newQuantity,
@@ -493,7 +479,7 @@ class FoodService {
     try {
       const now = new Date();
       
-      const expiredFood = await FoodListingModel.updateMany({
+      const pickedFood = await FoodListingModel.updateMany({
         where: {
           status: 'AVAILABLE',
           expiryTime: {
@@ -501,14 +487,14 @@ class FoodService {
           }
         },
         data: {
-          status: 'EXPIRED',
+          status: 'PICKED',
           updatedAt: now
         }
       });
 
       return {
-        message: `${expiredFood.count} food listings marked as expired`,
-        expiredCount: expiredFood.count
+        message: `${pickedFood.count} food listings marked as picked`,
+        pickedCount: pickedFood.count
       };
     } catch (error) {
       throw error;

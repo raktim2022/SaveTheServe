@@ -11,7 +11,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-600 to-secondary-500 text-white font-bold flex items-center justify-center">S</div>
+              <div className="h-10 w-10 rounded-xl bg-linear-to-br from-primary-600 to-secondary-500 text-white font-bold flex items-center justify-center">S</div>
               <div>
                 <p className="text-lg font-semibold">SaveTheServe</p>
                 <p className="text-sm text-slate-400">Food rescue network</p>

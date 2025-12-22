@@ -29,15 +29,17 @@ enum FoodRequestStatus {
 }
 
 model User {
-  id          Int       @id @default(autoincrement())
-  name        String
-  email       String    @unique
-  phone       String?   @db.VarChar(20)
-  password    String
-  role        UserRole  @default(RESTAURANT)
-  isVerified  Boolean   @default(false) @map("is_verified")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  id                       Int       @id @default(autoincrement())
+  name                     String
+  email                    String    @unique
+  phone                    String?   @db.VarChar(20)
+  password                 String
+  role                     UserRole  @default(RESTAURANT)
+  isVerified               Boolean   @default(false) @map("is_verified")
+  verificationToken        String?   @map("verification_token")
+  verificationTokenExpiry  DateTime? @map("verification_token_expiry")
+  createdAt                DateTime  @default(now()) @map("created_at")
+  updatedAt                DateTime  @updatedAt @map("updated_at")
 
   // Relationships
   admin       Admin?

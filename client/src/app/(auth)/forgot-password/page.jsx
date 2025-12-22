@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { Mail, ArrowLeft, CheckCircle, Loader2 } from 'lucide-react';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 import { forgotPassword } from '@/services/auth.service';
@@ -31,27 +33,62 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-header">
-          <h1 className="auth-title">Forgot Password</h1>
+      <motion.div 
+        className="auth-card"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <motion.div 
+          className="auth-header"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+        >
+          <div className="flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mx-auto mb-4">
+            <Mail className="h-8 w-8 text-primary-600" />
+          </div>
+          <h1 className="auth-title">Forgot Password?</h1>
           <p className="auth-subtitle">
-            Enter your email to receive a password reset link
+            No worries! Enter your email and we'll send you a reset link
           </p>
-        </div>
+        </motion.div>
 
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
+          <motion.div 
+            className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-200"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
             {error}
-          </div>
+          </motion.div>
         )}
 
         {success && (
-          <div className="bg-green-50 text-green-600 p-3 rounded-lg mb-4 text-sm">
-            Password reset link has been sent to your email!
-          </div>
+          <motion.div 
+            className="bg-green-50 text-green-600 p-4 rounded-lg mb-4 text-sm border border-green-200"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="flex items-start">
+              <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-medium">Reset link sent!</p>
+                <p className="text-green-700">Check your email for password reset instructions.</p>
+              </div>
+            </div>
+          </motion.div>
         )}
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        <motion.form 
+          onSubmit={handleSubmit} 
+          className="auth-form"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+        >
           <Input
             label="Email"
             type="email"
@@ -62,18 +99,30 @@ export default function ForgotPasswordPage() {
             required
           />
 
-          <Button type="submit" fullWidth loading={loading}>
-            Send Reset Link
+          <Button type="submit" fullWidth loading={loading} disabled={success}>
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : success ? (
+              <>
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Email Sent
+              </>
+            ) : (
+              'Send Reset Link'
+            )}
           </Button>
-        </form>
+        </motion.form>
 
-        <p className="text-center text-sm text-gray-600 mt-4">
-          Remember your password?{' '}
-          <Link href="/login" className="auth-link">
-            Sign in
+        <div className="flex items-center justify-center mt-6">
+          <Link 
+            href="/login" 
+            className="flex items-center text-sm text-gray-600 hover:text-primary-600 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Sign In
           </Link>
-        </p>
-      </div>
+        </div>
+      </motion.div>
     </div>
   );
 }

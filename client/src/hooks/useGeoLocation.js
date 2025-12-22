@@ -11,16 +11,30 @@ export const useGeoLocation = (options = {}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchLocation = async () => {
+  const fetchLocation = async (retryCount = 0) => {
     try {
       setLoading(true);
       setError(null);
       
-      const position = await getCurrentLocation();
+      // Try with high accuracy first, then fallback to lower accuracy if it fails
+      const geoOptions = retryCount > 0 ? {
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 600000, // 10 minutes for retry
+      } : undefined;
+      
+      const position = await getCurrentLocation(geoOptions);
       setLocation(position);
     } catch (err) {
-      setError(err.message || 'Failed to get location');
       console.error('Geolocation error:', err);
+      
+      // If high accuracy failed and we haven't retried yet, try with lower accuracy
+      if (err.code === 3 && retryCount === 0) { // TIMEOUT
+        console.log('Retrying with lower accuracy...');
+        return fetchLocation(1);
+      }
+      
+      setError(err.message || 'Failed to get location');
     } finally {
       setLoading(false);
     }
