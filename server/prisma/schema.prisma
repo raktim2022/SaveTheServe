@@ -1,0 +1,144 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  NGO
+  RESTAURANT
+}
+
+enum FoodListingStatus {
+  AVAILABLE
+  REQUESTED
+  PICKED
+}
+
+enum FoodRequestStatus {
+  PENDING
+  ACCEPTED
+  COMPLETED
+}
+
+model User {
+  id          Int       @id @default(autoincrement())
+  name        String
+  email       String    @unique
+  phone       String?   @db.VarChar(20)
+  password    String
+  role        UserRole  @default(RESTAURANT)
+  isVerified  Boolean   @default(false) @map("is_verified")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relationships
+  admin       Admin?
+  ngo         NGO?
+  restaurant  Restaurant?
+
+  @@map("users")
+}
+
+model Admin {
+  id       Int      @id @default(autoincrement())
+  userId   Int      @unique @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("admins")
+}
+
+model Restaurant {
+  id        Int     @id @default(autoincrement())
+  userId    Int     @unique @map("user_id")
+  shopName  String  @map("shop_name")
+  shopType  String? @map("shop_type")
+  address   String
+  latitude  Decimal @db.Decimal(10, 7)
+  longitude Decimal @db.Decimal(10, 7)
+  verified  Boolean @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relationships
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  foodListings FoodListing[]
+
+  @@map("restaurants")
+}
+
+model NGO {
+  id                 Int     @id @default(autoincrement())
+  userId             Int     @unique @map("user_id")
+  ngoName            String  @map("ngo_name")
+  address            String
+  latitude           Decimal @db.Decimal(10, 7)
+  longitude          Decimal @db.Decimal(10, 7)
+  coverageRadiusKm   Decimal @map("coverage_radius_km") @db.Decimal(5, 2)
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  // Relationships
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requests FoodRequest[]
+
+  @@map("ngos")
+}
+
+model FoodListing {
+  id           Int                @id @default(autoincrement())
+  restaurantId Int                @map("restaurant_id")
+  foodName     String             @map("food_name")
+  quantity     Int
+  expiryTime   DateTime           @map("expiry_time")
+  status       FoodListingStatus  @default(AVAILABLE)
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+
+  // Relationships
+  restaurant Restaurant    @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  requests   FoodRequest[]
+
+  @@map("food_listings")
+}
+
+model FoodRequest {
+  id            Int               @id @default(autoincrement())
+  ngoId         Int               @map("ngo_id")
+  foodListingId Int               @map("food_listing_id")
+  status        FoodRequestStatus @default(PENDING)
+  pickupTime    DateTime?         @map("pickup_time")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+
+  // Relationships
+  ngo         NGO         @relation(fields: [ngoId], references: [id], onDelete: Cascade)
+  foodListing FoodListing @relation(fields: [foodListingId], references: [id], onDelete: Cascade)
+  pickupLog   PickupLog?
+
+  @@map("food_requests")
+}
+
+model PickupLog {
+  id            Int      @id @default(autoincrement())
+  foodRequestId Int      @unique @map("food_request_id")
+  pickupCode    String   @unique @map("pickup_code")
+  pickupStatus  String   @map("pickup_status")
+  timestamp     DateTime @default(now())
+
+  // Relationships
+  foodRequest FoodRequest @relation(fields: [foodRequestId], references: [id], onDelete: Cascade)
+
+  @@map("pickup_logs")
+}
