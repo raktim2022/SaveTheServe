@@ -2,6 +2,20 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { 
+  LayoutDashboard, 
+  Package, 
+  FileText, 
+  History, 
+  Users, 
+  BarChart3, 
+  Truck, 
+  Settings,
+  Heart,
+  ChefHat,
+  Shield
+} from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import clsx from 'clsx';
 
@@ -15,44 +29,65 @@ export default function Sidebar() {
   const getMenuItems = () => {
     if (!user) return [];
 
-    const commonItems = [
-      { href: `/${user.role}`, label: 'Dashboard', icon: '📊' },
+    const userId = user.id;
+
+    if (user.role === 'NGO') {
+      return [
+        { href: `/ngo/${userId}`, label: 'Dashboard', icon: LayoutDashboard },
+        { href: `/ngo/${userId}/requests`, label: 'My Requests', icon: FileText },
+        { href: `/ngo/${userId}/history`, label: 'Impact History', icon: History },
+      ];
+    }
+
+    if (user.role === 'RESTAURANT') {
+      return [
+        { href: `/donor/${userId}`, label: 'Dashboard', icon: LayoutDashboard },
+        { href: `/donor/${userId}/food-listings`, label: 'Food Listings', icon: Package },
+        { href: `/donor/${userId}/pickups`, label: 'Pickup Requests', icon: Truck },
+      ];
+    }
+
+    if (user.role === 'ADMIN') {
+      return [
+        { href: `/admin/${userId}`, label: 'Dashboard', icon: LayoutDashboard },
+        { href: `/admin/${userId}/users`, label: 'User Management', icon: Users },
+        { href: `/admin/${userId}/reports`, label: 'Reports & Analytics', icon: BarChart3 },
+      ];
+    }
+
+    return [
+      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     ];
+  };
 
-    if (user.role === 'ngo') {
-      return [
-        ...commonItems,
-        { href: '/ngo/requests', label: 'My Requests', icon: '📋' },
-        { href: '/ngo/history', label: 'History', icon: '📜' },
-      ];
+  const getRoleIcon = (role) => {
+    switch (role) {
+      case 'NGO':
+        return Heart;
+      case 'RESTAURANT':
+        return ChefHat;
+      case 'ADMIN':
+        return Shield;
+      default:
+        return Users;
     }
-
-    if (user.role === 'restaurant') {
-      return [
-        ...commonItems,
-        { href: '/donor/food-listings', label: 'Food Listings', icon: '🍽️' },
-        { href: '/donor/pickups', label: 'Pickups', icon: '📦' },
-      ];
-    }
-
-    if (user.role === 'admin') {
-      return [
-        ...commonItems,
-        { href: '/admin/users', label: 'Users', icon: '👥' },
-        { href: '/admin/reports', label: 'Reports', icon: '📈' },
-      ];
-    }
-
-    return commonItems;
   };
 
   const menuItems = getMenuItems();
 
   return (
-    <aside className="w-64 bg-white/95 backdrop-blur-sm border-r border-slate-100 shadow-brand-card/40 fixed h-full flex flex-col">
+    <motion.aside 
+      className="w-64 bg-white/95 backdrop-blur-sm border-r border-slate-100 shadow-lg fixed h-full flex flex-col z-20"
+      initial={{ x: -64 }}
+      animate={{ x: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      {/* Logo Section */}
       <div className="p-6 border-b border-slate-100">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-600 to-secondary-500 text-white font-bold flex items-center justify-center">S</div>
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-600 to-secondary-500 text-white font-bold flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+            S
+          </div>
           <div>
             <p className="text-base font-semibold text-slate-900 leading-tight">SaveTheServe</p>
             <p className="text-xs text-slate-500 leading-tight">Dashboard</p>
@@ -60,38 +95,67 @@ export default function Sidebar() {
         </Link>
       </div>
 
-      <nav className="flex-1 overflow-y-auto p-4 space-y-2">
-        {menuItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={clsx(
-              'flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition border',
-              pathname === item.href
-                ? 'bg-primary-50 text-primary-800 border-primary-100'
-                : 'text-slate-700 border-transparent hover:bg-slate-50 hover:border-slate-100'
-            )}
-          >
-            <span className="text-lg">{item.icon}</span>
-            <span>{item.label}</span>
-          </Link>
-        ))}
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto p-4 space-y-1">
+        {menuItems.map((item, index) => {
+          const Icon = item.icon;
+          const isActive = pathname === item.href;
+          
+          return (
+            <motion.div
+              key={item.href}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+            >
+              <Link
+                href={item.href}
+                className={clsx(
+                  'flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group',
+                  isActive
+                    ? 'bg-primary-50 text-primary-700 shadow-sm'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                )}
+              >
+                <Icon className={clsx(
+                  'h-5 w-5 transition-colors',
+                  isActive ? 'text-primary-600' : 'text-slate-400 group-hover:text-slate-600'
+                )} />
+                <span>{item.label}</span>
+              </Link>
+            </motion.div>
+          );
+        })}
       </nav>
 
+      {/* User Profile Section */}
       {user && (
-        <div className="p-5 border-t border-slate-100">
+        <motion.div 
+          className="p-6 border-t border-slate-100 bg-slate-50/50"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.5 }}
+        >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-600 to-secondary-500 text-white flex items-center justify-center font-bold shadow-lg">
               {user.name?.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-slate-900 truncate">{user.name}</p>
-              <p className="text-xs text-slate-500 truncate">{user.email}</p>
+              <div className="flex items-center space-x-1">
+                <div className={clsx(
+                  'w-2 h-2 rounded-full',
+                  user.role === 'NGO' ? 'bg-green-500' :
+                  user.role === 'RESTAURANT' ? 'bg-blue-500' :
+                  'bg-purple-500'
+                )} />
+                <p className="text-xs text-slate-500 truncate">{user.role}</p>
+              </div>
             </div>
-          </div>
         </div>
-      )}
-    </aside>
-  );
+      </motion.div>
+    )}
+  </motion.aside>
+);
 }
 
