@@ -8,6 +8,9 @@ import donorRoutes from './donor.routes.js';
 import foodRoutes from './food.routes.js';
 import requestRoutes from './request.routes.js';
 import pickupRoutes from './pickup.routes.js';
+import volunteerRoutes from './volunteer.routes.js';
+import reviewRoutes from './review.routes.js';
+import analyticsRoutes from './analytics.routes.js';
 
 const router = Router();
 
@@ -35,6 +38,8 @@ router.get('/', (req, res) => {
       food: '/api/food',
       requests: '/api/requests',
       pickups: '/api/pickups',
+      reviews: '/api/reviews',
+      analytics: '/api/analytics',
       health: '/api/health'
     },
     documentation: '/api/docs'
@@ -50,6 +55,9 @@ router.use('/restaurants', donorRoutes);
 router.use('/food', foodRoutes);
 router.use('/requests', requestRoutes);
 router.use('/pickups', pickupRoutes);
+router.use('/volunteers', volunteerRoutes);
+router.use('/reviews', reviewRoutes);
+router.use('/analytics', analyticsRoutes);
 
 // API documentation endpoint
 router.get('/docs', (req, res) => {
@@ -143,6 +151,30 @@ router.get('/docs', (req, res) => {
           'GET /my/pickups - Get user pickups',
           'GET /admin/all - Get all pickups (ADMIN role)'
         ]
+      },
+      reviews: {
+        base: '/api/reviews',
+        description: 'Review management endpoints',
+        endpoints: [
+          'POST / - Create review (authenticated)',
+          'GET /my-reviews - Get user reviews (authenticated)',
+          'GET /restaurant/:id - Get restaurant reviews (public)',
+          'GET /ngo/:id - Get NGO reviews (public)',
+          'GET /:id - Get review by ID (public)',
+          'PUT /:id - Update review (reviewer only)',
+          'DELETE /:id - Delete review (reviewer or admin)',
+          'GET /all - Get all reviews (ADMIN role)'
+        ]
+      },
+      analytics: {
+        base: '/api/analytics',
+        description: 'Analytics and statistics endpoints',
+        endpoints: [
+          'GET /restaurant/:id - Get restaurant analytics (authenticated)',
+          'GET /ngo/:id - Get NGO analytics (authenticated)',
+          'GET /admin - Get admin analytics (ADMIN role)',
+          'GET /public/leaderboard - Get public leaderboard (public)'
+        ]
       }
     },
     authentication: {
@@ -185,7 +217,9 @@ router.use((req, res) => {
       '/api/restaurants/*',
       '/api/food/*',
       '/api/requests/*',
-      '/api/pickups/*'
+      '/api/pickups/*',
+      '/api/reviews/*',
+      '/api/analytics/*'
     ]
   });
 });

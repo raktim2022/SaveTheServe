@@ -1,5 +1,7 @@
 import { USER_ROLES } from './constants';
 
+const normalizeRole = (role) => String(role || '').toLowerCase();
+
 /**
  * Permission utility functions
  */
@@ -11,7 +13,7 @@ import { USER_ROLES } from './constants';
  * @returns {boolean} True if user has the role
  */
 export const hasRole = (user, role) => {
-  return user && user.role === role;
+  return !!user && normalizeRole(user.role) === normalizeRole(role);
 };
 
 /**
@@ -48,7 +50,9 @@ export const isRestaurant = (user) => {
  * @returns {boolean} True if user has any of the roles
  */
 export const hasAnyRole = (user, roles) => {
-  return user && roles.includes(user.role);
+  if (!user || !Array.isArray(roles)) return false;
+  const userRole = normalizeRole(user.role);
+  return roles.some((role) => normalizeRole(role) === userRole);
 };
 
 /**
@@ -60,14 +64,17 @@ export const getDashboardRoute = (user) => {
   if (!user) return '/login';
   
   const userId = user.id;
+  const role = normalizeRole(user.role);
   
-  switch (user.role) {
+  switch (role) {
     case USER_ROLES.ADMIN:
       return `/admin/${userId}`;
     case USER_ROLES.NGO:
       return `/ngo/${userId}`;
     case USER_ROLES.RESTAURANT:
       return `/donor/${userId}`;
+    case USER_ROLES.VOLUNTEER:
+      return `/volunteer/${userId}`;
     default:
       return '/';
   }

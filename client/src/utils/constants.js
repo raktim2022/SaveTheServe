@@ -16,6 +16,7 @@ export const getDynamicRoutes = (userId) => ({
   // NGO Routes
   NGO_DASHBOARD: `/ngo/${userId}`,
   NGO_REQUESTS: `/ngo/${userId}/requests`,
+  NGO_VOLUNTEERS: `/ngo/${userId}/volunteers`,
   NGO_HISTORY: `/ngo/${userId}/history`,
   
   // Donor Routes
@@ -27,12 +28,22 @@ export const getDynamicRoutes = (userId) => ({
   ADMIN_DASHBOARD: `/admin/${userId}`,
   ADMIN_USERS: `/admin/${userId}/users`,
   ADMIN_REPORTS: `/admin/${userId}/reports`,
+
+  // Settings Routes
+  NGO_SETTINGS: `/ngo/${userId}/settings`,
+  DONOR_SETTINGS: `/donor/${userId}/settings`,
+  ADMIN_SETTINGS: `/admin/${userId}/settings`,
 });
 
 export const USER_ROLES = {
   ADMIN: 'admin',
   NGO: 'ngo',
   RESTAURANT: 'restaurant',
+  VOLUNTEER: 'volunteer',
+  
+  // API compatibility aliases
+  ngo: 'ngo',
+  restaurant: 'restaurant',
 };
 
 export const FOOD_STATUS = {

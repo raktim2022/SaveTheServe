@@ -11,6 +11,8 @@ import {
   paginationSchema
 } from '../validations/pickup.validation.js';
 import { responseHelper } from '../helpers/response.helper.js';
+import { createNotification } from '../services/notification.service.js';
+import logger from '../utils/logger.js';
 
 class PickupController {
   /**
@@ -70,6 +72,64 @@ class PickupController {
         req.user.role, 
         value.completionNotes
       );
+      
+      // Notify NGO and restaurant about completed pickup
+      try {
+        const foodRequest = pickup.foodRequest;
+        if (foodRequest && foodRequest.ngo?.user?.id) {
+          await createNotification(
+            foodRequest.ngo.user.id,
+            'pickup_completed',
+            'Pickup Completed',
+            `Your pickup for ${foodRequest.foodListing?.foodName || 'food'} has been completed successfully. Thank you!`,
+            { pickupId: pickup.id, requestId: foodRequest.id, foodListingId: foodRequest.foodListingId },
+            'IN_APP'
+          );
+          // Prompt NGO to review the restaurant
+          if (foodRequest.foodListing?.restaurant?.id) {
+            await createNotification(
+              foodRequest.ngo.user.id,
+              'review_prompt',
+              'Review the Restaurant',
+              `How was your experience with ${foodRequest.foodListing.restaurant.shopName || 'this restaurant'}? Your feedback helps others!`,
+              {
+                requestId: foodRequest.id,
+                restaurantId: foodRequest.foodListing.restaurant.id,
+                restaurantName: foodRequest.foodListing.restaurant.shopName
+              },
+              'IN_APP'
+            );
+          }
+        }
+        // Also notify restaurant
+        if (foodRequest?.foodListing?.restaurant?.user?.id) {
+          await createNotification(
+            foodRequest.foodListing.restaurant.user.id,
+            'pickup_completed',
+            'Pickup Completed',
+            `Your donation of ${foodRequest.foodListing?.foodName || 'food'} has been picked up successfully.`,
+            { pickupId: pickup.id, requestId: foodRequest.id, foodListingId: foodRequest.foodListingId },
+            'IN_APP'
+          );
+          // Prompt restaurant to review the NGO
+          if (foodRequest.ngo?.id) {
+            await createNotification(
+              foodRequest.foodListing.restaurant.user.id,
+              'review_prompt',
+              'Review the NGO',
+              `How was your experience with ${foodRequest.ngo.ngoName || 'this NGO'}? Your feedback is valuable!`,
+              {
+                requestId: foodRequest.id,
+                ngoId: foodRequest.ngo.id,
+                ngoName: foodRequest.ngo.ngoName
+              },
+              'IN_APP'
+            );
+          }
+        }
+      } catch (notifError) {
+        logger.warn('Failed to send pickup completion notification:', notifError.message);
+      }
       
       return responseHelper.success(res, pickup, 'Pickup completed successfully');
     } catch (error) {
