@@ -197,7 +197,7 @@ SaveTheServe is a **food donation and waste reduction platform** that bridges th
 |-----------|---------|---------|
 | **Next.js** | 16.1.0 | React framework with SSR & App Router |
 | **React** | 19.2.3 | UI component library |
-| **TypeScript** | Latest | Type safety (optional, setup ready) |
+| **JavaScript** | ES6+ | Dynamic typing with JSDoc comments |
 | **Tailwind CSS** | 4.1.18 | Utility-first CSS framework |
 | **Zustand** | 5.0.9 | Global state management |
 | **@tanstack/react-query** | 5.90.12 | Data fetching & caching |
@@ -211,7 +211,7 @@ SaveTheServe is a **food donation and waste reduction platform** that bridges th
 |-----------|---------|---------|
 | **Node.js** | 18+ | JavaScript runtime |
 | **Express** | 5.2.1 | Web framework |
-| **TypeScript** | Latest | Type safety (optional) |
+| **JavaScript** | ES6+ | Dynamic typing with JSDoc comments |
 | **Prisma** | 6.19.1 | ORM & database toolkit |
 | **socket.io** | 4.8.1 | Real-time bidirectional communication |
 | **node-cron** | 3.x | Job scheduling |
@@ -291,7 +291,7 @@ SaveTheServe/
 │   │   │   ├── notification.service.js
 │   │   │   └── user.service.js
 │   │   ├── styles/                 # Global & component styles
-│   │   ├── types/                  # TypeScript types
+│   │   ├── types/                  # JS type definitions & constants
 │   │   └── utils/                  # Utility functions
 │   ├── public/                     # Static assets
 │   └── package.json
