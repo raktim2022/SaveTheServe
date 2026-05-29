@@ -1,3 +1,4 @@
+
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -23,12 +24,17 @@ export const config = {
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
   
   // CORS
-  ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+  ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS?.split(',') || [
+    'http://localhost:3000',
+    'http://localhost:3001', 
+    'http://localhost:3002',
+    'http://localhost:5173'
+  ],
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:3000',
   
   // Rate Limiting
   RATE_LIMIT_WINDOW_MS: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 900000, // 15 minutes
-  RATE_LIMIT_MAX: parseInt(process.env.RATE_LIMIT_MAX) || 100,
+  RATE_LIMIT_MAX: parseInt(process.env.RATE_LIMIT_MAX) || 300,
   
   // Email
   SMTP_HOST: process.env.SMTP_HOST,
@@ -45,6 +51,15 @@ export const config = {
   
   // Logging
   LOG_LEVEL: process.env.LOG_LEVEL || 'info',
+
+  // Twilio SMS (optional – set to enable phone OTP via SMS)
+  TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID || null,
+  TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN || null,
+  TWILIO_PHONE_NUMBER: process.env.TWILIO_PHONE_NUMBER || null,
+
+  // Razorpay Payment Gateway
+  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
+  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
 };
 
 // Validate required environment variables

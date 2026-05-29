@@ -58,6 +58,8 @@ export const errorHandler = (err, req, res, next) => {
 
 // 404 Not Found middleware
 export const notFound = (req, res) => {
+  // Guard: Socket.IO already handled this, or another handler sent a response.
+  if (res.headersSent) return;
   res.status(404).json({
     success: false,
     message: 'Route not found',
