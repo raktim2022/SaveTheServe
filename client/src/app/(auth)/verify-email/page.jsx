@@ -22,7 +22,7 @@ export default function EmailVerificationPage() {
   const [canResend, setCanResend] = useState(false);
   
   const email = searchParams?.get('email') || sessionStorage.getItem('registrationEmail') || '';
-  const userId = searchParams?.get('userId') || '';
+  const userId = searchParams?.get('userId') || sessionStorage.getItem('registrationUserId') || '';
 
   useEffect(() => {
     // If no email in URL params, try to get from session storage
@@ -56,11 +56,14 @@ export default function EmailVerificationPage() {
     setSuccess('');
 
     try {
-      await verifyEmailCode({ 
-        userId, 
-        email, 
-        code: verificationCode.trim() 
-      });
+      const payload = { email, code: verificationCode.trim() };
+      if (userId) payload.userId = userId;
+
+      await verifyEmailCode(payload);
+
+      // Clean up sessionStorage after successful verification
+      sessionStorage.removeItem('registrationEmail');
+      sessionStorage.removeItem('registrationUserId');
       
       setSuccess('Email verified successfully! Redirecting to login...');
       setTimeout(() => {
@@ -81,7 +84,11 @@ export default function EmailVerificationPage() {
     setSuccess('');
 
     try {
-      await resendVerification({ email, userId });
+      const response = await resendVerification({ email, userId });
+      // Store userId from resend response in case it wasn't saved before
+      if (response?.data?.userId) {
+        sessionStorage.setItem('registrationUserId', String(response.data.userId));
+      }
       setSuccess('Verification code sent! Please check your email.');
       setCountdown(60);
       setCanResend(false);

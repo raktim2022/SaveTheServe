@@ -112,19 +112,26 @@ export class AuthService {
         });
       }
 
-      // Generate verification token and OTP
+      // Generate 6-digit OTP for email verification
+      const verificationOtp = Math.floor(100000 + Math.random() * 900000).toString();
+      const verificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+      // Store OTP on the user record
+      await UserModel.update(user.id, {
+        verificationToken: verificationOtp,
+        verificationTokenExpiry: verificationExpiry,
+      });
+
+      // Generate JWT token (for URL-based verification fallback)
       const verificationToken = this.generateToken({
         userId: user.id,
         type: 'email-verification',
       });
 
-      // Generate 6-digit OTP
-      const verificationOtp = Math.floor(100000 + Math.random() * 900000).toString();
-
       // Send verification email with OTP
       const emailSent = await emailService.sendVerificationEmail(
-        email, 
-        verificationOtp, 
+        email,
+        verificationOtp,
         name
       );
 
@@ -240,36 +247,50 @@ export class AuthService {
    */
   async verifyEmailWithCode(userId, email, code) {
     try {
-      // Convert userId to number if it's a string
-      const userIdNum = typeof userId === 'string' ? parseInt(userId, 10) : userId;
-      
-      console.log('🔍 Looking for user:', { userIdNum, email, code });
-      
-      // Get user to verify
-      const user = await UserModel.findById(userIdNum);
-      if (!user) {
-        throw new Error('User not found');
+      let user;
+
+      // Look up by userId if provided (and non-empty), otherwise fall back to email
+      if (userId && String(userId).trim() !== '') {
+        const userIdNum = typeof userId === 'string' ? parseInt(userId, 10) : userId;
+        user = await UserModel.findById(userIdNum);
+        if (user && user.email !== email) {
+          throw new Error('Email mismatch');
+        }
       }
 
-      if (user.email !== email) {
-        throw new Error('Email mismatch');
+      // Fall back to email lookup
+      if (!user) {
+        user = await UserModel.findByEmail(email);
+      }
+
+      if (!user) {
+        throw new Error('User not found');
       }
 
       if (user.isVerified) {
         return { message: 'Email already verified' };
       }
 
-      // For now, accept any 6-digit code since we're having Prisma client issues
-      // In production, this should check against stored verificationToken
+      // Validate code format
       if (!code || code.length !== 6 || !/^[0-9]+$/.test(code)) {
         throw new Error('Invalid verification code format');
       }
 
-      console.log('✅ Updating user verification status...');
+      // Verify the OTP matches what was stored
+      if (user.verificationToken !== code) {
+        throw new Error('Invalid verification code');
+      }
 
-      // Update user verification status
-      await UserModel.update(userIdNum, { 
-        isVerified: true
+      // Check expiry
+      if (user.verificationTokenExpiry && new Date() > new Date(user.verificationTokenExpiry)) {
+        throw new Error('Verification code has expired. Please request a new one.');
+      }
+
+      // Mark user as verified and clear the token
+      await UserModel.update(user.id, {
+        isVerified: true,
+        verificationToken: null,
+        verificationTokenExpiry: null,
       });
 
       return { message: 'Email verified successfully' };
@@ -469,6 +490,118 @@ export class AuthService {
       return { message: 'Logged out successfully' };
     } catch (error) {
       throw new Error(`Logout failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Mask email for display (e.g. "jo***@example.com")
+   */
+  maskEmail(email) {
+    const [local, domain] = email.split('@');
+    const masked = local.slice(0, 2) + '***';
+    return `${masked}@${domain}`;
+  }
+
+  /**
+   * Request OTP for profile update
+   * Generates a 6-digit OTP, stores in verificationToken, and emails the user.
+   */
+  async requestSettingsOtp(userId) {
+    try {
+      const user = await UserModel.findById(userId);
+      if (!user) throw new Error('User not found');
+
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+      await UserModel.update(userId, {
+        verificationToken: otp,
+        verificationTokenExpiry: expiry,
+      });
+
+      await emailService.sendProfileUpdateOtp(user.email, otp, user.name);
+
+      return {
+        message: 'Verification code sent to your email',
+        maskedEmail: this.maskEmail(user.email),
+      };
+    } catch (error) {
+      throw new Error(`Failed to send verification code: ${error.message}`);
+    }
+  }
+
+  /**
+   * Update profile with OTP verification (settings flow)
+   * Verifies the OTP, updates user + role-specific profile, then clears the token.
+   */
+  async updateSettingsProfile(userId, otp, updateData) {
+    try {
+      const user = await UserModel.findById(userId);
+      if (!user) throw new Error('User not found');
+
+      // Verify OTP
+      if (!user.verificationToken || user.verificationToken !== otp) {
+        throw new Error('Invalid verification code');
+      }
+      if (user.verificationTokenExpiry && new Date() > new Date(user.verificationTokenExpiry)) {
+        throw new Error('Verification code has expired. Please request a new one.');
+      }
+
+      // Separate user fields from role-specific fields
+      const { ngoName, address, coverageRadiusKm, shopName, shopType, ...userFields } = updateData;
+
+      // Handle email change
+      const emailChanging = userFields.email && userFields.email !== user.email;
+      if (emailChanging) {
+        const existing = await UserModel.findByEmail(userFields.email);
+        if (existing && existing.id !== userId) {
+          throw new Error('This email address is already in use by another account');
+        }
+        userFields.isVerified = false;
+      }
+
+      // Convert empty phone to null
+      if (userFields.phone === '') userFields.phone = null;
+
+      // Update user record and clear OTP
+      await UserModel.update(userId, {
+        ...userFields,
+        verificationToken: null,
+        verificationTokenExpiry: null,
+      });
+
+      // Update role-specific profile
+      if (user.role === 'NGO' && user.ngo) {
+        const ngoUpdates = {};
+        if (ngoName !== undefined) ngoUpdates.ngoName = ngoName;
+        if (address !== undefined) ngoUpdates.address = address;
+        if (coverageRadiusKm !== undefined) ngoUpdates.coverageRadiusKm = coverageRadiusKm;
+        if (Object.keys(ngoUpdates).length > 0) {
+          await NGOModel.update(user.ngo.id, ngoUpdates);
+        }
+      } else if (user.role === 'RESTAURANT' && user.restaurant) {
+        const restUpdates = {};
+        if (shopName !== undefined) restUpdates.shopName = shopName;
+        if (shopType !== undefined) restUpdates.shopType = shopType || null;
+        if (address !== undefined) restUpdates.address = address;
+        if (Object.keys(restUpdates).length > 0) {
+          await RestaurantModel.update(user.restaurant.id, restUpdates);
+        }
+      }
+
+      // Return fresh profile
+      const updatedUser = await UserModel.findById(userId);
+      const { password: _, ...userWithoutPassword } = updatedUser;
+
+      return {
+        user: userWithoutPassword,
+        emailChanged: emailChanging,
+        message: emailChanging
+          ? 'Profile updated. Please verify your new email address.'
+          : 'Profile updated successfully.',
+      };
+    } catch (error) {
+      throw new Error(`Profile update failed: ${error.message}`);
     }
   }
 }

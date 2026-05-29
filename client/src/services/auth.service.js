@@ -1,41 +1,69 @@
 import axios from '@/lib/axios';
 
 /**
- * Authentication service
+ * Authentication service - Complete API integration with server
  */
 
 /**
  * Login user
  * @param {Object} credentials - { email, password }
- * @returns {Promise<Object>} User data and token
+ * @returns {Promise<{message: string, data: {token: string, user: Object}}>}
  */
 export const login = async (credentials) => {
-  const response = await axios.post('/auth/login', credentials);
-  return response.data;
+  try {
+    const response = await axios.post('/auth/login', credentials);
+    // Server responds with: { message: "Login successful", data: { token: "...", user: {...} } }
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Login failed');
+  }
 };
 
 /**
  * Register new user
- * @param {Object} userData - User registration data
- * @returns {Promise<Object>} User data and token
+ * @param {Object} userData - { name, email, password, role: "ngo"|"restaurant", address, phone?, description? }
+ * @returns {Promise<{message: string, data: {token: string, user: Object}}>}
  */
 export const register = async (userData) => {
-  const response = await axios.post('/auth/register', userData);
-  return response.data;
+  try {
+    // Validate required fields based on server requirements
+    const requiredFields = ['name', 'email', 'password', 'role', 'address'];
+    const missingFields = requiredFields.filter(field => !userData[field]);
+    
+    if (missingFields.length > 0) {
+      throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+    }
+
+    // Ensure role is valid (case-insensitive)
+    if (!['ngo', 'restaurant'].includes(userData.role?.toLowerCase())) {
+      throw new Error('Role must be either "ngo" or "restaurant"');
+    }
+
+    // Server expects uppercase role ('NGO' | 'RESTAURANT')
+    const response = await axios.post('/auth/register', {
+      ...userData,
+      role: userData.role.toUpperCase(),
+    });
+    // Server responds with: { message: "User registered successfully", data: { token: "...", user: {...} } }
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Registration failed');
+  }
 };
 
 /**
- * Logout user
+ * Logout user (client-side only, server doesn't have logout endpoint)
  * @returns {Promise<void>}
  */
 export const logout = async () => {
-  const response = await axios.post('/auth/logout');
-  return response.data;
+  // Since server doesn't have a logout endpoint, we only clear client-side data
+  // This is handled by the auth context
+  return Promise.resolve();
 };
 
 /**
  * Get current user profile
- * @returns {Promise<Object>} User profile data
+ * @returns {Promise<{message: string, data: Object}>} User profile data
  */
 export const getProfile = async () => {
   const response = await axios.get('/auth/profile');

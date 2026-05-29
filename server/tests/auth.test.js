@@ -52,7 +52,8 @@ describe('Authentication Tests', () => {
     test('should not register user with existing email', async () => {
       const userData = {
         email: 'ngo@test.com', // This email already exists
-        password: 'password123',
+        password: 'Password123!',
+        confirmPassword: 'Password123!',
         name: 'Duplicate NGO',
         role: 'NGO'
       };
@@ -219,7 +220,8 @@ describe('Authentication Tests', () => {
     test('should hash passwords during registration', async () => {
       const userData = {
         email: 'passwordtest@test.com',
-        password: 'myPlainPassword123',
+        password: 'MyPlainPassword123!',
+        confirmPassword: 'MyPlainPassword123!',
         name: 'Password Test User',
         role: 'NGO'
       };
@@ -230,7 +232,7 @@ describe('Authentication Tests', () => {
         .expect(201);
 
       // Check that password is hashed in database
-      const user = await global.prisma.user.findUnique({
+      const user = await global.getPrismaClient().user.findUnique({
         where: { email: userData.email }
       });
 

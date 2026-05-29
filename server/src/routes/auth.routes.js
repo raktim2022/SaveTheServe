@@ -160,6 +160,29 @@ router.post(
   authController.logout
 );
 
+/**
+ * @route   POST /api/auth/settings/request-otp
+ * @desc    Send OTP to current email for profile update verification
+ * @access  Private
+ */
+router.post(
+  '/settings/request-otp',
+  authenticateToken,
+  authController.requestSettingsOtp
+);
+
+/**
+ * @route   PUT /api/auth/settings/profile
+ * @desc    Update user + role profile after OTP verification
+ * @access  Private
+ */
+router.put(
+  '/settings/profile',
+  authenticateToken,
+  validateAuth(authValidationSchemas.updateSettingsProfile),
+  authController.updateSettingsProfile
+);
+
 // Error handling middleware for auth routes
 router.use((error, req, res, next) => {
   console.error('Auth Route Error:', error);

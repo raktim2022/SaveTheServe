@@ -51,7 +51,10 @@ export const authenticateToken = async (req, res, next) => {
       email: user.email,
       role: user.role,
       name: user.name,
-      isVerified: user.isVerified
+      isVerified: user.isVerified,
+      // Volunteer-specific flags (null for non-volunteers)
+      mustChangePassword: user.volunteer?.mustChangePassword ?? null,
+      phoneVerified: user.volunteer?.phoneVerified ?? null,
     };
     
     next();

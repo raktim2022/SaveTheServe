@@ -1,6 +1,8 @@
 import { AuthService } from '../services/auth.service.js';
 import { validationResult } from 'express-validator';
 import emailService from '../services/email.service.js';
+import { createNotification } from '../services/notification.service.js';
+import logger from '../utils/logger.js';
 
 const authService = new AuthService();
 
@@ -22,6 +24,20 @@ export class AuthController {
       }
 
       const result = await authService.register(req.body);
+
+      // Send welcome notification
+      try {
+        await createNotification(
+          result.user.id,
+          'registration_welcome',
+          'Welcome to SaveTheServe',
+          `Hi ${result.user.name}, welcome to SaveTheServe! Your account has been created successfully.`,
+          { role: result.user.role },
+          'IN_APP'
+        );
+      } catch (notifError) {
+        logger.warn('Failed to send welcome notification:', notifError.message);
+      }
 
       res.status(201).json({
         success: true,
@@ -324,15 +340,20 @@ export class AuthController {
         });
       }
 
-      const verificationToken = authService.generateToken({
-        userId: user.id,
-        type: 'email-verification',
+      const verificationOtp = Math.floor(100000 + Math.random() * 900000).toString();
+      const verificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+      // Store OTP on user record
+      const { UserModel } = await import('../models/index.js');
+      await UserModel.update(user.id, {
+        verificationToken: verificationOtp,
+        verificationTokenExpiry: verificationExpiry,
       });
 
-      // Send verification email
+      // Send verification email with the OTP
       const emailSent = await emailService.sendVerificationEmail(
-        email, 
-        verificationToken, 
+        email,
+        verificationOtp,
         user.name
       );
 
@@ -342,8 +363,7 @@ export class AuthController {
           ? 'Verification email sent successfully' 
           : 'Failed to send verification email. Please try again.',
         emailSent,
-        // Remove in production
-        ...(process.env.NODE_ENV === 'development' && { verificationToken }),
+        userId: user.id,
       });
     } catch (error) {
       next(error);
@@ -366,7 +386,55 @@ export class AuthController {
       next(error);
     }
   }
-}
+  /**
+   * Request OTP for profile update (settings page)
+   * POST /api/auth/settings/request-otp
+   */
+  async requestSettingsOtp(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const result = await authService.requestSettingsOtp(userId);
+
+      res.json({
+        success: true,
+        message: result.message,
+        maskedEmail: result.maskedEmail,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Update profile with OTP verification (settings page)
+   * PUT /api/auth/settings/profile
+   */
+  async updateSettingsProfile(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: errors.array(),
+        });
+      }
+
+      const userId = req.user.id;
+      const { otp, ...updateData } = req.body;
+
+      const result = await authService.updateSettingsProfile(userId, otp, updateData);
+
+      res.json({
+        success: true,
+        data: result.user,
+        message: result.message,
+        emailChanged: result.emailChanged,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }}
 
 // Create controller instance
 export const authController = new AuthController();

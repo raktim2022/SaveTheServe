@@ -48,6 +48,7 @@ export const authValidationSchemas = {
       }),
 
     role: Joi.string()
+      .uppercase()
       .valid('ADMIN', 'NGO', 'RESTAURANT')
       .default('RESTAURANT')
       .messages({
@@ -140,10 +141,10 @@ export const authValidationSchemas = {
   verifyEmail: Joi.object({
     userId: Joi.alternatives()
       .try(
-        Joi.string().required(),
-        Joi.number().required()
+        Joi.string().allow(''),
+        Joi.number()
       )
-      .required()
+      .optional()
       .messages({
         'any.required': 'User ID is required',
       }),
@@ -260,6 +261,40 @@ export const authValidationSchemas = {
     // Don't allow role changes through profile update
   }).min(1).messages({
     'object.min': 'At least one field must be provided for update',
+  }),
+
+  // Settings: update profile (OTP-gated)
+  updateSettingsProfile: Joi.object({
+    otp: Joi.string()
+      .length(6)
+      .pattern(/^[0-9]+$/)
+      .required()
+      .messages({
+        'string.length': 'Verification code must be exactly 6 digits',
+        'string.pattern.base': 'Verification code must contain only numbers',
+        'any.required': 'Verification code is required',
+      }),
+
+    name: Joi.string().min(2).max(50).optional()
+      .messages({ 'string.min': 'Name must be at least 2 characters' }),
+
+    email: Joi.string().email().optional()
+      .messages({ 'string.email': 'Please provide a valid email address' }),
+
+    phone: Joi.string()
+      .pattern(/^[+]?[0-9]{10,15}$/)
+      .allow('', null)
+      .optional()
+      .messages({ 'string.pattern.base': 'Please provide a valid phone number (10-15 digits)' }),
+
+    // NGO fields
+    ngoName: Joi.string().min(2).max(100).optional(),
+    address: Joi.string().min(5).max(200).optional(),
+    coverageRadiusKm: Joi.number().min(1).max(100).optional(),
+
+    // Restaurant fields
+    shopName: Joi.string().min(2).max(100).optional(),
+    shopType: Joi.string().max(50).allow('', null).optional(),
   }),
 };
 
