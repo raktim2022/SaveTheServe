@@ -2,6 +2,7 @@ import express from 'express';
 import foodController from '../controllers/food.controller.js';
 import { authenticateToken, authenticateOptional } from '../middlewares/auth.middleware.js';
 import { requireRole } from '../middlewares/role.middleware.js';
+import { uploadFoodImage } from '../middlewares/upload.middleware.js';
 
 const router = express.Router();
 
@@ -76,6 +77,9 @@ router.patch('/:id/expire', foodController.markAsExpired);
 
 // Mark food as fulfilled
 router.patch('/:id/fulfill', foodController.markAsFulfilled);
+
+// Upload food image
+router.post('/:id/image', uploadFoodImage.single('image'), foodController.uploadFoodImage);
 
 /**
  * Admin Routes (ADMIN role only)

@@ -25,7 +25,7 @@ describe('Food Request Tests', () => {
     restaurantToken = restaurantLogin.body.data.accessToken;
 
     // Create test food listing
-    testFoodListing = await global.prisma.foodListing.create({
+    testFoodListing = await global.getPrismaClient().foodListing.create({
       data: {
         restaurantId: global.testRestaurant.id,
         foodName: 'Test Food for Requests',
@@ -123,7 +123,7 @@ describe('Food Request Tests', () => {
   describe('GET /api/requests/my-requests', () => {
     beforeEach(async () => {
       // Create test request
-      testFoodRequest = await global.prisma.foodRequest.create({
+      testFoodRequest = await global.getPrismaClient().foodRequest.create({
         data: {
           ngoId: global.testNgo.id,
           foodListingId: testFoodListing.id,
@@ -175,7 +175,7 @@ describe('Food Request Tests', () => {
   describe('GET /api/requests/incoming', () => {
     beforeEach(async () => {
       // Create test request for restaurant's food
-      testFoodRequest = await global.prisma.foodRequest.create({
+      testFoodRequest = await global.getPrismaClient().foodRequest.create({
         data: {
           ngoId: global.testNgo.id,
           foodListingId: testFoodListing.id,
@@ -222,7 +222,7 @@ describe('Food Request Tests', () => {
 
   describe('PUT /api/requests/:id/status', () => {
     beforeEach(async () => {
-      testFoodRequest = await global.prisma.foodRequest.create({
+      testFoodRequest = await global.getPrismaClient().foodRequest.create({
         data: {
           ngoId: global.testNgo.id,
           foodListingId: testFoodListing.id,
@@ -243,7 +243,7 @@ describe('Food Request Tests', () => {
       expect(response.body.data.status).toBe('ACCEPTED');
 
       // Check food listing status changed
-      const updatedListing = await global.prisma.foodListing.findUnique({
+      const updatedListing = await global.getPrismaClient().foodListing.findUnique({
         where: { id: testFoodListing.id }
       });
       expect(updatedListing.status).toBe('REQUESTED');
@@ -251,7 +251,7 @@ describe('Food Request Tests', () => {
 
     test('should complete request as restaurant owner', async () => {
       // First accept the request
-      await global.prisma.foodRequest.update({
+      await global.getPrismaClient().foodRequest.update({
         where: { id: testFoodRequest.id },
         data: { status: 'ACCEPTED' }
       });
@@ -266,7 +266,7 @@ describe('Food Request Tests', () => {
       expect(response.body.data.status).toBe('COMPLETED');
 
       // Check food listing status changed
-      const updatedListing = await global.prisma.foodListing.findUnique({
+      const updatedListing = await global.getPrismaClient().foodListing.findUnique({
         where: { id: testFoodListing.id }
       });
       expect(updatedListing.status).toBe('PICKED');
@@ -295,7 +295,7 @@ describe('Food Request Tests', () => {
 
   describe('DELETE /api/requests/:id', () => {
     beforeEach(async () => {
-      testFoodRequest = await global.prisma.foodRequest.create({
+      testFoodRequest = await global.getPrismaClient().foodRequest.create({
         data: {
           ngoId: global.testNgo.id,
           foodListingId: testFoodListing.id,
@@ -314,7 +314,7 @@ describe('Food Request Tests', () => {
       expect(response.body.success).toBe(true);
 
       // Verify deletion
-      const deletedRequest = await global.prisma.foodRequest.findUnique({
+      const deletedRequest = await global.getPrismaClient().foodRequest.findUnique({
         where: { id: testFoodRequest.id }
       });
       expect(deletedRequest).toBeNull();
@@ -331,7 +331,7 @@ describe('Food Request Tests', () => {
 
     test('should not cancel accepted request', async () => {
       // Update request status to accepted
-      await global.prisma.foodRequest.update({
+      await global.getPrismaClient().foodRequest.update({
         where: { id: testFoodRequest.id },
         data: { status: 'ACCEPTED' }
       });

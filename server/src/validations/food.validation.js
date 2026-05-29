@@ -9,6 +9,9 @@ export const createFoodListingSchema = Joi.object({
       'string.max': 'Food name must not exceed 100 characters',
       'any.required': 'Food name is required'
     }),
+  description: Joi.string().max(500).optional().allow(''),
+  category: Joi.string().max(50).optional().allow(''),
+  imageUrl: Joi.string().uri().optional().allow(''),
   quantity: Joi.number().integer().min(1).required()
     .messages({
       'number.base': 'Quantity must be a number',
@@ -16,6 +19,8 @@ export const createFoodListingSchema = Joi.object({
       'number.min': 'Quantity must be at least 1',
       'any.required': 'Quantity is required'
     }),
+  unit: Joi.string().max(20).optional().allow(''),
+  pickupInstructions: Joi.string().max(500).optional().allow(''),
   expiryTime: Joi.date().greater('now').required()
     .messages({
       'date.base': 'Expiry time must be a valid date',
@@ -31,12 +36,17 @@ export const updateFoodListingSchema = Joi.object({
       'string.min': 'Food name must be at least 2 characters long',
       'string.max': 'Food name must not exceed 100 characters'
     }),
+  description: Joi.string().max(500).optional().allow(''),
+  category: Joi.string().max(50).optional().allow(''),
+  imageUrl: Joi.string().uri().optional().allow(''),
   quantity: Joi.number().integer().min(0).optional()
     .messages({
       'number.base': 'Quantity must be a number',
       'number.integer': 'Quantity must be an integer',
       'number.min': 'Quantity must be at least 0'
     }),
+  unit: Joi.string().max(20).optional().allow(''),
+  pickupInstructions: Joi.string().max(500).optional().allow(''),
   expiryTime: Joi.date().greater('now').optional()
     .messages({
       'date.base': 'Expiry time must be a valid date',

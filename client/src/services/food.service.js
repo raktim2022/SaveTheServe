@@ -1,93 +1,164 @@
 import axios from '@/lib/axios';
 
 /**
- * Food service
+ * Food service - Complete API integration with server endpoints
+ * Based on server documentation: /food/create, /food/available, /food/my-listings, /food/:id
  */
 
 /**
- * Get all food listings
- * @param {Object} params - Query parameters (page, limit, status, category, etc.)
- * @returns {Promise<Object>} Food listings with pagination
+ * Get available food listings with optional geolocation filtering
+ * @param {Object} params - Query parameters { latitude?, longitude?, radius? (in km) }
+ * @returns {Promise<{message: string, data: Array}>} Available food listings
  */
 export const getFoodListings = async (params = {}) => {
   try {
-    const response = await axios.get('/food', { params });
+    const queryParams = new URLSearchParams();
+    
+    // Add geolocation parameters if provided
+    if (params.latitude) queryParams.append('latitude', params.latitude);
+    if (params.longitude) queryParams.append('longitude', params.longitude);
+    if (params.radius) queryParams.append('radius', params.radius);
+    
+    const url = `/food/available${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+    const response = await axios.get(url);
+    
+    // Server responds with: { message: "Available food listings retrieved successfully", data: [...] }
     return response.data;
   } catch (error) {
-    console.error('Food service error:', error);
-    // Return empty result instead of throwing
-    return { data: [], success: false, message: 'Failed to fetch food listings' };
+    throw new Error(error.response?.data?.message || 'Failed to fetch available food listings');
   }
 };
 
+export const getAvailableFoodListings = getFoodListings;
+
 /**
- * Get food listing by ID
+ * Get food listing by ID (public endpoint)
  * @param {string} id - Food listing ID
  * @returns {Promise<Object>} Food listing details
  */
 export const getFoodById = async (id) => {
-  const response = await axios.get(`/food/${id}`);
-  return response.data;
+  try {
+    const response = await axios.get(`/food/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to fetch food listing');
+  }
 };
 
 /**
- * Create new food listing
- * @param {Object} foodData - Food listing data
- * @returns {Promise<Object>} Created food listing
+ * Create new food listing (restaurant role only)
+ * @param {Object} foodData - { foodName, description?, category?, quantity, unit?, expiryTime, pickupInstructions?, _imageFile? }
+ * @returns {Promise<{message: string, data: Object}>} Created food listing
  */
 export const createFood = async (foodData) => {
-  const response = await axios.post('/food', foodData);
-  return response.data;
-};
+  try {
+    // Extract image file before sending JSON
+    const { _imageFile, ...jsonData } = foodData;
 
+    const requiredFields = ['foodName', 'quantity', 'expiryTime'];
+    const missingFields = requiredFields.filter(field => !jsonData[field]);
+
+    if (missingFields.length > 0) {
+      throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+    }
+
+    const response = await axios.post('/food/create', jsonData);
+    const created = response.data;
+
+    // Upload image separately if provided
+    if (_imageFile && created?.data?.id) {
+      try {
+        const form = new FormData();
+        form.append('image', _imageFile);
+        await axios.post(`/food/${created.data.id}/image`, form, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      } catch (imgErr) {
+        console.warn('Image upload failed:', imgErr.message);
+      }
+    }
+
+    return created;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || error.message || 'Failed to create food listing');
+  }
+};
 /**
- * Update food listing
+ * Update food listing (restaurant owner only)
  * @param {string} id - Food listing ID
  * @param {Object} foodData - Updated food data
- * @returns {Promise<Object>} Updated food listing
+ * @returns {Promise<{message: string, data: Object}>} Updated food listing
  */
 export const updateFood = async (id, foodData) => {
-  const response = await axios.put(`/food/${id}`, foodData);
-  return response.data;
+  try {
+    if (!id) {
+      throw new Error('Food listing ID is required');
+    }
+
+    const { _imageFile, ...jsonData } = foodData;
+
+    const response = await axios.put(`/food/${id}`, jsonData);
+
+    // Upload image separately if provided
+    if (_imageFile) {
+      try {
+        const form = new FormData();
+        form.append('image', _imageFile);
+        await axios.post(`/food/${id}/image`, form, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      } catch (imgErr) {
+        console.warn('Image upload failed:', imgErr.message);
+      }
+    }
+
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to update food listing');
+  }
 };
 
 /**
- * Delete food listing
+ * Delete food listing (restaurant owner only)
  * @param {string} id - Food listing ID
- * @returns {Promise<Object>} Success message
+ * @returns {Promise<{message: string, data: Object}>} Deletion confirmation
  */
 export const deleteFood = async (id) => {
-  const response = await axios.delete(`/food/${id}`);
-  return response.data;
+  try {
+    if (!id) {
+      throw new Error('Food listing ID is required');
+    }
+
+    const response = await axios.delete(`/food/${id}`);
+    // Server responds with: { message: "Food listing deleted successfully", data: { id } }
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to delete food listing');
+  }
 };
 
 /**
- * Search food listings by location
- * @param {Object} locationData - { latitude, longitude, radius }
- * @returns {Promise<Array>} Nearby food listings
+ * Get my food listings (restaurant role only)
+ * @returns {Promise<{message: string, data: Array}>} User's food listings
  */
-export const searchFoodByLocation = async (locationData) => {
-  const response = await axios.post('/food/search/location', locationData);
-  return response.data;
+export const getMyFoodListings = async (params = {}) => {
+  try {
+    const response = await axios.get('/food/my-listings', { params });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to fetch my food listings');
+  }
 };
 
-/**
- * Get food listings by restaurant
- * @param {string} restaurantId - Restaurant ID
- * @param {Object} params - Query parameters
- * @returns {Promise<Object>} Food listings
- */
+export const searchFoodByLocation = async ({ latitude, longitude, radius }) => {
+  return getFoodListings({ latitude, longitude, radius });
+};
+
 export const getFoodByRestaurant = async (restaurantId, params = {}) => {
-  const response = await axios.get(`/food/restaurant/${restaurantId}`, { params });
-  return response.data;
+  // Backward-compatible fallback if dedicated endpoint is absent.
+  return getFoodListings({ ...params, restaurantId });
 };
 
-/**
- * Upload food image
- * @param {string} foodId - Food listing ID
- * @param {FormData} formData - Form data with image file
- * @returns {Promise<Object>} Image URL
- */
 export const uploadFoodImage = async (foodId, formData) => {
   const response = await axios.post(`/food/${foodId}/image`, formData, {
     headers: {
@@ -97,23 +168,21 @@ export const uploadFoodImage = async (foodId, formData) => {
   return response.data;
 };
 
-/**
- * Get food statistics
- * @returns {Promise<Object>} Food statistics
- */
 export const getFoodStats = async () => {
-  const response = await axios.get('/food/stats');
-  return response.data;
-};
-
-/**
- * Get my food listings (current user's listings)
- * @param {Object} params - Query parameters
- * @returns {Promise<Object>} Current user's food listings
- */
-export const getMyFoodListings = async (params = {}) => {
-  const response = await axios.get('/food/my-listings', { params });
-  return response.data;
+  try {
+    const response = await axios.get('/food/stats');
+    return response.data;
+  } catch {
+    const listingsRes = await getFoodListings();
+    const listings = listingsRes?.data || [];
+    return {
+      message: 'Food statistics computed successfully',
+      data: {
+        totalListings: listings.length,
+        availableListings: listings.length,
+      },
+    };
+  }
 };
 
 /**
@@ -128,6 +197,7 @@ export const markAsPicked = async (id) => {
 
 export default {
   getFoodListings,
+  getAvailableFoodListings,
   getFoodById,
   createFood,
   updateFood,

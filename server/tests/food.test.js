@@ -25,7 +25,7 @@ describe('Food Listing Tests', () => {
     ngoToken = ngoLogin.body.data.accessToken;
 
     // Create test food listing
-    testFoodListing = await global.prisma.foodListing.create({
+    testFoodListing = await global.getPrismaClient().foodListing.create({
       data: {
         restaurantId: global.testRestaurant.id,
         foodName: 'Test Food Item',
@@ -188,8 +188,8 @@ describe('Food Listing Tests', () => {
 
     test('should not update other restaurant food listing', async () => {
       // Create another restaurant user first
-      const hashedPassword = await global.prisma.user.findFirst();
-      const otherRestaurantUser = await global.prisma.user.create({
+      const hashedPassword = await global.getPrismaClient().user.findFirst();
+      const otherRestaurantUser = await global.getPrismaClient().user.create({
         data: {
           email: 'other@restaurant.com',
           password: hashedPassword.password,
@@ -227,7 +227,7 @@ describe('Food Listing Tests', () => {
       expect(response.body.success).toBe(true);
 
       // Verify deletion
-      const deletedListing = await global.prisma.foodListing.findUnique({
+      const deletedListing = await global.getPrismaClient().foodListing.findUnique({
         where: { id: testFoodListing.id }
       });
       expect(deletedListing).toBeNull();

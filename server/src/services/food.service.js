@@ -1,5 +1,7 @@
 import { FoodListingModel, RestaurantModel } from '../models/index.js';
 import { getDistanceFromLatLonInKm } from '../helpers/geo.helper.js';
+import { emitToRole } from '../sockets/index.js';
+import { SOCKET_EVENTS } from '../sockets/notification.socket.js';
 
 class FoodService {
   /**
@@ -15,11 +17,24 @@ class FoodService {
 
       const foodListing = await FoodListingModel.create({
         foodName: foodData.foodName,
+        description: foodData.description || null,
+        category: foodData.category || null,
+        imageUrl: foodData.imageUrl || null,
         quantity: foodData.quantity,
+        unit: foodData.unit || null,
+        pickupInstructions: foodData.pickupInstructions || null,
         expiryTime: foodData.expiryTime,
         restaurantId: restaurant.id,
         status: 'AVAILABLE',
         createdAt: new Date()
+      });
+
+      // Notify all online NGOs about the new food listing
+      emitToRole('NGO', SOCKET_EVENTS.FOOD_NEW, {
+        type: SOCKET_EVENTS.FOOD_NEW,
+        message: `New food available: ${foodListing.foodName}`,
+        data: foodListing,
+        timestamp: new Date().toISOString(),
       });
 
       return foodListing;
@@ -71,6 +86,14 @@ class FoodService {
         updatedAt: new Date()
       });
 
+      // Notify NGOs the listing has changed (quantity, expiry, etc.)
+      emitToRole('NGO', SOCKET_EVENTS.FOOD_UPDATED, {
+        type: SOCKET_EVENTS.FOOD_UPDATED,
+        message: `Food listing updated: ${updatedFoodListing.foodName}`,
+        data: updatedFoodListing,
+        timestamp: new Date().toISOString(),
+      });
+
       return updatedFoodListing;
     } catch (error) {
       console.error('FoodService.updateFoodListing error:', error.message);
@@ -102,6 +125,14 @@ class FoodService {
       if (foodListing.status === 'REQUESTED') {
         throw new Error('Cannot delete food listing with active requests');
       }
+
+      // Notify NGOs the listing was removed before deleting
+      emitToRole('NGO', SOCKET_EVENTS.FOOD_DELETED, {
+        type: SOCKET_EVENTS.FOOD_DELETED,
+        message: 'A food listing has been removed.',
+        data: { id: foodId },
+        timestamp: new Date().toISOString(),
+      });
 
       await FoodListingModel.delete(foodId);
       

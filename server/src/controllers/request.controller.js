@@ -8,6 +8,8 @@ import {
   paginationSchema
 } from '../validations/request.validation.js';
 import { responseHelper } from '../helpers/response.helper.js';
+import { createNotification } from '../services/notification.service.js';
+import logger from '../utils/logger.js';
 
 class RequestController {
   /**
@@ -21,6 +23,23 @@ class RequestController {
       }
 
       const foodRequest = await requestService.createFoodRequest(req.user.id, value);
+      
+      // Notify restaurant about new request
+      try {
+        const restaurantUserId = foodRequest.foodListing?.restaurant?.user?.id;
+        if (restaurantUserId) {
+          await createNotification(
+            restaurantUserId,
+            'new_request',
+            'New Food Request',
+            `A new request has been received for: ${foodRequest.foodListing?.foodName || 'your food listing'}`,
+            { requestId: foodRequest.id, foodListingId: foodRequest.foodListingId },
+            'IN_APP'
+          );
+        }
+      } catch (notifError) {
+        logger.warn('Failed to send request notification:', notifError.message);
+      }
       
       return responseHelper.success(res, foodRequest, 'Food request created successfully', 201);
     } catch (error) {
@@ -113,6 +132,23 @@ class RequestController {
         bodyValue.status
       );
       
+      // Notify NGO about approval
+      try {
+        const ngoUserId = foodRequest.ngo?.user?.id;
+        if (ngoUserId) {
+          await createNotification(
+            ngoUserId,
+            'request_accepted',
+            'Request Approved',
+            `Your request for ${foodRequest.foodListing?.foodName || 'food'} has been approved. Please arrange pickup.`,
+            { requestId: foodRequest.id, foodListingId: foodRequest.foodListingId },
+            'IN_APP'
+          );
+        }
+      } catch (notifError) {
+        logger.warn('Failed to send approval notification:', notifError.message);
+      }
+      
       return responseHelper.success(res, foodRequest, 'Food request approved successfully');
     } catch (error) {
       if (error.message === 'Food request not found') {
@@ -138,6 +174,23 @@ class RequestController {
       }
 
       const foodRequest = await requestService.rejectFoodRequest(req.user.id, paramValue.id, value.reason);
+      
+      // Notify NGO about rejection
+      try {
+        const ngoUserId = foodRequest.ngo?.user?.id;
+        if (ngoUserId) {
+          await createNotification(
+            ngoUserId,
+            'request_rejected',
+            'Request Declined',
+            `Your request for ${foodRequest.foodListing?.foodName || 'food'} was declined. Reason: ${value.reason}`,
+            { requestId: foodRequest.id, foodListingId: foodRequest.foodListingId, reason: value.reason },
+            'IN_APP'
+          );
+        }
+      } catch (notifError) {
+        logger.warn('Failed to send rejection notification:', notifError.message);
+      }
       
       return responseHelper.success(res, foodRequest, 'Food request rejected successfully');
     } catch (error) {
@@ -272,6 +325,87 @@ class RequestController {
       const urgentRequests = await requestService.getUrgentRequests(hours);
       
       return responseHelper.success(res, urgentRequests, `Urgent requests (expiring in ${hours} hours) retrieved successfully`);
+    } catch (error) {
+      return responseHelper.error(res, error.message);
+    }
+  }
+
+  /**
+   * Assign a volunteer to an accepted request (NGO)
+   * POST /api/requests/:id/assign-volunteer  { volunteerId }
+   */
+  async assignVolunteer(req, res) {
+    try {
+      const { error: paramError, value: paramValue } = idParamSchema.validate(req.params);
+      if (paramError) {
+        return responseHelper.validationError(res, paramError.details[0].message);
+      }
+
+      const { volunteerId } = req.body;
+      if (!volunteerId || isNaN(parseInt(volunteerId))) {
+        return responseHelper.validationError(res, 'volunteerId is required and must be a number');
+      }
+
+      const result = await requestService.assignVolunteer(
+        req.user.id,
+        parseInt(paramValue.id, 10),
+        parseInt(volunteerId, 10)
+      );
+
+      return responseHelper.success(res, result, 'Volunteer assigned successfully');
+    } catch (error) {
+      if (error.message === 'Food request not found') {
+        return responseHelper.notFound(res, error.message);
+      }
+      if (error.message === 'Volunteer not found') {
+        return responseHelper.notFound(res, error.message);
+      }
+      return responseHelper.error(res, error.message);
+    }
+  }
+
+  /**
+   * Verify pickup via OTP or QR token (Restaurant/Donor)
+   * POST /api/requests/:id/verify-pickup  { otp } or { qrToken }
+   */
+  async verifyPickupOtp(req, res) {
+    try {
+      const { error: paramError, value: paramValue } = idParamSchema.validate(req.params);
+      if (paramError) {
+        return responseHelper.validationError(res, paramError.details[0].message);
+      }
+
+      const { otp, qrToken } = req.body;
+      if (!otp && !qrToken) {
+        return responseHelper.validationError(res, 'Provide either otp or qrToken');
+      }
+
+      const result = await requestService.verifyPickupOtp(
+        req.user.id,
+        parseInt(paramValue.id, 10),
+        { otp: otp ?? null, qrToken: qrToken ?? null }
+      );
+
+      return responseHelper.success(res, result, 'Pickup verified successfully');
+    } catch (error) {
+      if (error.message === 'Food request not found') {
+        return responseHelper.notFound(res, error.message);
+      }
+      if (error.message === 'Invalid OTP' || error.message === 'Invalid QR token') {
+        return responseHelper.validationError(res, error.message);
+      }
+      return responseHelper.error(res, error.message);
+    }
+  }
+
+  /**
+   * Get volunteer's pickup assignments (VOLUNTEER role)
+   * GET /api/requests/my-pickups
+   */
+  async getMyPickups(req, res) {
+    try {
+      const pickups = await requestService.getVolunteerPickups(req.user.id);
+      return responseHelper.success(res, pickups, 'Pickup assignments retrieved successfully');
     } catch (error) {
       return responseHelper.error(res, error.message);
     }

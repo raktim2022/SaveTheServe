@@ -31,9 +31,9 @@ export const requestFilterSchema = Joi.object({
       'number.min': 'Limit must be at least 1',
       'number.max': 'Limit must not exceed 50'
     }),
-  status: Joi.string().valid('PENDING', 'ACCEPTED', 'COMPLETED').optional()
+  status: Joi.string().valid('PENDING', 'ACCEPTED', 'REJECTED', 'COMPLETED').optional()
     .messages({
-      'any.only': 'Status must be one of PENDING, ACCEPTED, COMPLETED'
+      'any.only': 'Status must be one of PENDING, ACCEPTED, REJECTED, COMPLETED'
     }),
   foodType: Joi.string().min(2).max(50).optional()
     .messages({
@@ -55,9 +55,9 @@ export const rejectRequestSchema = Joi.object({
 
 // Update request status validation
 export const updateStatusSchema = Joi.object({
-  status: Joi.string().valid('PENDING', 'ACCEPTED', 'COMPLETED').required()
+  status: Joi.string().valid('PENDING', 'ACCEPTED', 'REJECTED', 'COMPLETED').required()
     .messages({
-      'any.only': 'Status must be one of PENDING, ACCEPTED, COMPLETED',
+      'any.only': 'Status must be one of PENDING, ACCEPTED, REJECTED, COMPLETED',
       'any.required': 'Status is required'
     }),
   reason: Joi.string().min(10).max(500).optional()

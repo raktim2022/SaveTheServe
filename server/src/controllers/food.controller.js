@@ -11,6 +11,8 @@ import {
   idParamSchema
 } from '../validations/food.validation.js';
 import { responseHelper } from '../helpers/response.helper.js';
+import { sendNotificationByRole } from '../services/notification.service.js';
+import logger from '../utils/logger.js';
 
 class FoodController {
   /**
@@ -24,6 +26,19 @@ class FoodController {
       }
 
       const foodListing = await foodService.createFoodListing(req.user.id, value);
+      
+      // Notify all NGOs about new food listing
+      try {
+        await sendNotificationByRole(
+          'NGO',
+          'new_listing_created',
+          'New Food Available',
+          `${value.foodName} is now available for pickup. Quantity: ${value.quantity} ${value.unit || 'units'}`,
+          { foodListingId: foodListing.id, foodName: value.foodName }
+        );
+      } catch (notifError) {
+        logger.warn('Failed to send food listing notification:', notifError.message);
+      }
       
       return responseHelper.success(res, foodListing, 'Food listing created successfully', 201);
     } catch (error) {
@@ -328,6 +343,34 @@ class FoodController {
       
       return responseHelper.success(res, result, 'Bulk food expiry completed successfully');
     } catch (error) {
+      return responseHelper.error(res, error.message);
+    }
+  }
+
+  /**
+   * Upload food image (Restaurant only)
+   */
+  async uploadFoodImage(req, res) {
+    try {
+      const { error, value } = idParamSchema.validate(req.params);
+      if (error) {
+        return responseHelper.validationError(res, error.details[0].message);
+      }
+
+      if (!req.file) {
+        return responseHelper.validationError(res, 'Image file is required');
+      }
+
+      const foodId = parseInt(value.id, 10);
+      const imageUrl = req.file.path;
+
+      const foodListing = await foodService.updateFoodListing(req.user.id, foodId, { imageUrl });
+
+      return responseHelper.success(res, foodListing, 'Food image uploaded successfully');
+    } catch (error) {
+      if (error.message === 'Food listing not found') {
+        return responseHelper.notFound(res, 'Food listing not found');
+      }
       return responseHelper.error(res, error.message);
     }
   }

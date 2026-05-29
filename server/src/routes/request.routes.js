@@ -27,8 +27,19 @@ router.put('/:id/status', requireRole('RESTAURANT'), requestController.approveFo
 // Cancel/Delete request (NGO only)
 router.delete('/:id', requireRole('NGO'), requestController.cancelFoodRequest);
 
+// Get volunteer's own pickup assignments (VOLUNTEER only) — must precede /:id
+router.get('/volunteer/my-pickups', requireRole('VOLUNTEER'), requestController.getMyPickups);
+
 // Get food request by ID (General)
 router.get('/:id', requestController.getFoodRequestById);
+
+// ── Volunteer Pickup Routes ───────────────────────────────────────────────────
+
+// Assign a volunteer to an accepted request (NGO only)
+router.post('/:id/assign-volunteer', requireRole('NGO'), requestController.assignVolunteer);
+
+// Verify pickup OTP or QR token (Restaurant/Donor only)
+router.post('/:id/verify-pickup', requireRole('RESTAURANT'), requestController.verifyPickupOtp);
 
 /**
  * Legacy NGO Routes
