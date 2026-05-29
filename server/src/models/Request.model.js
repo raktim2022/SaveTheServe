@@ -1,4 +1,7 @@
-import prisma from '../config/db.config.js';
+import { getPrismaClient } from '../config/db.config.js';
+
+// Lazy proxy - always retrieves the initialized Prisma client
+const prisma = new Proxy({}, { get: (_, prop) => getPrismaClient()[prop] });
 
 export const FoodRequestModel = {
   // Create food request
@@ -42,6 +45,9 @@ export const FoodRequestModel = {
               },
             },
           },
+        },
+        assignedVolunteer: {
+          include: { user: true },
         },
         pickupLog: true,
       },

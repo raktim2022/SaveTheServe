@@ -1,8 +1,12 @@
-import prisma from '../config/db.config.js';
+import { getPrismaClient } from '../config/db.config.js';
+
+// Lazy proxy - always retrieves the initialized Prisma client
+const prisma = new Proxy({}, { get: (_, prop) => getPrismaClient()[prop] });
 
 export const NGOModel = {
   // Create NGO profile
   async create(ngoData) {
+    const prisma = getPrismaClient();
     return await prisma.nGO.create({
       data: ngoData,
       include: {
@@ -13,6 +17,7 @@ export const NGOModel = {
 
   // Find NGO by user ID
   async findByUserId(userId) {
+    const prisma = getPrismaClient();
     return await prisma.nGO.findUnique({
       where: { userId },
       include: {
@@ -37,6 +42,7 @@ export const NGOModel = {
 
   // Find NGO by ID
   async findById(id) {
+    const prisma = getPrismaClient();
     return await prisma.nGO.findUnique({
       where: { id },
       include: {

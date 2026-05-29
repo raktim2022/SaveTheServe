@@ -6,18 +6,24 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Starting database seeding...');
 
-  // Clear existing data (skip if tables don't exist yet)
+  // Clear existing data in dependency order (children first)
   try {
+    await prisma.adminLog.deleteMany();
+    await prisma.cityStats.deleteMany();
+    await prisma.review.deleteMany();
+    await prisma.notification.deleteMany();
+    await prisma.payment.deleteMany();
     await prisma.pickupLog.deleteMany();
     await prisma.foodRequest.deleteMany();
     await prisma.foodListing.deleteMany();
+    await prisma.volunteer.deleteMany();
     await prisma.restaurant.deleteMany();
     await prisma.nGO.deleteMany();
     await prisma.admin.deleteMany();
     await prisma.user.deleteMany();
     console.log('🗑️ Cleared existing data');
   } catch (error) {
-    console.log('ℹ️ No existing data to clear');
+    console.log('ℹ️ No existing data to clear:', error.message);
   }
 
   // Hash password for all users
@@ -184,12 +190,113 @@ async function main() {
 
   console.log('🥘 Created 2 Food Listings');
 
-  console.log('✅ Database seeding completed successfully!');
+  // ── Food Requests (one completed, one pending) ──────────────────────
+  const completedRequest = await prisma.foodRequest.create({
+    data: {
+      ngoId: ngo1.id,
+      foodListingId: foodListing1.id,
+      status: 'COMPLETED',
+      pickupTime: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+      pickupOtpVerified: true,
+    },
+  });
+
+  const pendingRequest = await prisma.foodRequest.create({
+    data: {
+      ngoId: ngo2.id,
+      foodListingId: foodListing2.id,
+      status: 'ACCEPTED',
+      pickupOtp: '482910',
+      pickupOtpExpiry: new Date(Date.now() + 30 * 60 * 1000), // 30 min
+    },
+  });
+
+  console.log('📋 Created 2 Food Requests');
+
+  // ── Reviews ────────────────────────────────────────────────────────
+  await prisma.review.create({
+    data: {
+      rating: 5,
+      comment: 'Incredible organisation — food was fresh and handover was smooth!',
+      reviewerId: ngoUser1.id,
+      reviewerRole: 'NGO',
+      restaurantId: restaurant1.id,
+      foodRequestId: completedRequest.id,
+    },
+  });
+
+  await prisma.review.create({
+    data: {
+      rating: 4,
+      comment: 'Great NGO, very punctual and professional volunteers.',
+      reviewerId: restaurantUser1.id,
+      reviewerRole: 'RESTAURANT',
+      ngoId: ngo1.id,
+      foodRequestId: completedRequest.id,
+    },
+  });
+
+  await prisma.review.create({
+    data: {
+      rating: 5,
+      comment: 'Love how easy the platform makes it to donate surplus food.',
+      reviewerId: ngoUser2.id,
+      reviewerRole: 'NGO',
+      restaurantId: restaurant2.id,
+    },
+  });
+
+  console.log('⭐ Created 3 Reviews');
+
+  // ── CityStats ──────────────────────────────────────────────────────
+  await prisma.cityStats.createMany({
+    data: [
+      { city: 'Mumbai', totalDonations: 312, totalMealsRescued: 18700, totalPeopleFed: 4200, activeRestaurants: 47, activeNgos: 12, co2SavedKg: 2340.50 },
+      { city: 'Delhi', totalDonations: 198, totalMealsRescued: 11200, totalPeopleFed: 2800, activeRestaurants: 31, activeNgos: 9, co2SavedKg: 1450.00 },
+      { city: 'Bangalore', totalDonations: 143, totalMealsRescued: 8500, totalPeopleFed: 1900, activeRestaurants: 22, activeNgos: 7, co2SavedKg: 980.75 },
+      { city: 'Chennai', totalDonations: 87, totalMealsRescued: 5100, totalPeopleFed: 1200, activeRestaurants: 14, activeNgos: 5, co2SavedKg: 612.30 },
+    ],
+  });
+
+  console.log('🏙️ Created 4 CityStats rows');
+
+  // ── Notifications ──────────────────────────────────────────────────
+  await prisma.notification.createMany({
+    data: [
+      { userId: ngoUser1.id, type: 'request:status_changed', title: 'Pickup Completed!', body: 'Your food pickup from Grand Palace Hotel has been successfully completed.', channel: 'IN_APP', isRead: true },
+      { userId: ngoUser2.id, type: 'food:new', title: 'New Food Available Nearby', body: 'Tasty Treats has listed fresh bread and pastries — request before it expires!', channel: 'IN_APP' },
+      { userId: restaurantUser1.id, type: 'request:new', title: 'New Pickup Request', body: 'Feed The Hungry Foundation has requested your buffet surplus listing.', channel: 'IN_APP', isRead: true },
+      { userId: restaurantUser2.id, type: 'request:status_changed', title: 'Request Accepted', body: 'Hope Kitchen Initiative has accepted your food listing.', channel: 'IN_APP' },
+      { userId: adminUser.id, type: 'notification', title: 'New Restaurant Registered', body: 'A new restaurant has signed up and is awaiting verification.', channel: 'IN_APP' },
+      { userId: ngoUser3.id, type: 'food:new', title: 'Listings Available in Your Area', body: 'There are 3 active food listings within 10 km of your NGO.', channel: 'IN_APP' },
+    ],
+  });
+
+  console.log('🔔 Created 6 Notifications');
+
+  // ── AdminLogs ─────────────────────────────────────────────────────
+  const adminRecord = await prisma.admin.findUnique({ where: { userId: adminUser.id } });
+
+  await prisma.adminLog.createMany({
+    data: [
+      { adminId: adminRecord.id, action: 'VERIFY_RESTAURANT', targetType: 'Restaurant', targetId: restaurant1.id, details: { reason: 'Documents verified', verifiedBy: 'admin@savetheserve.com' }, ipAddress: '127.0.0.1' },
+      { adminId: adminRecord.id, action: 'VERIFY_RESTAURANT', targetType: 'Restaurant', targetId: restaurant2.id, details: { reason: 'Documents verified', verifiedBy: 'admin@savetheserve.com' }, ipAddress: '127.0.0.1' },
+      { adminId: adminRecord.id, action: 'VERIFY_NGO', targetType: 'NGO', targetId: ngo1.id, details: { reason: 'NGO registration documents accepted' }, ipAddress: '127.0.0.1' },
+    ],
+  });
+
+  console.log('📝 Created 3 AdminLogs');
+
+  console.log('\n✅ Database seeding completed successfully!');
   console.log('\n📊 Summary:');
-  console.log('- 1 Admin user created');
-  console.log('- 3 NGOs created');
-  console.log('- 2 Restaurants created');
-  console.log('- 2 Food listings created');
+  console.log('- 1 Admin user + 3 AdminLogs');
+  console.log('- 3 NGOs');
+  console.log('- 2 Restaurants');
+  console.log('- 2 Food listings');
+  console.log('- 2 Food requests (1 completed, 1 accepted)');
+  console.log('- 3 Reviews');
+  console.log('- 4 CityStats (Mumbai, Delhi, Bangalore, Chennai)');
+  console.log('- 6 Notifications');
   console.log('\n🔑 Login credentials (password for all: password123):');
   console.log('Admin: admin@savetheserve.com');
   console.log('NGOs: help@feedthehungry.org, contact@hopekitchen.org, info@mealsonwheels.org');
