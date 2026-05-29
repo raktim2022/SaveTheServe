@@ -41,7 +41,8 @@ export default function DashboardLayout({ children }) {
     const roleMap = {
       NGO: 'ngo',
       RESTAURANT: 'donor', 
-      ADMIN: 'admin'
+      ADMIN: 'admin',
+      VOLUNTEER: 'volunteer',
     };
     
     const rolePath = roleMap[user.role] || 'ngo';

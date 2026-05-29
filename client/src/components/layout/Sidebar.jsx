@@ -14,9 +14,11 @@ import {
   Settings,
   Heart,
   ChefHat,
-  Shield
+  Shield,
+  Handshake
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import NotificationBell from './NotificationBell';
 import clsx from 'clsx';
 
 /**
@@ -33,9 +35,19 @@ export default function Sidebar() {
 
     if (user.role === 'NGO') {
       return [
-        { href: `/ngo/${userId}`, label: 'Dashboard', icon: LayoutDashboard },
+        { href: `/ngo/${userId}`, label: 'Food Listings', icon: Package },
         { href: `/ngo/${userId}/requests`, label: 'My Requests', icon: FileText },
-        { href: `/ngo/${userId}/history`, label: 'Impact History', icon: History },
+        { href: `/ngo/${userId}/volunteers`, label: 'Volunteers', icon: Users },
+        { href: `/ngo/${userId}/impact`, label: 'Impact', icon: BarChart3 },
+        { href: `/ngo/${userId}/history`, label: 'History', icon: History },
+        { href: `/ngo/${userId}/settings`, label: 'Settings', icon: Settings },
+      ];
+    }
+
+    if (user.role === 'VOLUNTEER') {
+      return [
+        { href: `/volunteer/${userId}`, label: 'My Dashboard', icon: LayoutDashboard },
+        { href: `/volunteer/${userId}/settings`, label: 'Settings', icon: Settings },
       ];
     }
 
@@ -44,6 +56,8 @@ export default function Sidebar() {
         { href: `/donor/${userId}`, label: 'Dashboard', icon: LayoutDashboard },
         { href: `/donor/${userId}/food-listings`, label: 'Food Listings', icon: Package },
         { href: `/donor/${userId}/pickups`, label: 'Pickup Requests', icon: Truck },
+        { href: `/donor/${userId}/impact`, label: 'My Impact', icon: BarChart3 },
+        { href: `/donor/${userId}/settings`, label: 'Settings', icon: Settings },
       ];
     }
 
@@ -52,6 +66,7 @@ export default function Sidebar() {
         { href: `/admin/${userId}`, label: 'Dashboard', icon: LayoutDashboard },
         { href: `/admin/${userId}/users`, label: 'User Management', icon: Users },
         { href: `/admin/${userId}/reports`, label: 'Reports & Analytics', icon: BarChart3 },
+        { href: `/admin/${userId}/settings`, label: 'Settings', icon: Settings },
       ];
     }
 
@@ -62,14 +77,11 @@ export default function Sidebar() {
 
   const getRoleIcon = (role) => {
     switch (role) {
-      case 'NGO':
-        return Heart;
-      case 'RESTAURANT':
-        return ChefHat;
-      case 'ADMIN':
-        return Shield;
-      default:
-        return Users;
+      case 'NGO':        return Heart;
+      case 'RESTAURANT': return ChefHat;
+      case 'ADMIN':      return Shield;
+      case 'VOLUNTEER':  return Handshake;
+      default:           return Users;
     }
   };
 
@@ -85,7 +97,7 @@ export default function Sidebar() {
       {/* Logo Section */}
       <div className="p-6 border-b border-slate-100">
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-600 to-secondary-500 text-white font-bold flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+          <div className="h-10 w-10 rounded-xl bg-linear-to-br from-primary-600 to-secondary-500 text-white font-bold flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
             S
           </div>
           <div>
@@ -128,16 +140,22 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* User Profile Section */}
+      {/* Notification Bell + User Profile */}
       {user && (
         <motion.div 
-          className="p-6 border-t border-slate-100 bg-slate-50/50"
+          className="p-4 mb-8 border-t border-slate-100 bg-slate-50/50"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.5 }}
         >
+          {/* Notification bell row */}
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Alerts</span>
+            <NotificationBell />
+          </div>
+          {/* User info */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-600 to-secondary-500 text-white flex items-center justify-center font-bold shadow-lg">
+            <div className="w-9 h-9 rounded-full bg-linear-to-br from-primary-600 to-secondary-500 text-white flex items-center justify-center font-bold shadow">
               {user.name?.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
@@ -145,17 +163,18 @@ export default function Sidebar() {
               <div className="flex items-center space-x-1">
                 <div className={clsx(
                   'w-2 h-2 rounded-full',
-                  user.role === 'NGO' ? 'bg-green-500' :
+                                user.role === 'NGO' ? 'bg-green-500' :
                   user.role === 'RESTAURANT' ? 'bg-blue-500' :
+                  user.role === 'VOLUNTEER' ? 'bg-purple-500' :
                   'bg-purple-500'
                 )} />
                 <p className="text-xs text-slate-500 truncate">{user.role}</p>
               </div>
             </div>
-        </div>
-      </motion.div>
-    )}
-  </motion.aside>
-);
+          </div>
+        </motion.div>
+      )}
+    </motion.aside>
+  );
 }
 

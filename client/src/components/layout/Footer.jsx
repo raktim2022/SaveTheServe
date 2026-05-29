@@ -54,8 +54,14 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-t border-slate-800 pt-6 text-sm text-slate-500">
-          <p>© {currentYear} SaveTheServe. All rights reserved.</p>
+          <div className="space-y-1">
+            <p>© {currentYear} SaveTheServe. All rights reserved.</p>
+            <p className="text-slate-600 text-xs">
+              A capstone project — built with ❤️ for the community.
+            </p>
+          </div>
           <div className="flex gap-4">
+            <Link href="/leaderboard" className="hover:text-white">Leaderboard</Link>
             <Link href="/privacy" className="hover:text-white">Privacy</Link>
             <Link href="/terms" className="hover:text-white">Terms</Link>
           </div>

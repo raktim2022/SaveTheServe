@@ -5,11 +5,14 @@ import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Users, Building2, Package, Activity, TrendingUp, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { hasRole } from '@/utils/permissions';
+import { USER_ROLES } from '@/utils/constants';
 import Loader from '@/components/common/Loader';
 import Badge from '@/components/common/Badge';
 import { getUserStats } from '@/services/user.service';
 import { getFoodStats } from '@/services/food.service';
 import { getRequestStats } from '@/services/request.service';
+import { getAdminAnalytics } from '@/services/analytics.service';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
@@ -33,7 +36,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (user && userId) {
       // Check if the user ID matches the logged-in user and user is ADMIN
-      if (user.id.toString() !== userId.toString() || user.role !== 'ADMIN') {
+      if (user.id.toString() !== userId.toString() || !hasRole(user, USER_ROLES.ADMIN)) {
         router.push('/login');
         return;
       }
@@ -46,32 +49,36 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
+      // Try real analytics first, fall back to individual service calls
+      let analyticsData = null;
+      try {
+        const res = await getAdminAnalytics();
+        analyticsData = res?.data || res;
+      } catch { /* fall through */ }
+
       const [userStats, foodStats, requestStats] = await Promise.all([
-        getUserStats(),
-        getFoodStats(),
-        getRequestStats(),
+        getUserStats().catch(() => ({})),
+        getFoodStats().catch(() => ({})),
+        getRequestStats().catch(() => ({})),
       ]);
-      
+
       setStats({
-        totalUsers: userStats.total || 45,
-        totalNGOs: userStats.ngos || 18,
-        totalRestaurants: userStats.restaurants || 27,
-        totalFood: foodStats.total || 123,
-        totalRequests: requestStats.total || 89,
-        completedRequests: requestStats.completed || 67,
-        pendingRequests: requestStats.pending || 22,
-        mealsRescued: foodStats.mealsRescued || 1245,
+        totalUsers: analyticsData?.totalUsers ?? userStats.total ?? 0,
+        totalNGOs: analyticsData?.totalNGOs ?? userStats.ngos ?? 0,
+        totalRestaurants: analyticsData?.totalRestaurants ?? userStats.restaurants ?? 0,
+        totalFood: analyticsData?.totalFoodListings ?? foodStats.total ?? 0,
+        totalRequests: analyticsData?.totalRequests ?? requestStats.total ?? 0,
+        completedRequests: analyticsData?.completedRequests ?? requestStats.completed ?? 0,
+        pendingRequests: analyticsData?.pendingRequests ?? requestStats.pending ?? 0,
+        mealsRescued: analyticsData?.totalMealsRescued ?? foodStats.mealsRescued ?? 0,
       });
 
-      // Mock recent activity data
-      setRecentActivity([
-        { id: 1, type: 'user', message: 'Green Kitchen NGO joined', time: '2 hours ago', status: 'info' },
-        { id: 2, type: 'request', message: 'Food rescue completed - 50 meals', time: '3 hours ago', status: 'success' },
-        { id: 3, type: 'food', message: 'New food listing: Italian Cuisine', time: '5 hours ago', status: 'info' },
-        { id: 4, type: 'alert', message: '2 food items expiring today', time: '6 hours ago', status: 'warning' },
-        { id: 5, type: 'request', message: 'Charity Connect submitted request', time: '8 hours ago', status: 'info' }
+      // Build activity feed from analytics recent activity or fall back to placeholders
+      const recent = analyticsData?.recentActivity || [];
+      setRecentActivity(recent.length > 0 ? recent : [
+        { id: 1, type: 'user', message: 'Platform is live and accepting registrations', time: 'now', status: 'info' },
+        { id: 2, type: 'request', message: 'Real-time stats will appear as activity occurs', time: 'pending', status: 'info' },
       ]);
-      
     } catch (error) {
       console.error('Error fetching stats:', error);
     } finally {
