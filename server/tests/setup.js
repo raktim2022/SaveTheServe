@@ -1,19 +1,19 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { connectDatabase, disconnectDatabase, getPrismaClient } from '../src/config/db.config.js';
 
 // Force test environment
 process.env.NODE_ENV = 'test';
-// URL encode the special characters in the password - use production DB as it's empty
-const testDatabaseUrl = 'postgresql://postgres:Raktim05%40@localhost:5432/SaveTheServe';
+// Use the same database as development for now
+const testDatabaseUrl = 'postgresql://postgres:Raktim05@@localhost:5432/savetheserve';
 process.env.DATABASE_URL = testDatabaseUrl;
 process.env.JWT_SECRET = 'test-jwt-secret-key-for-testing';
 
-const prisma = new PrismaClient({
-  datasourceUrl: testDatabaseUrl
-});
-
 // Setup test database before all tests
 beforeAll(async () => {
+  // Connect to database using our connection function
+  await connectDatabase();
+  
   // Clean the test database
   await cleanDatabase();
   
@@ -24,30 +24,44 @@ beforeAll(async () => {
 // Clean database after all tests
 afterAll(async () => {
   await cleanDatabase();
-  await prisma.$disconnect();
+  await disconnectDatabase();
 });
 
 // Clean database before each test
 beforeEach(async () => {
   // Clean transactional data only (keep users, restaurants, NGOs)
   try {
+    const prisma = getPrismaClient();
+    await prisma.adminLog.deleteMany();
+    await prisma.cityStats.deleteMany();
+    await prisma.review.deleteMany();
+    await prisma.notification.deleteMany();
+    await prisma.payment.deleteMany();
     await prisma.pickupLog.deleteMany();
     await prisma.foodRequest.deleteMany();
     await prisma.foodListing.deleteMany();
+    await prisma.volunteer.deleteMany();
   } catch (error) {
     // Ignore errors if tables don't exist
   }
 });
 
 async function cleanDatabase() {
+  const prisma = getPrismaClient();
   const deleteOrder = [
+    'adminLog',
+    'cityStats',
+    'review',
+    'notification',
+    'payment',
     'pickupLog',
-    'foodRequest', 
+    'foodRequest',
     'foodListing',
+    'volunteer',
     'restaurant',
     'nGO',
     'admin',
-    'user'
+    'user',
   ];
 
   for (const model of deleteOrder) {
@@ -61,6 +75,7 @@ async function cleanDatabase() {
 
 async function createTestData() {
   try {
+    const prisma = getPrismaClient();
     const hashedPassword = await bcrypt.hash('testpass123', 12);
 
     // Create test admin
@@ -72,6 +87,7 @@ async function createTestData() {
         phone: '+1234567890',
         role: 'ADMIN',
         isVerified: true,
+        // Don't set verification token for test users
       },
     });
 
@@ -131,5 +147,5 @@ async function createTestData() {
   }
 }
 
-// Export Prisma instance for use in tests
-global.prisma = prisma;
+// Export Prisma client getter for use in tests
+global.getPrismaClient = getPrismaClient;
