@@ -43,6 +43,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        headings: ["'Headings', 'Manrope'", "system-ui", "sans-serif"],
+        body: ["'Body', 'Manrope'", "system-ui", "sans-serif"],
+      },
       colors: {
         primary: {
           50: "#ECF6EF",
