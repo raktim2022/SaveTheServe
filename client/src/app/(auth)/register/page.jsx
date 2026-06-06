@@ -5,12 +5,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
-import { Eye, EyeOff, CheckCircle, AlertCircle, MapPin, Utensils, Users, Globe, Landmark, Handshake } from 'lucide-react';
+import { Eye, EyeOff, CheckCircle, AlertCircle, MapPin, Utensils, Users, Globe, Landmark, Handshake, Chrome } from 'lucide-react';
 import Button from '@/components/common/Button';
 import { useAuth } from '@/hooks/useAuth';
 import { useGeoLocation } from '@/hooks/useGeoLocation';
-import { register as registerService } from '@/services/auth.service';
+import { register as registerService, loginWithGoogle } from '@/services/auth.service';
 import '@/styles/auth.css';
+import { motion } from 'framer-motion';
 
 const FIELD_CLASS =
   'w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-white transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-gray-400';
@@ -53,6 +54,7 @@ export default function RegisterPage() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -130,6 +132,24 @@ export default function RegisterPage() {
 
   const isNgo = role === 'ngo';
 
+  const handleGoogleSignup = async () => {
+    setGoogleLoading(true);
+    setError('');
+
+    try {
+      const result = await loginWithGoogle();
+      await login(
+        result.tokens.accessToken,
+        result.user,
+        result.needsRoleSetup
+      );
+    } catch (err) {
+      setError(err.message || 'Google sign up failed. Please try again.');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Left panel — branding */}
@@ -192,6 +212,34 @@ export default function RegisterPage() {
           <p className="text-sm text-gray-500 mb-8">
             Fill in the details below to get started. Takes less than 2 minutes.
           </p>
+          {/* Google Sign-Up Button */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            <Button
+              type="button"
+              onClick={handleGoogleSignup}
+              disabled={loading || googleLoading}
+              loading={googleLoading}
+              variant="secondary"
+              className="w-full mb-4 flex items-center justify-center gap-2 border-2 border-gray-300"
+            >
+              <Chrome className="h-5 w-5" />
+              Sign up with Google
+            </Button>
+          </motion.div>
+
+          {/* Divider */}
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+            </div>
+          </div>
 
           {/* Role selector */}
           <div className="grid grid-cols-2 gap-3 mb-4">
@@ -523,6 +571,8 @@ export default function RegisterPage() {
               <Link href="/privacy" className="text-green-600 hover:underline">Privacy Policy</Link>
             </p>
           </form>
+
+          
         </div>
       </div>
     </div>

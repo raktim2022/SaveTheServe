@@ -1,11 +1,23 @@
 import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import { useSocket } from "@/context/SocketContext";
+import { getNotifications, markAllAsRead, markAsRead } from "@/services/notification.service";
 
 const MAX_NOTIFICATIONS = 50;
 
 let idCounter = 0;
 const nextId = () => ++idCounter;
+
+const normalizeNotification = (notification) => ({
+  id: notification.id || notification.notificationId || nextId(),
+  type: notification.type || "notification",
+  title: notification.title,
+  message: notification.message || notification.body || notification.title || "New notification",
+  data: notification.data,
+  timestamp: notification.timestamp || notification.sentAt || notification.createdAt || new Date().toISOString(),
+  read: notification.read ?? notification.isRead ?? false,
+  persisted: Boolean(notification.id || notification.notificationId),
+});
 
 /**
  * Manages an in-session notification list driven by socket events.
@@ -24,9 +36,27 @@ export function useNotifications() {
 
   const push = useCallback((notification) => {
     setNotifications((prev) => [
-      { ...notification, id: nextId(), read: false },
+      normalizeNotification({ ...notification, read: false }),
       ...prev.slice(0, MAX_NOTIFICATIONS - 1),
     ]);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getNotifications({ page: 1, limit: 20 })
+      .then((res) => {
+        if (cancelled) return;
+        const list = res.data?.notifications || [];
+        setNotifications(list.map(normalizeNotification));
+      })
+      .catch(() => {
+        if (!cancelled) setNotifications([]);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -101,8 +131,10 @@ export function useNotifications() {
     const onGeneric = (payload) => {
       console.log("[Notification] notification:new", payload);
       push({
-        type: "notification",
-        message: payload.message,
+        id: payload.notificationId,
+        type: payload.type || "notification",
+        title: payload.title,
+        message: payload.message || payload.body,
         data: payload.data,
         timestamp: payload.timestamp ?? new Date().toISOString(),
       });
@@ -131,17 +163,21 @@ export function useNotifications() {
   }, [socket, push]);
 
   const markRead = useCallback(
-    (id) =>
+    (id) => {
+      const target = notifications.find((n) => n.id === id);
+      if (target?.persisted) markAsRead(id).catch(() => {});
+
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-      ),
-    [],
+      );
+    },
+    [notifications],
   );
 
-  const markAllRead = useCallback(
-    () => setNotifications((prev) => prev.map((n) => ({ ...n, read: true }))),
-    [],
-  );
+  const markAllRead = useCallback(() => {
+    markAllAsRead().catch(() => {});
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  }, []);
 
   const clearAll = useCallback(() => setNotifications([]), []);
 

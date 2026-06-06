@@ -183,6 +183,16 @@ router.put(
   authController.updateSettingsProfile
 );
 
+/**
+ * @route   POST /api/auth/google-login
+ * @desc    Login with Google
+ * @access  Public
+ */
+router.post(
+  '/google-login',
+  authController.googleLogin.bind(authController)
+);
+
 // Error handling middleware for auth routes
 router.use((error, req, res, next) => {
   console.error('Auth Route Error:', error);

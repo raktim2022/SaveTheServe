@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { volunteerController } from '../controllers/volunteer.controller.js';
-import { authenticateToken } from '../middlewares/auth.middleware.js';
+import { authenticateToken, authenticateOptional } from '../middlewares/auth.middleware.js';
 import { requireRole } from '../middlewares/role.middleware.js';
 
 const router = Router();
@@ -17,7 +17,13 @@ router.get('/ngos', volunteerController.listNGOs);
  * POST /api/volunteers/register
  * Submit a volunteer application
  */
-router.post('/register', volunteerController.register);
+router.post('/register', authenticateOptional, volunteerController.register);
+
+/**
+ * POST /api/volunteers/complete-invite
+ * Complete accepted volunteer account setup
+ */
+router.post('/complete-invite', volunteerController.completeInvite);
 
 // ── Volunteer Routes (VOLUNTEER role) ─────────────────────────────────────────
 

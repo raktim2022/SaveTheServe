@@ -9,7 +9,6 @@ const createPrismaClient = () => {
   if (!databaseUrl) {
     throw new Error('DATABASE_URL environment variable is not set');
   }
-  
   // Check if using placeholder password
   if (databaseUrl.includes('AIVEN_PASSWORD')) {
     logger.warn('⚠️  Using placeholder Aiven password. Falling back to local database.');

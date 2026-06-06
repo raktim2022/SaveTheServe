@@ -95,6 +95,8 @@ export const canAccessRoute = (user, route) => {
     return isNGO(user);
   } else if (route.startsWith('/donor')) {
     return isRestaurant(user);
+  } else if (route.startsWith('/volunteer')) {
+    return hasRole(user, USER_ROLES.VOLUNTEER);
   }
   
   return true;

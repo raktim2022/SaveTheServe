@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config/env.config.js';
 import crypto from 'crypto';
 import emailService from './email.service.js';
+import admin from '../config/firebase.config.js';
+// import * as admin from 'firebase-admin';
 
 export class AuthService {
 
@@ -604,4 +606,84 @@ export class AuthService {
       throw new Error(`Profile update failed: ${error.message}`);
     }
   }
+
+  /**
+   * Handle Google OAuth login via Firebase
+   */
+  async googleLogin(firebaseToken, role) {
+    try {
+      // Check if Firebase is initialized
+      if (!admin.apps || admin.apps.length === 0) {
+        throw new Error('Firebase Admin SDK is not initialized');
+      }
+
+      if (!firebaseToken) {
+        throw new Error('Firebase token is required');
+      }
+
+      console.log('🔐 Verifying Firebase token...');
+      // Verify Firebase token with admin SDK
+      let decodedToken;
+      try {
+        decodedToken = await admin.auth().verifyIdToken(firebaseToken);
+      } catch (tokenError) {
+        console.error('❌ Token verification failed:', tokenError.message);
+        throw new Error(`Invalid Firebase token: ${tokenError.message}`);
+      }
+
+      const { email, name, uid } = decodedToken;
+      console.log('✅ Firebase token verified for:', email);
+
+      // Check if user exists
+      let user = await UserModel.findByEmail(email);
+      let isNewUser = false;
+
+      if (!user) {
+        console.log('📝 Creating new Firebase user:', email);
+        // Create new user (skip role assignment initially)
+        user = await UserModel.create({
+          email,
+          name,
+          role: 'RESTAURANT', // Temporary default
+          authProvider: 'FIREBASE',
+          isVerified: true, // Auto-verify Firebase users
+        });
+        isNewUser = true;
+        console.log('✅ New user created:', user.id);
+      } else {
+        console.log('✅ Existing user found:', user.id);
+      }
+
+      // Generate JWT token for session management
+      const accessToken = this.generateToken({
+        id: user.id,
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+        type: 'access',
+      });
+
+      const refreshToken = this.generateToken({
+        userId: user.id,
+        type: 'refresh',
+      });
+
+      const { password: _, ...userWithoutPassword } = user;
+
+      return {
+        user: userWithoutPassword,
+        tokens: {
+          accessToken,
+          refreshToken,
+        },
+        isNewUser,
+        needsRoleSetup: isNewUser,
+        message: 'Login successful',
+      };
+    } catch (error) {
+      console.error('❌ Google login error:', error.message, error);
+      throw error; // Re-throw the error as-is so the message is preserved
+    }
+  }
+
 }

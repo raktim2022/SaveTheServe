@@ -3,6 +3,7 @@ import { Router } from 'express';
 // Import route modules
 import authRoutes from './auth.routes.js';
 import adminRoutes from './admin.routes.js';
+import userRoutes from './user.routes.js';
 import ngoRoutes from './ngo.routes.js';
 import donorRoutes from './donor.routes.js';
 import foodRoutes from './food.routes.js';
@@ -11,6 +12,7 @@ import pickupRoutes from './pickup.routes.js';
 import volunteerRoutes from './volunteer.routes.js';
 import reviewRoutes from './review.routes.js';
 import analyticsRoutes from './analytics.routes.js';
+import notificationRoutes from './notification.routes.js';
 
 const router = Router();
 
@@ -49,7 +51,8 @@ router.get('/', (req, res) => {
 // Mount route modules
 router.use('/auth', authRoutes);
 router.use('/admin', adminRoutes);
-router.use('/users', adminRoutes); // Users route points to admin for now
+router.use('/users', userRoutes); // User profile management
+router.use('/admin/users', adminRoutes); // Admin user management // Users route points to admin for now
 router.use('/ngos', ngoRoutes);
 router.use('/restaurants', donorRoutes);
 router.use('/food', foodRoutes);
@@ -58,6 +61,7 @@ router.use('/pickups', pickupRoutes);
 router.use('/volunteers', volunteerRoutes);
 router.use('/reviews', reviewRoutes);
 router.use('/analytics', analyticsRoutes);
+router.use('/notifications', notificationRoutes);
 
 // API documentation endpoint
 router.get('/docs', (req, res) => {

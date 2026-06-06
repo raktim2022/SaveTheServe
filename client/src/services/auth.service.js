@@ -1,4 +1,6 @@
 import axios from '@/lib/axios';
+import { signInWithPopup, GoogleAuthProvider, getIdToken } from "firebase/auth";
+import { auth } from '@/lib/firebase';
 
 /**
  * Authentication service - Complete API integration with server
@@ -149,6 +151,43 @@ export const refreshToken = async () => {
   return response.data;
 };
 
+/**
+ * Google Sign-In via Firebase
+ */
+export const loginWithGoogle = async (role) => {
+  try {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    const firebaseToken = await getIdToken(result.user);
+    
+    // Send Firebase token to backend
+    const response = await axios.post('/auth/google-login', {
+      firebaseToken,
+    });
+    
+    // Backend returns { success: true, data: { user, tokens, isNewUser, needsRoleSetup } }
+    return response.data.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Google login failed');
+  }
+};
+
+/**
+ * Handle Google login
+ */
+const handleGoogleLogin = async () => {
+  try {
+    const result = await loginWithGoogle();
+    await login(
+      result.tokens.accessToken, 
+      result.user, 
+      result.needsRoleSetup
+    );
+  } catch (error) {
+    // Handle error
+  }
+};
+
 export default {
   login,
   register,
@@ -162,5 +201,7 @@ export default {
   verifyEmailCode,
   resendVerification,
   refreshToken,
+  loginWithGoogle,
+  handleGoogleLogin,
 };
 

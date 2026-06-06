@@ -1,20 +1,21 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { Bell, X, CheckCheck } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Bell, CheckCheck, X } from 'lucide-react';
 import { useNotifications } from '@/hooks/useNotifications';
 
 const TYPE_ICONS = {
-  'food:new':               '🍱',
-  'food:status_changed':    '🔄',
-  'request:new':            '📋',
-  'request:status_changed': '✅',
-  notification:             '🔔',
+  'food:new': 'F',
+  'food:status_changed': 'U',
+  'request:new': 'R',
+  'request:status_changed': 'S',
+  'volunteer:application': 'V',
+  notification: 'N',
 };
 
 function timeAgo(iso) {
   const delta = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (delta < 60)   return 'just now';
+  if (delta < 60) return 'just now';
   if (delta < 3600) return `${Math.floor(delta / 60)}m ago`;
   if (delta < 86400) return `${Math.floor(delta / 3600)}h ago`;
   return `${Math.floor(delta / 86400)}d ago`;
@@ -25,10 +26,9 @@ export default function NotificationBell() {
   const [open, setOpen] = useState(false);
   const panelRef = useRef(null);
 
-  // Close when clicking outside
   useEffect(() => {
-    const handler = (e) => {
-      if (!panelRef.current?.contains(e.target)) setOpen(false);
+    const handler = (event) => {
+      if (!panelRef.current?.contains(event.target)) setOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -36,7 +36,6 @@ export default function NotificationBell() {
 
   return (
     <div ref={panelRef} className="relative">
-      {/* Bell button */}
       <button
         onClick={() => setOpen((prev) => !prev)}
         className="relative p-2 rounded-xl hover:bg-slate-100 transition-colors text-slate-500 hover:text-slate-700"
@@ -50,10 +49,8 @@ export default function NotificationBell() {
         )}
       </button>
 
-      {/* Dropdown panel */}
       {open && (
         <div className="absolute bottom-12 left-0 z-50 w-80 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden">
-          {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
             <span className="text-sm font-semibold text-slate-900">
               Notifications
@@ -81,7 +78,6 @@ export default function NotificationBell() {
             </div>
           </div>
 
-          {/* List */}
           <div className="max-h-72 overflow-y-auto divide-y divide-slate-50">
             {notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 text-slate-400">
@@ -89,22 +85,27 @@ export default function NotificationBell() {
                 <p className="text-xs">No notifications yet</p>
               </div>
             ) : (
-              notifications.slice(0, 20).map((n) => (
+              notifications.slice(0, 20).map((notification) => (
                 <button
-                  key={n.id}
-                  onClick={() => markRead(n.id)}
+                  key={notification.id}
+                  onClick={() => markRead(notification.id)}
                   className={`w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-slate-50 transition-colors ${
-                    !n.read ? 'bg-green-50/50' : ''
+                    !notification.read ? 'bg-green-50/50' : ''
                   }`}
                 >
-                  <span className="text-base shrink-0 mt-0.5">
-                    {TYPE_ICONS[n.type] ?? '🔔'}
+                  <span className="h-6 w-6 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold shrink-0 mt-0.5 flex items-center justify-center">
+                    {TYPE_ICONS[notification.type] ?? 'N'}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-slate-700 leading-snug line-clamp-2">{n.message}</p>
-                    <p className="text-[10px] text-slate-400 mt-0.5">{timeAgo(n.timestamp)}</p>
+                    {notification.title && (
+                      <p className="text-xs font-semibold text-slate-800 leading-snug line-clamp-1">
+                        {notification.title}
+                      </p>
+                    )}
+                    <p className="text-xs text-slate-700 leading-snug line-clamp-2">{notification.message}</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">{timeAgo(notification.timestamp)}</p>
                   </div>
-                  {!n.read && (
+                  {!notification.read && (
                     <span className="h-2 w-2 rounded-full bg-green-500 shrink-0 mt-1.5" />
                   )}
                 </button>

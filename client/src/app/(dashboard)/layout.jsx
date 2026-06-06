@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { canAccessRoute, getDashboardRoute } from '@/utils/permissions';
 import Sidebar from '@/components/layout/Sidebar';
 import Loader from '@/components/common/Loader';
 import DashboardErrorBoundary from '@/components/common/DashboardErrorBoundary';
@@ -27,27 +28,26 @@ export default function DashboardLayout({ children }) {
     // If user is authenticated, check if we're on a valid dynamic route
     if (!loading && user) {
       const currentPath = window.location.pathname;
-      const expectedPath = getExpectedDashboardPath(user);
+      const expectedPath = getDashboardRoute(user);
+      const expectedPrefix = expectedPath.split('/').slice(0, 3).join('/');
       
       // If on root dashboard path, redirect to user-specific route
       if (currentPath === '/dashboard' || currentPath.endsWith('/dashboard/')) {
         router.push(expectedPath);
+        return;
+      }
+
+      if (currentPath === '/setup-profile' || currentPath === '/complete-profile' || currentPath === '/volunteer/pending') {
+        return;
+      }
+
+      const isExpectedUserPath = currentPath === expectedPrefix || currentPath.startsWith(`${expectedPrefix}/`);
+
+      if (!canAccessRoute(user, currentPath) || !isExpectedUserPath) {
+        router.push(expectedPath);
       }
     }
   }, [user, loading, router]);
-
-  // Helper function to get the expected dashboard path for a user
-  const getExpectedDashboardPath = (user) => {
-    const roleMap = {
-      NGO: 'ngo',
-      RESTAURANT: 'donor', 
-      ADMIN: 'admin',
-      VOLUNTEER: 'volunteer',
-    };
-    
-    const rolePath = roleMap[user.role] || 'ngo';
-    return `/${rolePath}/${user.id}`;
-  };
 
   if (loading) {
     return <Loader fullScreen text="Loading..." />;

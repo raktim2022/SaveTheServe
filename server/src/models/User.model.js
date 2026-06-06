@@ -45,7 +45,7 @@ export const UserModel = {
   async update(id, updateData) {
     const prisma = getPrismaClient();
     return await prisma.user.update({
-      where: { id },
+      where: { id: Number(id) },
       data: updateData,
     });
   },
@@ -71,6 +71,7 @@ export const UserModel = {
         admin: true,
         ngo: true,
         restaurant: true,
+        volunteer: true,
       },
       orderBy: {
         createdAt: 'desc',

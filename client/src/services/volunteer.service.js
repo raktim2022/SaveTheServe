@@ -16,6 +16,12 @@ export const registerVolunteer = async ({ ngoId, name, email, phone }) => {
   return res.data;
 };
 
+/** Public: complete accepted volunteer invite */
+export const completeVolunteerInvite = async ({ token, password }) => {
+  const res = await axios.post('/volunteers/complete-invite', { token, password });
+  return res.data;
+};
+
 // ── NGO endpoints ─────────────────────────────────────────────────────────────
 
 /** NGO: fetch all volunteers for their NGO */
@@ -24,9 +30,9 @@ export const getVolunteersForMyNGO = async () => {
   return res.data;
 };
 
-/** NGO: verify a volunteer application and send credentials */
-export const verifyVolunteer = async (volunteerId, temporaryPassword) => {
-  const res = await axios.put(`/volunteers/${volunteerId}/verify`, { temporaryPassword });
+/** NGO: accept a volunteer application and send setup invite */
+export const verifyVolunteer = async (volunteerId) => {
+  const res = await axios.put(`/volunteers/${volunteerId}/verify`);
   return res.data;
 };
 

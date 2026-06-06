@@ -1,4 +1,4 @@
-import { getPrismaClient } from '../config/db.config.js';
+import { getPrismaClient } from "../config/db.config.js";
 
 // Lazy proxy - always retrieves the initialized Prisma client
 const prisma = new Proxy({}, { get: (_, prop) => getPrismaClient()[prop] });
@@ -79,15 +79,25 @@ export const NGOModel = {
   // Update NGO
   async update(id, updateData) {
     return await prisma.nGO.update({
-      where: { id },
-      data: updateData,
+      where: {
+        userId: Number(id),
+      },
+      update: {
+        ngoName,
+        address,
+      },
+      create: {
+        userId: Number(id),
+        ngoName,
+        address,
+      },
     });
   },
 
   // Get all NGOs
   async findAll(page = 1, limit = 10, filters = {}) {
     const skip = (page - 1) * limit;
-    
+
     return await prisma.nGO.findMany({
       where: filters,
       skip,
@@ -108,7 +118,7 @@ export const NGOModel = {
         },
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
   },

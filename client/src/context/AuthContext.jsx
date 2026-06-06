@@ -26,14 +26,18 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (token, userData) => {
+  const login = async (token, userData, needsRoleSetup = false) => {
     setToken(token);
     saveUser(userData);
     setUser(userData);
     
-    // Redirect to appropriate dashboard
-    const dashboardRoute = getDashboardRoute(userData);
-    router.push(dashboardRoute);
+    // Redirect to setup if new Google user
+    if (needsRoleSetup) {
+      router.push('/setup-profile');
+    } else {
+      const dashboardRoute = getDashboardRoute(userData);
+      router.push(dashboardRoute);
+    }
   };
 
   const logout = () => {

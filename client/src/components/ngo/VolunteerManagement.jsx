@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Users, Clock, CheckCircle, XCircle, Eye, EyeOff, KeyRound, AlertCircle, RefreshCw, Phone, Mail } from 'lucide-react';
+import { Users, Clock, CheckCircle, XCircle, Send, AlertCircle, RefreshCw, Phone, Mail } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getVolunteersForMyNGO, verifyVolunteer, rejectVolunteer } from '@/services/volunteer.service';
 
@@ -28,27 +28,21 @@ function StatusBadge({ status }) {
   );
 }
 
-function VerifyModal({ volunteer, onClose, onVerified }) {
-  const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
-  const [showPwd, setShowPwd] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
+function AcceptModal({ volunteer, onClose, onAccepted }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (password.length < 8) { setError('Password must be at least 8 characters'); return; }
-    if (password !== confirm) { setError('Passwords do not match'); return; }
     setLoading(true);
     try {
-      await verifyVolunteer(volunteer.id, password);
-      toast.success(`${volunteer.name} verified! Credentials sent via email.`);
-      onVerified(volunteer.id);
+      await verifyVolunteer(volunteer.id);
+      toast.success(`${volunteer.name} accepted! Invite sent via email.`);
+      onAccepted(volunteer.id);
       onClose();
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Verification failed');
+      setError(err.response?.data?.message || err.message || 'Acceptance failed');
     } finally {
       setLoading(false);
     }
@@ -57,59 +51,15 @@ function VerifyModal({ volunteer, onClose, onVerified }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-        <h3 className="text-lg font-bold text-gray-900 mb-1">Verify Volunteer</h3>
+        <h3 className="text-lg font-bold text-gray-900 mb-1">Accept Volunteer</h3>
         <p className="text-sm text-gray-500 mb-5">
-          Set a temporary password for <strong>{volunteer.name}</strong>. They will receive it via email and must change it on first login.
+          Send <strong>{volunteer.name}</strong> an invite link to set up their volunteer account.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Volunteer Email</label>
             <input value={volunteer.email} readOnly className="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl text-gray-500" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Temporary Password <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <input
-                type={showPwd ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => { setPassword(e.target.value); setError(''); }}
-                placeholder="Min 8 characters"
-                className="w-full px-3 py-2 pr-10 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPwd((s) => !s)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                tabIndex={-1}
-              >
-                {showPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Confirm Password <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <input
-                type={showConfirm ? 'text' : 'password'}
-                value={confirm}
-                onChange={(e) => { setConfirm(e.target.value); setError(''); }}
-                placeholder="Repeat password"
-                className="w-full px-3 py-2 pr-10 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirm((s) => !s)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                tabIndex={-1}
-              >
-                {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
           </div>
 
           {error && (
@@ -132,7 +82,7 @@ function VerifyModal({ volunteer, onClose, onVerified }) {
               disabled={loading}
               className="flex-1 py-2.5 text-sm font-semibold text-white bg-green-600 rounded-xl hover:bg-green-700 disabled:opacity-60 transition-colors"
             >
-              {loading ? 'Sending...' : 'Verify & Send Credentials'}
+              {loading ? 'Sending...' : 'Accept & Send Invite'}
             </button>
           </div>
         </form>
@@ -145,7 +95,7 @@ export default function VolunteerManagement() {
   const [volunteers, setVolunteers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('ALL');
-  const [verifyModal, setVerifyModal] = useState(null); // volunteer object
+  const [acceptModal, setAcceptModal] = useState(null); // volunteer object
   const [rejectingId, setRejectingId] = useState(null);
 
   const fetchVolunteers = useCallback(async () => {
@@ -176,7 +126,7 @@ export default function VolunteerManagement() {
     }
   };
 
-  const handleVerified = (volunteerId) => {
+  const handleAccepted = (volunteerId) => {
     setVolunteers((prev) => prev.map((v) => v.id === volunteerId ? { ...v, status: 'VERIFIED' } : v));
   };
 
@@ -295,11 +245,11 @@ export default function VolunteerManagement() {
               {vol.status === 'PENDING' && (
                 <div className="flex gap-2 flex-shrink-0">
                   <button
-                    onClick={() => setVerifyModal(vol)}
+                    onClick={() => setAcceptModal(vol)}
                     className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
                   >
-                    <KeyRound className="h-3.5 w-3.5" />
-                    Verify
+                    <Send className="h-3.5 w-3.5" />
+                    Accept
                   </button>
                   <button
                     onClick={() => handleReject(vol.id)}
@@ -315,7 +265,7 @@ export default function VolunteerManagement() {
               {vol.status === 'VERIFIED' && (
                 <div className="flex items-center gap-1.5 text-xs text-blue-600">
                   <CheckCircle className="h-4 w-4" />
-                  <span>Credentials sent</span>
+                  <span>Invite sent</span>
                 </div>
               )}
 
@@ -330,12 +280,12 @@ export default function VolunteerManagement() {
         </div>
       )}
 
-      {/* Verify Modal */}
-      {verifyModal && (
-        <VerifyModal
-          volunteer={verifyModal}
-          onClose={() => setVerifyModal(null)}
-          onVerified={handleVerified}
+      {/* Accept Modal */}
+      {acceptModal && (
+        <AcceptModal
+          volunteer={acceptModal}
+          onClose={() => setAcceptModal(null)}
+          onAccepted={handleAccepted}
         />
       )}
     </div>

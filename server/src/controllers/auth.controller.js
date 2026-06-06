@@ -434,7 +434,48 @@ export class AuthController {
     } catch (error) {
       next(error);
     }
-  }}
+  }
 
+  /**
+   * Google OAuth login
+   * POST /api/auth/google-login
+   */
+  async googleLogin(req, res, next) {
+    try {
+      const { firebaseToken, role } = req.body;
+
+      if (!firebaseToken) {
+        return res.status(400).json({
+          success: false,
+          message: 'Firebase token required',
+        });
+      }
+
+      const result = await authService.googleLogin(firebaseToken, role);
+
+      // Set refresh token as httpOnly cookie
+      res.cookie('refreshToken', result.tokens?.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
+      res.json({
+        success: true,
+        data: {
+          user: result.user,
+          tokens: result.tokens,
+          token: result.tokens.accessToken,
+          isNewUser: result.isNewUser,
+          needsRoleSetup: result.needsRoleSetup,
+          message: result.message,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+}
 // Create controller instance
 export const authController = new AuthController();

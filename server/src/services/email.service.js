@@ -408,19 +408,19 @@ export class EmailService {
   }
 
   /**
-   * Send credentials email to volunteer after NGO verification
+   * Send invite email to volunteer after NGO acceptance
    */
-  async sendVolunteerCredentials(email, volunteerName, loginEmail, temporaryPassword, ngoName) {
+  async sendVolunteerInvite(email, volunteerName, ngoName, inviteToken) {
     const transporter = await this.ensureInitialized();
     if (!transporter) { console.warn('Email transporter not available'); return false; }
     try {
-      const loginUrl = `${config.CLIENT_URL}/login`;
+      const inviteUrl = `${config.CLIENT_URL}/volunteer-invite?token=${encodeURIComponent(inviteToken)}`;
       await transporter.sendMail({
         from: { name: 'SaveTheServe', address: config.SMTP_USER },
         to: email,
         subject: `Your SaveTheServe Volunteer Account is Ready – ${ngoName}`,
-        html: this._volunteerCredentialsTemplate(volunteerName, loginEmail, temporaryPassword, loginUrl, ngoName),
-        text: `Hi ${volunteerName},\n\nGreat news! ${ngoName} has verified your volunteer application.\n\nYour login credentials:\nEmail: ${loginEmail}\nTemporary Password: ${temporaryPassword}\n\nLogin at: ${loginUrl}\n\nPlease change your password after first login and verify your phone number.\n\nThe SaveTheServe Team`,
+        html: this._volunteerInviteTemplate(volunteerName, ngoName, inviteUrl),
+        text: `Hi ${volunteerName},\n\nGreat news! ${ngoName} has accepted your volunteer application.\n\nSet up your password here: ${inviteUrl}\n\nThis invite expires in 7 days. After setup, log in and verify your phone number.\n\nThe SaveTheServe Team`,
       });
       console.log('✅ Volunteer credentials email sent to:', email);
       return true;
@@ -503,7 +503,7 @@ export class EmailService {
 </body></html>`;
   }
 
-  _volunteerCredentialsTemplate(name, loginEmail, tempPassword, loginUrl, ngoName) {
+  _volunteerInviteTemplate(name, ngoName, inviteUrl) {
     return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
 <body style="margin:0;padding:0;background:#f0fdf4;font-family:Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
@@ -513,17 +513,15 @@ export class EmailService {
   </div>
   <div style="padding:36px 32px;">
     <p style="font-size:15px;color:#374151;">Hi <strong>${name}</strong>,</p>
-    <p style="font-size:14px;color:#6b7280;line-height:1.7;"><strong style="color:#16a34a;">${ngoName}</strong> has verified your volunteer application. Your account is now active!</p>
+    <p style="font-size:14px;color:#6b7280;line-height:1.7;"><strong style="color:#16a34a;">${ngoName}</strong> has accepted your volunteer application. Set up your password to activate your login.</p>
     <div style="background:#f0fdf4;border:2px solid #bbf7d0;border-radius:12px;padding:24px;margin:24px 0;">
-      <p style="margin:0 0 16px;font-size:13px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:1px;">Your Login Credentials</p>
-      <div style="margin-bottom:12px;"><span style="font-size:12px;color:#6b7280;">Email</span><br><code style="font-size:15px;color:#111827;background:#ffffff;padding:6px 12px;border-radius:6px;border:1px solid #e5e7eb;display:inline-block;margin-top:4px;">${loginEmail}</code></div>
-      <div><span style="font-size:12px;color:#6b7280;">Temporary Password</span><br><code style="font-size:15px;color:#111827;background:#ffffff;padding:6px 12px;border-radius:6px;border:1px solid #e5e7eb;display:inline-block;margin-top:4px;">${tempPassword}</code></div>
+      <p style="margin:0;font-size:14px;color:#166534;line-height:1.7;">This invite link expires in 7 days. After setting your password, log in and verify your phone number to become active for pickup assignments.</p>
     </div>
     <div style="background:#fefce8;border-left:4px solid #eab308;border-radius:8px;padding:14px 18px;margin-bottom:24px;">
       <p style="margin:0;font-size:13px;color:#854d0e;"><strong>⚠️ Important:</strong> Please change your password immediately after your first login, and verify your phone number to activate your account fully.</p>
     </div>
     <div style="text-align:center;">
-      <a href="${loginUrl}" style="display:inline-block;background:#16a34a;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:700;font-size:14px;">Login to SaveTheServe</a>
+      <a href="${inviteUrl}" style="display:inline-block;background:#16a34a;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:700;font-size:14px;">Set Up Volunteer Account</a>
     </div>
   </div>
   <div style="background:#f9fafb;padding:16px 32px;border-top:1px solid #f3f4f6;text-align:center;">

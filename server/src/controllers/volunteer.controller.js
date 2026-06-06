@@ -27,7 +27,13 @@ export class VolunteerController {
       if (!ngoId || !name || !email) {
         return res.status(400).json({ success: false, message: 'ngoId, name, and email are required' });
       }
-      const volunteer = await volunteerService.registerVolunteer({ ngoId: parseInt(ngoId), name, email, phone });
+      const volunteer = await volunteerService.registerVolunteer({
+        ngoId: parseInt(ngoId),
+        name,
+        email,
+        phone,
+        currentUserId: req.user?.id,
+      });
       res.status(201).json({
         success: true,
         message: 'Volunteer application submitted. You will receive an email once the NGO verifies you.',
@@ -58,12 +64,25 @@ export class VolunteerController {
   async verify(req, res, next) {
     try {
       const { id } = req.params;
-      const { temporaryPassword } = req.body;
-      if (!temporaryPassword) {
-        return res.status(400).json({ success: false, message: 'temporaryPassword is required' });
+      const volunteer = await volunteerService.verifyVolunteer(parseInt(id), req.user.id);
+      res.json({ success: true, message: 'Volunteer accepted. Invite sent via email.', data: volunteer });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/volunteers/complete-invite
+   * Public – accepted volunteer sets their password from invite email
+   */
+  async completeInvite(req, res, next) {
+    try {
+      const { token, password } = req.body;
+      if (!token || !password) {
+        return res.status(400).json({ success: false, message: 'token and password are required' });
       }
-      const volunteer = await volunteerService.verifyVolunteer(parseInt(id), req.user.id, temporaryPassword);
-      res.json({ success: true, message: 'Volunteer verified. Credentials sent via email.', data: volunteer });
+      const result = await volunteerService.completeInvite(token, password);
+      res.json({ success: true, ...result });
     } catch (error) {
       next(error);
     }

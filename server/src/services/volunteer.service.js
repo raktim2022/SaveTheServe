@@ -3,24 +3,26 @@ import { NGOModel } from '../models/NGO.model.js';
 import { UserModel } from '../models/User.model.js';
 import { getPrismaClient } from '../config/db.config.js';
 import emailService from './email.service.js';
+import { createNotification } from './notification.service.js';
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
+import { config } from '../config/env.config.js';
 
 export class VolunteerService {
 
   /**
    * Register as a volunteer for a specific NGO (public – no auth required)
    */
-  async registerVolunteer({ ngoId, name, email, phone }) {
+  async registerVolunteer({ ngoId, name, email, phone, currentUserId = null }) {
     // Check if email already used as a volunteer application
     const existing = await VolunteerModel.findByEmail(email);
-    if (existing) {
+    if (existing && existing.userId !== currentUserId) {
       throw new Error('An application with this email already exists');
     }
 
     // Check if email already used as a system user
     const existingUser = await UserModel.findByEmail(email);
-    if (existingUser) {
+    if (existingUser && existingUser.id !== currentUserId) {
       throw new Error('This email is already registered as a system user');
     }
 
@@ -29,6 +31,19 @@ export class VolunteerService {
     if (!ngo) throw new Error('NGO not found');
 
     const volunteer = await VolunteerModel.create({ ngoId, name, email, phone });
+
+    if (currentUserId) {
+      const currentUser = await UserModel.findById(currentUserId);
+      if (!currentUser) {
+        throw new Error('Authenticated user not found');
+      }
+      if (currentUser.role !== 'VOLUNTEER') {
+        await UserModel.update(currentUserId, {
+          role: 'VOLUNTEER',
+          phone: phone || currentUser.phone,
+        });
+      }
+    }
 
     // Email to volunteer
     await emailService.sendVolunteerRegistrationThankYou(email, name, ngo.ngoName);
@@ -40,6 +55,21 @@ export class VolunteerService {
       name,
       email,
       phone
+    );
+
+    await createNotification(
+      ngo.userId,
+      'volunteer:application',
+      'New volunteer application',
+      `${name} has applied to volunteer with your NGO.`,
+      {
+        volunteerId: volunteer.id,
+        ngoId: ngo.id,
+        name,
+        email,
+        phone: phone || null,
+      },
+      'IN_APP'
     );
 
     return volunteer;
@@ -55,9 +85,9 @@ export class VolunteerService {
   }
 
   /**
-   * NGO verifies a volunteer, creates User account, sends credentials email
+   * NGO accepts a volunteer, creates a login account, sends setup invite
    */
-  async verifyVolunteer(volunteerId, ngoUserId, temporaryPassword) {
+  async verifyVolunteer(volunteerId, ngoUserId) {
     const volunteer = await VolunteerModel.findById(volunteerId);
     if (!volunteer) throw new Error('Volunteer not found');
 
@@ -71,44 +101,96 @@ export class VolunteerService {
       throw new Error('Volunteer application is no longer pending');
     }
 
-    if (!temporaryPassword || temporaryPassword.length < 8) {
-      throw new Error('Temporary password must be at least 8 characters');
+    const prisma = getPrismaClient();
+
+    // If the volunteer email already exists as a user, reuse that account rather than creating a duplicate.
+    let user = await UserModel.findByEmail(volunteer.email);
+
+    if (user) {
+      if (user.role !== 'VOLUNTEER') {
+        await UserModel.update(user.id, {
+          role: 'VOLUNTEER',
+          isVerified: true,
+        });
+        user = await UserModel.findById(user.id);
+      }
+    } else {
+      user = await prisma.user.create({
+        data: {
+          name: volunteer.name,
+          email: volunteer.email,
+          phone: volunteer.phone,
+          password: null,
+          role: 'VOLUNTEER',
+          isVerified: true, // pre-verified by NGO
+        },
+      });
     }
 
-    // Hash temporary password
-    const saltRounds = parseInt(process.env.BCRYPT_ROUNDS) || 12;
-    const hashedPassword = await bcrypt.hash(temporaryPassword, saltRounds);
-
-    // Create the User account
-    const prisma = getPrismaClient();
-    const user = await prisma.user.create({
-      data: {
-        name: volunteer.name,
-        email: volunteer.email,
-        phone: volunteer.phone,
-        password: hashedPassword,
-        role: 'VOLUNTEER',
-        isVerified: true, // pre-verified by NGO
-      },
-    });
-
-    // Update Volunteer record: link userId, set VERIFIED, require password change
+    // Update Volunteer record: link userId and set VERIFIED until phone verification activates them
     const updated = await VolunteerModel.update(volunteerId, {
       userId: user.id,
       status: 'VERIFIED',
-      mustChangePassword: true,
+      mustChangePassword: false,
     });
 
-    // Send credentials email to volunteer
-    await emailService.sendVolunteerCredentials(
+    const inviteToken = jwt.sign(
+      {
+        type: 'volunteer-invite',
+        userId: user.id,
+        volunteerId: volunteer.id,
+      },
+      config.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    await emailService.sendVolunteerInvite(
       volunteer.email,
       volunteer.name,
-      volunteer.email,
-      temporaryPassword,
-      ngo.ngoName
+      ngo.ngoName,
+      inviteToken
     );
 
     return updated;
+  }
+
+  /**
+   * Volunteer completes an NGO-approved invite by setting their password
+   */
+  async completeInvite(token, password) {
+    if (!token) throw new Error('Invite token is required');
+    if (!password || password.length < 8) throw new Error('Password must be at least 8 characters');
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, config.JWT_SECRET);
+    } catch {
+      throw new Error('Invalid or expired invite token');
+    }
+
+    if (decoded.type !== 'volunteer-invite') {
+      throw new Error('Invalid invite token');
+    }
+
+    const volunteer = await VolunteerModel.findById(decoded.volunteerId);
+    if (!volunteer || volunteer.userId !== decoded.userId) {
+      throw new Error('Volunteer invite not found');
+    }
+
+    if (volunteer.status !== 'VERIFIED' && volunteer.status !== 'ACTIVE') {
+      throw new Error('Volunteer invite is not active');
+    }
+
+    const user = await UserModel.findById(decoded.userId);
+    if (!user || user.role !== 'VOLUNTEER') {
+      throw new Error('Volunteer account not found');
+    }
+
+    const saltRounds = parseInt(process.env.BCRYPT_ROUNDS) || 12;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    await UserModel.update(user.id, { password: hashedPassword });
+
+    return { message: 'Volunteer account setup complete. You can now log in.' };
   }
 
   /**
