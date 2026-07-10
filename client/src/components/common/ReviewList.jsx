@@ -62,7 +62,7 @@ export default function ReviewList({
             />
           </svg>
         ))}
-        <span className="ml-2 text-sm text-gray-600">{rating}/5</span>
+        <span className="ml-2 text-sm text-gray-600 dark:text-slate-300">{rating}/5</span>
       </div>
     );
   };
@@ -79,18 +79,18 @@ export default function ReviewList({
     <div className="space-y-6">
       {/* Summary Section */}
       {(averageRating !== undefined || totalReviews !== undefined) && (
-        <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-gray-50 dark:bg-slate-900 p-4 rounded-lg">
           <div className="flex items-center gap-4">
             {averageRating !== undefined && (
               <div className="flex items-center gap-2">
-                <span className="text-3xl font-bold text-gray-900">
+                <span className="text-3xl font-bold text-gray-900 dark:text-white">
                   {averageRating.toFixed(1)}
                 </span>
                 {renderStars(Math.round(averageRating))}
               </div>
             )}
             {totalReviews !== undefined && (
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 dark:text-slate-300">
                 ({totalReviews} review{totalReviews !== 1 ? 's' : ''})
               </span>
             )}
@@ -100,7 +100,7 @@ export default function ReviewList({
 
       {/* Reviews List */}
       {reviews.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-gray-500 dark:text-slate-400">
           <p>No reviews yet. Be the first to review!</p>
         </div>
       ) : (
@@ -108,19 +108,19 @@ export default function ReviewList({
           {reviews.map((review) => (
             <div 
               key={review.id} 
-              className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex justify-between items-start mb-2">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     {renderStars(review.rating)}
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-gray-500 dark:text-slate-400">
                       {formatDate(review.createdAt)}
                     </span>
                   </div>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
                     {review.reviewer?.name || 'Anonymous'}
-                    <span className="ml-2 text-xs text-gray-500">
+                    <span className="ml-2 text-xs text-gray-500 dark:text-slate-400">
                       ({review.reviewerRole})
                     </span>
                   </p>
@@ -153,12 +153,12 @@ export default function ReviewList({
               </div>
 
               {review.comment && (
-                <p className="text-gray-700 mt-3">{review.comment}</p>
+                <p className="text-gray-700 dark:text-slate-200 mt-3">{review.comment}</p>
               )}
 
               {/* Show what was reviewed */}
               {(review.restaurant || review.ngo) && (
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs text-gray-500 dark:text-slate-400 mt-2">
                   Reviewed: {review.restaurant?.shopName || review.ngo?.ngoName}
                 </p>
               )}

@@ -102,7 +102,7 @@ export default function NGOHistoryPage() {
     if (meals >= 500) return { level: 'Champion', color: 'text-blue-600', bg: 'bg-blue-100' };
     if (meals >= 100) return { level: 'Warrior', color: 'text-green-600', bg: 'bg-green-100' };
     if (meals >= 10) return { level: 'Helper', color: 'text-yellow-600', bg: 'bg-yellow-100' };
-    return { level: 'Beginner', color: 'text-gray-600', bg: 'bg-gray-100' };
+    return { level: 'Beginner', color: 'text-gray-600 dark:text-slate-300', bg: 'bg-gray-100 dark:bg-slate-800' };
   };
 
   if (loading) {
@@ -115,23 +115,23 @@ export default function NGOHistoryPage() {
     <div className="space-y-8">
       {/* Header */}
       <motion.div 
-        className="flex items-center justify-between"
+        className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 justify-between"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Impact History</h1>
-          <p className="text-gray-600 mt-1">Your food rescue journey and impact</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Impact History</h1>
+          <p className="text-gray-600 dark:text-slate-300 mt-1">Your food rescue journey and impact</p>
         </div>
         
         {/* Time Filter */}
         <div className="flex items-center space-x-2">
-          <Calendar className="h-4 w-4 text-gray-500" />
+          <Calendar className="h-4 w-4 text-gray-500 dark:text-slate-400" />
           <select
             value={timeFilter}
             onChange={(e) => setTimeFilter(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="all">All Time</option>
             <option value="week">Last Week</option>
@@ -156,7 +156,7 @@ export default function NGOHistoryPage() {
             </span>
           </div>
         </div>
-        <p className="text-center text-gray-600">
+        <p className="text-sm sm:text-base text-center text-gray-600 dark:text-slate-300">
           You've rescued <strong>{stats.mealsRescued} meals</strong> and saved approximately{' '}
           <strong>{stats.carbonSaved}kg CO₂</strong> from entering the atmosphere!
         </p>
@@ -185,8 +185,8 @@ export default function NGOHistoryPage() {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-slate-300">{stat.title}</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{stat.value}</p>
               </div>
               <div className={`p-3 rounded-lg ${stat.bg}`}>
                 <stat.icon className={`h-6 w-6 ${stat.color}`} />
@@ -203,24 +203,24 @@ export default function NGOHistoryPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.4 }}
       >
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Rescue History</h2>
-          <p className="text-gray-600">Your completed food rescue requests</p>
+        <div className="p-6 border-b border-gray-200 dark:border-slate-700">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Rescue History</h2>
+          <p className="text-gray-600 dark:text-slate-300">Your completed food rescue requests</p>
         </div>
 
         <div className="p-6">
           {requests.length === 0 ? (
             <div className="text-center py-12">
               <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No completed rescues yet</h3>
-              <p className="text-gray-600">Start making requests to build your impact history!</p>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No completed rescues yet</h3>
+              <p className="text-gray-600 dark:text-slate-300">Start making requests to build your impact history!</p>
             </div>
           ) : (
             <div className="space-y-4">
               {requests.map((request, index) => (
                 <motion.div
                   key={request.id}
-                  className="flex items-start space-x-4 p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                  className="flex items-start space-x-4 p-4 rounded-lg border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 dark:bg-slate-900 transition-colors"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -232,8 +232,8 @@ export default function NGOHistoryPage() {
                   </div>
                   
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-lg font-medium text-gray-900">
+                    <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-white">
                         {request.foodListing?.title || 'Food Rescue'}
                       </h3>
                       <Badge className="bg-green-100 text-green-800">
@@ -241,7 +241,7 @@ export default function NGOHistoryPage() {
                       </Badge>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-slate-300">
                       <div className="flex items-center space-x-2">
                         <Clock className="h-4 w-4" />
                         <span>{formatDate(request.completedAt || request.updatedAt)}</span>
@@ -257,7 +257,7 @@ export default function NGOHistoryPage() {
                     </div>
                     
                     {request.foodListing?.description && (
-                      <p className="text-gray-600 mt-2 text-sm">
+                      <p className="text-gray-600 dark:text-slate-300 mt-2 text-sm">
                         {request.foodListing.description}
                       </p>
                     )}

@@ -34,7 +34,7 @@ export default function AdminReportsPage() {
     <div>
       <div className="dashboard-header">
         <h1 className="dashboard-title">Reports & Analytics</h1>
-        <p className="text-gray-600">Platform statistics and insights</p>
+        <p className="text-gray-600 dark:text-slate-300">Platform statistics and insights</p>
       </div>
 
       <div className="space-y-6">
@@ -45,25 +45,25 @@ export default function AdminReportsPage() {
               <div className="text-2xl font-bold text-primary-600">
                 {foodStats?.total || 0}
               </div>
-              <div className="text-sm text-gray-600">Total Listings</div>
+              <div className="text-sm text-gray-600 dark:text-slate-300">Total Listings</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-green-600">
                 {foodStats?.available || 0}
               </div>
-              <div className="text-sm text-gray-600">Available</div>
+              <div className="text-sm text-gray-600 dark:text-slate-300">Available</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-blue-600">
                 {foodStats?.reserved || 0}
               </div>
-              <div className="text-sm text-gray-600">Reserved</div>
+              <div className="text-sm text-gray-600 dark:text-slate-300">Reserved</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-600">
+              <div className="text-2xl font-bold text-gray-600 dark:text-slate-300">
                 {foodStats?.completed || 0}
               </div>
-              <div className="text-sm text-gray-600">Completed</div>
+              <div className="text-sm text-gray-600 dark:text-slate-300">Completed</div>
             </div>
           </div>
         </div>
@@ -75,25 +75,25 @@ export default function AdminReportsPage() {
               <div className="text-2xl font-bold text-primary-600">
                 {requestStats?.total || 0}
               </div>
-              <div className="text-sm text-gray-600">Total Requests</div>
+              <div className="text-sm text-gray-600 dark:text-slate-300">Total Requests</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-yellow-600">
                 {requestStats?.pending || 0}
               </div>
-              <div className="text-sm text-gray-600">Pending</div>
+              <div className="text-sm text-gray-600 dark:text-slate-300">Pending</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-green-600">
                 {requestStats?.approved || 0}
               </div>
-              <div className="text-sm text-gray-600">Approved</div>
+              <div className="text-sm text-gray-600 dark:text-slate-300">Approved</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-blue-600">
                 {requestStats?.completed || 0}
               </div>
-              <div className="text-sm text-gray-600">Completed</div>
+              <div className="text-sm text-gray-600 dark:text-slate-300">Completed</div>
             </div>
           </div>
         </div>

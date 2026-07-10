@@ -259,9 +259,9 @@ export default function SetupProfilePage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
         <div className="animate-spin">
-          <div className="h-8 w-8 border-4 border-gray-200 border-t-green-600 rounded-full" />
+          <div className="h-8 w-8 border-4 border-gray-200 dark:border-slate-700 border-t-green-600 rounded-full" />
         </div>
       </div>
     );
@@ -279,10 +279,10 @@ export default function SetupProfilePage() {
           <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
             <Building2 className="h-8 w-8 text-green-600" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             {step === 1 ? "Choose Your Role" : "Complete Your Profile"}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-slate-300">
             {step === 1
               ? "Tell us who you are to get started"
               : "Fill in the details to set up your account"}
@@ -317,14 +317,14 @@ export default function SetupProfilePage() {
                     "p-6 rounded-xl border-2 transition text-left",
                     selectedRole === role.id
                       ? "border-green-600 bg-green-50"
-                      : "border-gray-200 bg-white hover:border-green-300",
+                      : "border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-green-300",
                   )}
                 >
                   <div className="text-3xl mb-3">{role.icon}</div>
-                  <h3 className="font-semibold text-gray-900 mb-1">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
                     {role.label}
                   </h3>
-                  <p className="text-sm text-gray-600">{role.description}</p>
+                  <p className="text-sm text-gray-600 dark:text-slate-300">{role.description}</p>
                 </button>
               ))}
             </div>
@@ -346,7 +346,7 @@ export default function SetupProfilePage() {
 
         {/* Step 2: Profile Details */}
         {step === 2 && (
-          <div className="bg-white rounded-2xl shadow-lg p-8">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8">
             {errors.submit && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
                 <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
@@ -370,7 +370,7 @@ export default function SetupProfilePage() {
                   />
 
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-200">
                       Business Type <span className="text-red-500">*</span>
                     </label>
                     <select
@@ -381,8 +381,8 @@ export default function SetupProfilePage() {
                       className={clsx(
                         "w-full px-4 py-2 border rounded-lg transition",
                         "focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent",
-                        "disabled:bg-gray-100 disabled:cursor-not-allowed",
-                        errors.shopType ? "border-red-500" : "border-gray-300",
+                        "disabled:bg-gray-100 dark:bg-slate-800 disabled:cursor-not-allowed",
+                        errors.shopType ? "border-red-500" : "border-gray-300 dark:border-slate-600",
                       )}
                     >
                       <option value="">Select a business type</option>
@@ -414,7 +414,7 @@ export default function SetupProfilePage() {
 
               {selectedRole === "VOLUNTEER" && (
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-200">
                     Select NGO <span className="text-red-500">*</span>
                   </label>
 

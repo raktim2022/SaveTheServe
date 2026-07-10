@@ -11,11 +11,11 @@ function ProgressBar({ label, value, max, color = 'bg-green-500' }) {
   const pct = max > 0 ? Math.round((value / max) * 100) : 0;
   return (
     <div className="space-y-1">
-      <div className="flex justify-between text-xs text-gray-600">
+      <div className="flex justify-between text-xs text-gray-600 dark:text-slate-300">
         <span>{label}</span>
         <span className="font-semibold">{value}</span>
       </div>
-      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+      <div className="h-2 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
         <div className={`h-full ${color} rounded-full transition-all duration-700`} style={{ width: `${pct}%` }} />
       </div>
     </div>
@@ -93,27 +93,27 @@ export default function NGOImpactPage() {
   return (
     <div className="p-4 md:p-6 max-w-4xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">NGO Impact</h1>
-        <p className="text-gray-500 text-sm mt-1">Track your food rescue journey and community impact</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">NGO Impact</h1>
+        <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">Track your food rescue journey and community impact</p>
       </div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {statCards.map((c) => (
-          <div key={c.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+          <div key={c.label} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm p-4">
             <div className={`inline-flex p-2 rounded-lg ${c.bg} mb-3`}>
               <c.icon className={`h-5 w-5 ${c.color}`} />
             </div>
-            <p className="text-2xl font-bold text-gray-900">{c.value}</p>
-            <p className="text-xs text-gray-500 mt-0.5">{c.label}</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{c.value}</p>
+            <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{c.label}</p>
           </div>
         ))}
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Trend chart */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-          <h2 className="font-semibold text-gray-800 mb-3">Requests Over Last 6 Months</h2>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm p-5">
+          <h2 className="font-semibold text-gray-800 dark:text-slate-100 mb-3">Requests Over Last 6 Months</h2>
           <Sparkline data={trendData} />
           <div className="flex justify-between mt-1">
             {trendLabels.map((l, i) => (
@@ -123,8 +123,8 @@ export default function NGOImpactPage() {
         </div>
 
         {/* Request status breakdown */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-          <h2 className="font-semibold text-gray-800 mb-4">Request Breakdown</h2>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm p-5">
+          <h2 className="font-semibold text-gray-800 dark:text-slate-100 mb-4">Request Breakdown</h2>
           <div className="space-y-3">
             <ProgressBar label="Completed" value={completed} max={requests.length} color="bg-green-500" />
             <ProgressBar label="Accepted" value={accepted} max={requests.length} color="bg-blue-500" />
@@ -135,16 +135,16 @@ export default function NGOImpactPage() {
 
       {/* Top donors */}
       {topDonors.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-          <h2 className="font-semibold text-gray-800 mb-4">🏆 Top Donor Restaurants</h2>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm p-5">
+          <h2 className="font-semibold text-gray-800 dark:text-slate-100 mb-4">🏆 Top Donor Restaurants</h2>
           <div className="space-y-3">
             {topDonors.map(([name, count], i) => (
               <div key={name} className="flex items-center gap-3">
                 <span className="w-6 h-6 rounded-full bg-green-100 text-green-700 text-xs font-bold flex items-center justify-center shrink-0">
                   {i + 1}
                 </span>
-                <span className="flex-1 text-sm text-gray-700 truncate">{name}</span>
-                <span className="text-sm font-semibold text-gray-900">{count} donations</span>
+                <span className="flex-1 text-sm text-gray-700 dark:text-slate-200 truncate">{name}</span>
+                <span className="text-sm font-semibold text-gray-900 dark:text-white">{count} donations</span>
               </div>
             ))}
           </div>

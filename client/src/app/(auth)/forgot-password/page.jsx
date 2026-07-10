@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Mail, ArrowLeft, CheckCircle, Loader2 } from 'lucide-react';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
+import ThemeSwitcher from '@/components/common/ThemeSwitcher';
 import { forgotPassword } from '@/services/auth.service';
 import '@/styles/auth.css';
 
@@ -32,7 +33,10 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth-page auth-container relative">
+      <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6">
+        <ThemeSwitcher />
+      </div>
       <motion.div 
         className="auth-card"
         initial={{ opacity: 0, y: 20 }}
@@ -73,7 +77,7 @@ export default function ForgotPasswordPage() {
             transition={{ duration: 0.3 }}
           >
             <div className="flex items-start">
-              <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+              <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 shrink-0" />
               <div>
                 <p className="font-medium">Reset link sent!</p>
                 <p className="text-green-700">Check your email for password reset instructions.</p>
@@ -116,7 +120,7 @@ export default function ForgotPasswordPage() {
         <div className="flex items-center justify-center mt-6">
           <Link 
             href="/login" 
-            className="flex items-center text-sm text-gray-600 hover:text-primary-600 transition-colors"
+            className="flex items-center text-sm text-gray-600 dark:text-slate-300 hover:text-primary-600 transition-colors dark:text-slate-400 dark:hover:text-emerald-300"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Sign In

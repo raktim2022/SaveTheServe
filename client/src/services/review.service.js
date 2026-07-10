@@ -23,13 +23,13 @@ export const createReview = async (reviewData) => {
       throw new Error('Either restaurantId or ngoId must be provided');
     }
 
-    const response = await axios.post('/reviews', {
-      rating,
-      comment: comment || null,
-      restaurantId: restaurantId || null,
-      ngoId: ngoId || null,
-      foodRequestId: foodRequestId || null
-    });
+    const payload = { rating };
+    if (comment) payload.comment = comment;
+    if (restaurantId) payload.restaurantId = restaurantId;
+    if (ngoId) payload.ngoId = ngoId;
+    if (foodRequestId) payload.foodRequestId = foodRequestId;
+
+    const response = await axios.post('/reviews', payload);
 
     return response.data;
   } catch (error) {

@@ -194,12 +194,12 @@ export default function FoodForm({ initialData, onSubmit, onCancel }) {
 
       {/* Image Upload */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">
           Food Photo <span className="text-gray-400 font-normal">(optional)</span>
         </label>
         {imagePreview ? (
           <div className="relative inline-block">
-            <div className="relative w-48 h-36 rounded-lg overflow-hidden border border-gray-200">
+            <div className="relative w-48 h-36 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-700">
               <img
                 src={imagePreview}
                 alt="Food preview"
@@ -217,10 +217,10 @@ export default function FoodForm({ initialData, onSubmit, onCancel }) {
         ) : (
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-green-400 hover:bg-green-50 transition-colors"
+            className="border-2 border-dashed border-gray-300 dark:border-slate-600 rounded-lg p-6 text-center cursor-pointer hover:border-green-400 hover:bg-green-50 transition-colors"
           >
             <div className="text-3xl mb-2">📷</div>
-            <p className="text-sm text-gray-500">Click to upload a photo</p>
+            <p className="text-sm text-gray-500 dark:text-slate-400">Click to upload a photo</p>
             <p className="text-xs text-gray-400 mt-1">JPG, PNG or WebP, max 5MB</p>
           </div>
         )}

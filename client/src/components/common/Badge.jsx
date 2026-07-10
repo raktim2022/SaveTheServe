@@ -5,7 +5,7 @@ import clsx from 'clsx';
  */
 export default function Badge({ children, variant = 'default', size = 'md', className }) {
   const variants = {
-    default: 'bg-gray-100 text-gray-800',
+    default: 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-100',
     primary: 'bg-primary-100 text-primary-800',
     success: 'bg-green-100 text-green-800',
     warning: 'bg-yellow-100 text-yellow-800',

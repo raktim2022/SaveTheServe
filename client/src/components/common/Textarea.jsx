@@ -23,7 +23,7 @@ const Textarea = forwardRef(({
       {label && (
         <label 
           htmlFor={name} 
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-gray-700 dark:text-slate-200"
         >
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
@@ -42,17 +42,17 @@ const Textarea = forwardRef(({
         cols={cols}
         maxLength={maxLength}
         className={`
-          w-full px-4 py-3 border border-gray-200 rounded-xl 
+          w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl 
           focus:ring-2 focus:ring-green-500 focus:border-transparent 
           transition-all duration-200 bg-white/50 resize-vertical
-          disabled:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60
+          disabled:bg-gray-50 dark:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60
           ${error ? 'border-red-300 focus:ring-red-500' : ''}
           ${className}
         `}
         {...props}
       />
       {helpText && !error && (
-        <p className="text-sm text-gray-500 mt-1">{helpText}</p>
+        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">{helpText}</p>
       )}
       {error && (
         <p className="text-sm text-red-600 mt-1">{error}</p>

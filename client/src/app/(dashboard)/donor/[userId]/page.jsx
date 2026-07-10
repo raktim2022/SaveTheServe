@@ -13,7 +13,7 @@ import { getDynamicRoutes } from '@/utils/constants';
 const STATUS_COLORS = {
   AVAILABLE: 'bg-green-100 text-green-800',
   REQUESTED: 'bg-yellow-100 text-yellow-800',
-  PICKED: 'bg-gray-100 text-gray-600',
+  PICKED: 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300',
 };
 
 export default function DonorDashboard() {
@@ -64,10 +64,10 @@ export default function DonorDashboard() {
     <div className="p-4 md:p-6 max-w-5xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Welcome back, {user?.name || 'Donor'} 👋
         </h1>
-        <p className="text-gray-500 text-sm mt-1">Here&apos;s an overview of your food donations</p>
+        <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">Here&apos;s an overview of your food donations</p>
       </div>
 
       {error && (
@@ -78,28 +78,28 @@ export default function DonorDashboard() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-          <p className="text-xs text-gray-500 mb-1">Total Listings</p>
-          <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+          <p className="text-xs text-gray-500 dark:text-slate-400 mb-1">Total Listings</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-          <p className="text-xs text-gray-500 mb-1">Available</p>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+          <p className="text-xs text-gray-500 dark:text-slate-400 mb-1">Available</p>
           <p className="text-3xl font-bold text-green-600">{stats.available}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-          <p className="text-xs text-gray-500 mb-1">Requested</p>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+          <p className="text-xs text-gray-500 dark:text-slate-400 mb-1">Requested</p>
           <p className="text-3xl font-bold text-yellow-600">{stats.requested}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-          <p className="text-xs text-gray-500 mb-1">Picked Up</p>
-          <p className="text-3xl font-bold text-gray-500">{stats.picked}</p>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+          <p className="text-xs text-gray-500 dark:text-slate-400 mb-1">Picked Up</p>
+          <p className="text-3xl font-bold text-gray-500 dark:text-slate-400">{stats.picked}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-          <p className="text-xs text-gray-500 mb-1">Pending Requests</p>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+          <p className="text-xs text-gray-500 dark:text-slate-400 mb-1">Pending Requests</p>
           <p className="text-3xl font-bold text-orange-500">{stats.pendingRequests}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-          <p className="text-xs text-gray-500 mb-1">Accepted</p>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+          <p className="text-xs text-gray-500 dark:text-slate-400 mb-1">Accepted</p>
           <p className="text-3xl font-bold text-blue-600">{stats.acceptedRequests}</p>
         </div>
       </div>
@@ -114,7 +114,7 @@ export default function DonorDashboard() {
         </Link>
         <Link
           href={routes.DONOR_FOOD_LISTINGS}
-          className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          className="bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 dark:bg-slate-900 text-gray-700 dark:text-slate-200 border border-gray-200 dark:border-slate-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
         >
           Manage Listings
         </Link>
@@ -131,15 +131,15 @@ export default function DonorDashboard() {
       {/* Recent Listings */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Recent Listings</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Listings</h2>
           <Link href={routes.DONOR_FOOD_LISTINGS} className="text-sm text-green-600 hover:text-green-800">
             View all →
           </Link>
         </div>
         {listings.length === 0 ? (
-          <div className="bg-white rounded-xl border border-dashed border-gray-300 p-10 text-center">
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-dashed border-gray-300 dark:border-slate-600 p-10 text-center">
             <div className="text-4xl mb-3">🍱</div>
-            <p className="text-gray-500 text-sm">No food listings yet.</p>
+            <p className="text-gray-500 dark:text-slate-400 text-sm">No food listings yet.</p>
             <Link
               href={routes.DONOR_FOOD_LISTINGS}
               className="mt-3 inline-block text-sm text-green-600 font-medium hover:underline"
@@ -152,7 +152,7 @@ export default function DonorDashboard() {
             {listings.slice(0, 5).map((listing) => (
               <div
                 key={listing.id}
-                className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-4"
+                className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex items-center gap-4"
               >
                 {listing.imageUrl ? (
                   <img
@@ -161,17 +161,17 @@ export default function DonorDashboard() {
                     className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
                   />
                 ) : (
-                  <div className="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center text-2xl flex-shrink-0">
+                  <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-2xl flex-shrink-0">
                     🍽️
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 truncate">{listing.foodName}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="font-medium text-gray-900 dark:text-white truncate">{listing.foodName}</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400">
                     {listing.quantity} {listing.unit || 'units'} · Expires {formatDate(listing.expiryTime)}
                   </p>
                 </div>
-                <span className={`text-xs font-medium px-2 py-1 rounded-full flex-shrink-0 ${STATUS_COLORS[listing.status] || 'bg-gray-100 text-gray-600'}`}>
+                <span className={`text-xs font-medium px-2 py-1 rounded-full flex-shrink-0 ${STATUS_COLORS[listing.status] || 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300'}`}>
                   {listing.status}
                 </span>
               </div>
@@ -184,8 +184,8 @@ export default function DonorDashboard() {
       {requests.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Incoming Requests</h2>
-            <Link href={routes.DONOR_FOOD_LISTINGS} className="text-sm text-green-600 hover:text-green-800">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Incoming Requests</h2>
+            <Link href={routes.DONOR_PICKUPS} className="text-sm text-green-600 hover:text-green-800">
               View all →
             </Link>
           </div>
@@ -193,11 +193,11 @@ export default function DonorDashboard() {
             {requests.slice(0, 3).map((req) => (
               <div
                 key={req.id}
-                className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between gap-4"
+                className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex items-center justify-between gap-4"
               >
                 <div>
-                  <p className="font-medium text-gray-900">{req.foodListing?.foodName || 'Unknown'}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="font-medium text-gray-900 dark:text-white">{req.foodListing?.foodName || 'Unknown'}</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400">
                     By {req.ngo?.ngoName || req.ngo?.user?.name || 'NGO'} · {formatDate(req.createdAt)}
                   </p>
                 </div>

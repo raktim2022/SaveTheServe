@@ -10,7 +10,7 @@ import { formatDateTime, getTimeRemaining } from '@/utils/formatDate';
  */
 export default function FoodCard({ food, onRequest }) {
   return (
-    <div className="bg-white rounded-lg shadow hover:shadow-lg transition p-4">
+    <div className="bg-white dark:bg-slate-800 rounded-lg shadow hover:shadow-lg transition p-4">
       {/* Image */}
       <div className="relative h-48 mb-4 rounded-lg overflow-hidden bg-gray-200">
         {food.images && food.images[0] ? (
@@ -30,30 +30,30 @@ export default function FoodCard({ food, onRequest }) {
       {/* Content */}
       <div className="space-y-2">
         <div className="flex items-start justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">{food.name}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{food.name}</h3>
           <StatusBadge status={food.status} />
         </div>
 
-        <p className="text-sm text-gray-600 line-clamp-2">{food.description}</p>
+        <p className="text-sm text-gray-600 dark:text-slate-300 line-clamp-2">{food.description}</p>
 
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-500">
-            Quantity: <span className="font-medium text-gray-900">{food.quantity} {food.unit}</span>
+          <span className="text-gray-500 dark:text-slate-400">
+            Quantity: <span className="font-medium text-gray-900 dark:text-white">{food.quantity} {food.unit}</span>
           </span>
-          <span className="text-gray-500">
-            Category: <span className="font-medium text-gray-900">{food.category}</span>
+          <span className="text-gray-500 dark:text-slate-400">
+            Category: <span className="font-medium text-gray-900 dark:text-white">{food.category}</span>
           </span>
         </div>
 
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-500">
+          <span className="text-gray-500 dark:text-slate-400">
             Expires: <span className="font-medium text-red-600">{getTimeRemaining(food.expiryDate)}</span>
           </span>
         </div>
 
         {food.restaurant && (
-          <p className="text-sm text-gray-500">
-            From: <span className="font-medium text-gray-900">{food.restaurant.name}</span>
+          <p className="text-sm text-gray-500 dark:text-slate-400">
+            From: <span className="font-medium text-gray-900 dark:text-white">{food.restaurant.name}</span>
           </p>
         )}
 

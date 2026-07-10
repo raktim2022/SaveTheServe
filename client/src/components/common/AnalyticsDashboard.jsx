@@ -65,19 +65,19 @@ export default function AnalyticsDashboard({ type, entityId }) {
   }
 
   const StatCard = ({ title, value, subtitle, icon }) => (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+    <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-medium text-gray-600">{title}</h3>
+        <h3 className="text-sm font-medium text-gray-600 dark:text-slate-300">{title}</h3>
         {icon && <span className="text-2xl">{icon}</span>}
       </div>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
-      {subtitle && <p className="text-xs text-gray-500 mt-1">{subtitle}</p>}
+      <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+      {subtitle && <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">{subtitle}</p>}
     </div>
   );
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h2>
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics Dashboard</h2>
 
       {/* Restaurant Analytics */}
       {type === 'restaurant' && analytics.foodStats && (

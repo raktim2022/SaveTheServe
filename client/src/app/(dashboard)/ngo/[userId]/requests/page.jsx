@@ -12,6 +12,10 @@ import { useRealTimeRequests } from '@/hooks/useRealTimeRequests';
 import { formatDate } from '@/utils/formatDate';
 import { getDynamicRoutes } from '@/utils/constants';
 import QRCodeModal from '@/components/common/QRCodeModal';
+import ReviewForm from '@/components/common/ReviewForm';
+import { createReview } from '@/services/review.service';
+// import TrackingMap from '@/components/common/TrackingMap';
+// import { useLiveTracking } from '@/hooks/useLiveTracking';
 
 const STATUS_COLORS = {
   PENDING: 'bg-yellow-100 text-yellow-800',
@@ -41,6 +45,18 @@ export default function NGORequestsPage() {
   // QR code modal state
   const [qrModal, setQrModal] = useState(null); // { otp, qrToken, foodName, donorName }
 
+  // Review modal state
+  const [reviewModal, setReviewModal] = useState(null); // { restaurantId, foodRequestId, name }
+  const [trackingModal, setTrackingModal] = useState(null); // { requestId, restaurantCoords, ngoCoords, restaurantName, ngoName, isPickedUp }
+
+  /* 
+  const trackingData = useLiveTracking({
+    requestId: trackingModal?.requestId,
+    isVolunteer: false,
+    enabled: !!trackingModal
+  });
+  */
+
   // Assign volunteer modal state
   const [assignModal, setAssignModal] = useState(null); // { requestId }
   const [volunteers, setVolunteers] = useState([]);
@@ -49,6 +65,23 @@ export default function NGORequestsPage() {
   const [assignLoading, setAssignLoading] = useState(false);
 
   const routes = getDynamicRoutes(userId);
+
+  const handleReviewSubmit = async (reviewData) => {
+    try {
+      await createReview(reviewData);
+      toast.success('Review submitted successfully!', { icon: '⭐' });
+      setReviewModal(null);
+    } catch (err) {
+      toast.error(err.message || 'Failed to submit review');
+      throw err;
+    }
+  };
+
+  // const trackingData = useLiveTracking({
+  //   requestId: trackingModal?.requestId,
+  //   isVolunteer: false,
+  //   enabled: !!trackingModal
+  // });
 
   const fetchRequests = useCallback(async () => {
     setLoading(true);
@@ -70,9 +103,21 @@ export default function NGORequestsPage() {
   // ── Real-time request status updates ────────────────────────────────────────────
   const onRequestStatusChanged = useCallback((payload) => {
     const { requestId, status } = payload.data || {};
-    setRequests((prev) =>
-      prev.map((r) => (r.id === requestId ? { ...r, status } : r))
-    );
+    setRequests((prev) => {
+      const updated = prev.map((r) => (r.id === requestId ? { ...r, status } : r));
+      if (status === 'COMPLETED') {
+        const targetReq = updated.find((r) => r.id === requestId);
+        if (targetReq) {
+          toast.success(`Pickup for "${targetReq.foodListing?.foodName || 'food'}" completed!`, { icon: '🎉' });
+          setReviewModal({
+            restaurantId: targetReq.foodListing?.restaurant?.id,
+            foodRequestId: requestId,
+            name: targetReq.foodListing?.restaurant?.shopName || 'Restaurant',
+          });
+        }
+      }
+      return updated;
+    });
   }, []);
 
   useRealTimeRequests({ onStatusChanged: onRequestStatusChanged });
@@ -145,8 +190,8 @@ export default function NGORequestsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My Requests</h1>
-          <p className="text-gray-500 text-sm mt-1">Track your food donation requests</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Requests</h1>
+          <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">Track your food donation requests</p>
         </div>
         <Link
           href={routes.NGO_DASHBOARD}
@@ -174,43 +219,45 @@ export default function NGORequestsPage() {
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm text-center">
-          <p className="text-xs text-gray-500">Total</p>
-          <p className="text-2xl font-bold text-gray-900">{requests.length}</p>
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm text-center">
+          <p className="text-xs text-gray-500 dark:text-slate-400">Total</p>
+          <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{requests.length}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm text-center">
-          <p className="text-xs text-gray-500">Pending</p>
-          <p className="text-2xl font-bold text-yellow-600">{requests.filter(r => r.status === 'PENDING').length}</p>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm text-center">
+          <p className="text-xs text-gray-500 dark:text-slate-400">Pending</p>
+          <p className="text-xl sm:text-2xl font-bold text-yellow-600">{requests.filter(r => r.status === 'PENDING').length}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm text-center">
-          <p className="text-xs text-gray-500">Completed</p>
-          <p className="text-2xl font-bold text-blue-600">{requests.filter(r => r.status === 'COMPLETED').length}</p>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm text-center">
+          <p className="text-xs text-gray-500 dark:text-slate-400">Completed</p>
+          <p className="text-xl sm:text-2xl font-bold text-blue-600">{requests.filter(r => r.status === 'COMPLETED').length}</p>
         </div>
       </div>
 
       {/* Filter */}
-      <div className="flex gap-2 mb-6">
-        {['all', 'PENDING', 'ACCEPTED', 'REJECTED', 'COMPLETED'].map((s) => (
-          <button
-            key={s}
-            onClick={() => setStatusFilter(s)}
-            className={`text-sm px-3 py-1.5 rounded-full font-medium transition-colors ${
-              statusFilter === s
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            {s === 'all' ? 'All' : STATUS_LABELS[s]}
-          </button>
-        ))}
+      <div className="overflow-x-auto pb-1 mb-6">
+        <div className="flex flex-nowrap gap-2">
+          {['all', 'PENDING', 'ACCEPTED', 'REJECTED', 'COMPLETED'].map((s) => (
+            <button
+              key={s}
+              onClick={() => setStatusFilter(s)}
+              className={`whitespace-nowrap text-xs sm:text-sm px-3 py-1.5 rounded-full font-medium transition-colors ${
+                statusFilter === s
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-gray-200'
+              }`}
+            >
+              {s === 'all' ? 'All' : STATUS_LABELS[s]}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Requests List */}
       {filtered.length === 0 ? (
         <div className="text-center py-16">
           <div className="text-5xl mb-4">📬</div>
-          <h3 className="text-lg font-medium text-gray-700">
+          <h3 className="text-lg font-medium text-gray-700 dark:text-slate-200">
             {statusFilter === 'all' ? 'No requests yet' : `No ${STATUS_LABELS[statusFilter]?.toLowerCase()} requests`}
           </h3>
           <p className="text-gray-400 text-sm mt-1">
@@ -226,7 +273,7 @@ export default function NGORequestsPage() {
           {filtered.map((req) => (
             <div
               key={req.id}
-              className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+              className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden"
             >
               <div className="p-4">
                 <div className="flex items-start justify-between gap-3 mb-3">
@@ -235,29 +282,29 @@ export default function NGORequestsPage() {
                       <img
                         src={req.foodListing.imageUrl}
                         alt={req.foodListing.foodName}
-                        className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+                        className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg object-cover flex-shrink-0"
                       />
                     ) : (
-                      <div className="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center text-2xl flex-shrink-0">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-2xl flex-shrink-0">
                         🍽️
                       </div>
                     )}
                     <div>
-                      <h3 className="font-semibold text-gray-900">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">
                         {req.foodListing?.foodName || 'Unknown Food'}
                       </h3>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-500 dark:text-slate-400">
                         {req.foodListing?.quantity} {req.foodListing?.unit || 'units'}
                         {req.foodListing?.category && ` · ${req.foodListing.category}`}
                       </p>
                     </div>
                   </div>
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full flex-shrink-0 ${STATUS_COLORS[req.status] || 'bg-gray-100 text-gray-600'}`}>
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full flex-shrink-0 ${STATUS_COLORS[req.status] || 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300'}`}>
                     {STATUS_LABELS[req.status] || req.status}
                   </span>
                 </div>
 
-                <div className="flex flex-wrap gap-3 text-sm text-gray-600 mb-3">
+                <div className="flex flex-wrap gap-2 sm:gap-3 text-sm text-gray-600 dark:text-slate-300 mb-3">
                   {req.foodListing?.restaurant?.shopName && (
                     <span>🏪 {req.foodListing.restaurant.shopName}</span>
                   )}
@@ -294,19 +341,44 @@ export default function NGORequestsPage() {
                               : req.assignedVolunteer.name}
                           </strong> — OTP &amp; QR sent via email.
                         </p>
-                        {req.pickupOtp && (
-                          <button
-                            onClick={() => setQrModal({
-                              otp: req.pickupOtp,
-                              qrToken: req.pickupQrToken,
-                              foodName: req.foodListing?.foodName,
-                              donorName: req.foodListing?.restaurant?.shopName,
-                            })}
-                            className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg font-medium transition-colors shrink-0"
-                          >
-                            🔑 View QR Code
-                          </button>
-                        )}
+                        <div className="flex gap-2">
+                          {/* Commented out tracking button for safe deployment
+                          {req.assignedVolunteer && (
+                            <button
+                              onClick={() => setTrackingModal({
+                                requestId: req.id,
+                                restaurantCoords: {
+                                  lat: parseFloat(req.foodListing?.restaurant?.latitude),
+                                  lng: parseFloat(req.foodListing?.restaurant?.longitude)
+                                },
+                                ngoCoords: {
+                                  lat: parseFloat(req.ngo?.latitude),
+                                  lng: parseFloat(req.ngo?.longitude)
+                                },
+                                restaurantName: req.foodListing?.restaurant?.shopName,
+                                ngoName: req.ngo?.ngoName,
+                                isPickedUp: req.foodListing?.status === 'PICKED'
+                              })}
+                              className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg font-medium transition-colors shrink-0"
+                            >
+                              🛵 Track Volunteer
+                            </button>
+                          )}
+                          */}
+                          {req.pickupOtp && (
+                            <button
+                              onClick={() => setQrModal({
+                                otp: req.pickupOtp,
+                                qrToken: req.pickupQrToken,
+                                foodName: req.foodListing?.foodName,
+                                donorName: req.foodListing?.restaurant?.shopName,
+                              })}
+                              className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg font-medium transition-colors shrink-0"
+                            >
+                              🔑 View QR Code
+                            </button>
+                          )}
+                        </div>
                       </div>
                     ) : (
                       <p className="text-xs text-green-600 mt-0.5">
@@ -317,9 +389,21 @@ export default function NGORequestsPage() {
                 )}
 
                 {req.status === 'COMPLETED' && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
-                    <p className="text-sm text-blue-800 font-medium">✓ Pickup completed!</p>
-                    <p className="text-xs text-blue-600 mt-0.5">Thank you for rescuing this food.</p>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3 flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                      <p className="text-sm text-blue-800 font-medium">✓ Pickup completed!</p>
+                      <p className="text-xs text-blue-600 mt-0.5">Thank you for rescuing this food.</p>
+                    </div>
+                    <button
+                      onClick={() => setReviewModal({
+                        restaurantId: req.foodListing?.restaurant?.id,
+                        foodRequestId: req.id,
+                        name: req.foodListing?.restaurant?.shopName || 'Restaurant',
+                      })}
+                      className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                    >
+                      ⭐ Review Restaurant
+                    </button>
                   </div>
                 )}
 
@@ -373,9 +457,9 @@ export default function NGORequestsPage() {
       {/* Assign Volunteer Modal */}
       {assignModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-1">Assign Volunteer</h3>
-            <p className="text-sm text-gray-500 mb-5">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Assign Volunteer</h3>
+            <p className="text-sm text-gray-500 dark:text-slate-400 mb-5">
               Select an active volunteer to handle this pickup. They will receive a QR code &amp; OTP via email.
             </p>
             {volunteersLoading ? (
@@ -388,7 +472,7 @@ export default function NGORequestsPage() {
                   value={selectedVolunteerId}
                   onChange={(e) => setSelectedVolunteerId(e.target.value)}
                   required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
+                  className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
                 >
                   <option value="">— Select a volunteer —</option>
                   {volunteers.map((v) => {
@@ -406,7 +490,7 @@ export default function NGORequestsPage() {
                   <button
                     type="button"
                     onClick={() => setAssignModal(null)}
-                    className="flex-1 border border-gray-300 text-gray-700 rounded-lg py-2 text-sm font-medium hover:bg-gray-50 transition-colors"
+                    className="flex-1 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-200 rounded-lg py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-700 dark:bg-slate-900 transition-colors"
                   >
                     Cancel
                   </button>
@@ -424,7 +508,7 @@ export default function NGORequestsPage() {
               <button
                 type="button"
                 onClick={() => setAssignModal(null)}
-                className="mt-3 w-full text-xs text-gray-400 hover:text-gray-600"
+                className="mt-3 w-full text-xs text-gray-400 hover:text-gray-600 dark:text-slate-300"
               >
                 Close
               </button>
@@ -432,6 +516,46 @@ export default function NGORequestsPage() {
           </div>
         </div>
       )}
+
+      {/* Review Modal */}
+      {reviewModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <ReviewForm
+              restaurantId={reviewModal.restaurantId}
+              foodRequestId={reviewModal.foodRequestId}
+              onSubmit={handleReviewSubmit}
+              onCancel={() => setReviewModal(null)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Commented out tracking modal for safe deployment
+      {trackingModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl p-6">
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Live Tracking</h3>
+              <button
+                onClick={() => setTrackingModal(null)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 text-lg font-bold"
+              >
+                ✕
+              </button>
+            </div>
+            <TrackingMap
+              volunteerCoords={trackingData?.coordinates}
+              restaurantCoords={trackingModal.restaurantCoords}
+              ngoCoords={trackingModal.ngoCoords}
+              restaurantName={trackingModal.restaurantName}
+              ngoName={trackingModal.ngoName}
+              isPickedUp={trackingModal.isPickedUp}
+            />
+          </div>
+        </div>
+      )}
+      */}
     </div>
   );
 }

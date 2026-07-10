@@ -18,12 +18,15 @@ export const getDynamicRoutes = (userId) => ({
   NGO_REQUESTS: `/ngo/${userId}/requests`,
   NGO_VOLUNTEERS: `/ngo/${userId}/volunteers`,
   NGO_HISTORY: `/ngo/${userId}/history`,
-  
+  NGO_IMPACT: `/ngo/${userId}/impact`,
+  NGO_DONATE: `/ngo/${userId}/donate`,
+
   // Donor Routes
   DONOR_DASHBOARD: `/donor/${userId}`,
   DONOR_FOOD_LISTINGS: `/donor/${userId}/food-listings`,
   DONOR_PICKUPS: `/donor/${userId}/pickups`,
-  
+  DONOR_IMPACT: `/donor/${userId}/impact`,
+
   // Admin Routes
   ADMIN_DASHBOARD: `/admin/${userId}`,
   ADMIN_USERS: `/admin/${userId}/users`,
@@ -34,6 +37,7 @@ export const getDynamicRoutes = (userId) => ({
   DONOR_SETTINGS: `/donor/${userId}/settings`,
   ADMIN_SETTINGS: `/admin/${userId}/settings`,
 });
+
 
 export const USER_ROLES = {
   ADMIN: 'admin',

@@ -75,7 +75,7 @@ export default function PickupCodeInput({
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      <label className="block text-sm font-medium text-gray-700 dark:text-slate-200">{label}</label>
 
       <div className="flex gap-2 justify-center" onPaste={handlePaste}>
         {digits.map((d, idx) => (
@@ -99,7 +99,7 @@ export default function PickupCodeInput({
                 ? 'border-red-400 bg-red-50 text-red-700'
                 : d
                 ? 'border-green-400 bg-green-50 text-green-800'
-                : 'border-gray-300 bg-white text-gray-900',
+                : 'border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white',
               disabled && 'opacity-50 cursor-not-allowed',
             ]
               .filter(Boolean)

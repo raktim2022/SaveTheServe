@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CheckCircle, KeyRound, AlertCircle } from 'lucide-react';
 import Button from '@/components/common/Button';
+import ThemeSwitcher from '@/components/common/ThemeSwitcher';
 import { completeVolunteerInvite } from '@/services/volunteer.service';
 import '@/styles/auth.css';
 
@@ -54,10 +55,13 @@ export default function VolunteerInvitePage() {
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth-page auth-container relative">
+      <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6">
+        <ThemeSwitcher />
+      </div>
       <div className="auth-card">
         <div className="auth-header">
-          <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mx-auto mb-4">
+          <div className="flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-emerald-900/30 rounded-full mx-auto mb-4">
             {success ? (
               <CheckCircle className="h-8 w-8 text-green-600" />
             ) : (
@@ -69,21 +73,21 @@ export default function VolunteerInvitePage() {
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-200 flex gap-2">
+          <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-200 flex gap-2 dark:bg-slate-900 dark:text-red-300 dark:border-slate-700">
             <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {success && (
-          <div className="bg-green-50 text-green-700 p-4 rounded-lg mb-4 text-sm border border-green-200">
+          <div className="bg-green-50 text-green-700 p-4 rounded-lg mb-4 text-sm border border-green-200 dark:bg-slate-900 dark:text-emerald-300 dark:border-slate-700">
             Your account is ready. Redirecting you to sign in...
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">Password</label>
             <input
               type="password"
               value={password}
@@ -96,7 +100,7 @@ export default function VolunteerInvitePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">Confirm Password</label>
             <input
               type="password"
               value={confirmPassword}
@@ -114,7 +118,7 @@ export default function VolunteerInvitePage() {
         </form>
 
         <div className="flex items-center justify-center mt-6">
-          <Link href="/login" className="text-sm text-gray-600 hover:text-primary-600 transition-colors">
+          <Link href="/login" className="text-sm text-gray-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-emerald-300 transition-colors">
             Back to Sign In
           </Link>
         </div>

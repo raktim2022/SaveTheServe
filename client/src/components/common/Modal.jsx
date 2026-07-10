@@ -61,7 +61,7 @@ export default function Modal({
       <div className="flex min-h-full items-center justify-center p-4">
         <div
           className={clsx(
-            'relative bg-white rounded-lg shadow-xl w-full animate-slideIn',
+            'relative bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full animate-slideIn',
             sizes[size],
             className
           )}
@@ -69,11 +69,11 @@ export default function Modal({
           {/* Header */}
           {(title || showCloseButton) && (
             <div className="flex items-center justify-between p-6 border-b">
-              {title && <h3 className="text-xl font-semibold text-gray-900">{title}</h3>}
+              {title && <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{title}</h3>}
               {showCloseButton && (
                 <button
                   onClick={onClose}
-                  className="text-gray-400 hover:text-gray-600 transition"
+                  className="text-gray-400 hover:text-gray-600 dark:text-slate-300 transition"
                 >
                   <svg
                     className="w-6 h-6"

@@ -100,9 +100,9 @@ export default function ReportsPage() {
           </div>
         )}
       </div>
-      <h3 className="text-2xl font-bold text-gray-900 mb-1">{value}</h3>
-      <p className="text-sm text-gray-600">{title}</p>
-      {subtitle && <p className="text-xs text-gray-500 mt-1">{subtitle}</p>}
+      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{value}</h3>
+      <p className="text-sm text-gray-600 dark:text-slate-300">{title}</p>
+      {subtitle && <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">{subtitle}</p>}
     </motion.div>
   );
 
@@ -129,14 +129,14 @@ export default function ReportsPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Reports & Analytics</h1>
-          <p className="text-gray-600 mt-1">Platform performance and insights</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Reports & Analytics</h1>
+          <p className="text-gray-600 dark:text-slate-300 mt-1">Platform performance and insights</p>
         </div>
         <div className="flex items-center gap-3">
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
             <option value="7d">Last 7 days</option>
             <option value="30d">Last 30 days</option>
@@ -192,14 +192,14 @@ export default function ReportsPage() {
         transition={{ duration: 0.6, delay: 0.2 }}
         className="glass-card p-6 rounded-xl"
       >
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">User Distribution</h2>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">User Distribution</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center">
             <div className="flex items-center justify-center mb-3">
               <Heart className="h-8 w-8 text-green-600" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">{analytics.overview.ngoCount}</h3>
-            <p className="text-sm text-gray-600">NGOs</p>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{analytics.overview.ngoCount}</h3>
+            <p className="text-sm text-gray-600 dark:text-slate-300">NGOs</p>
             <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
               <div 
                 className="bg-green-600 h-2 rounded-full" 
@@ -211,8 +211,8 @@ export default function ReportsPage() {
             <div className="flex items-center justify-center mb-3">
               <ChefHat className="h-8 w-8 text-blue-600" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">{analytics.overview.restaurantCount}</h3>
-            <p className="text-sm text-gray-600">Restaurants</p>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{analytics.overview.restaurantCount}</h3>
+            <p className="text-sm text-gray-600 dark:text-slate-300">Restaurants</p>
             <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
               <div 
                 className="bg-blue-600 h-2 rounded-full" 
@@ -224,8 +224,8 @@ export default function ReportsPage() {
             <div className="flex items-center justify-center mb-3">
               <Shield className="h-8 w-8 text-purple-600" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">{analytics.overview.adminCount}</h3>
-            <p className="text-sm text-gray-600">Admins</p>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{analytics.overview.adminCount}</h3>
+            <p className="text-sm text-gray-600 dark:text-slate-300">Admins</p>
             <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
               <div 
                 className="bg-purple-600 h-2 rounded-full" 
@@ -243,13 +243,13 @@ export default function ReportsPage() {
         transition={{ duration: 0.6, delay: 0.3 }}
         className="glass-card p-6 rounded-xl"
       >
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Recent Activity</h2>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Recent Activity</h2>
         <div className="space-y-4">
           {analytics.recentActivity.map((day, index) => (
-            <div key={day.date} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div key={day.date} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-900 rounded-lg">
               <div className="flex items-center gap-4">
                 <Calendar className="h-5 w-5 text-gray-400" />
-                <span className="font-medium text-gray-900">
+                <span className="font-medium text-gray-900 dark:text-white">
                   {new Date(day.date).toLocaleDateString('en-US', { 
                     month: 'short', 
                     day: 'numeric' 
@@ -259,15 +259,15 @@ export default function ReportsPage() {
               <div className="flex items-center gap-8 text-sm">
                 <div className="text-center">
                   <div className="font-semibold text-blue-600">{day.users}</div>
-                  <div className="text-gray-500">Users</div>
+                  <div className="text-gray-500 dark:text-slate-400">Users</div>
                 </div>
                 <div className="text-center">
                   <div className="font-semibold text-green-600">{day.donations}</div>
-                  <div className="text-gray-500">Donations</div>
+                  <div className="text-gray-500 dark:text-slate-400">Donations</div>
                 </div>
                 <div className="text-center">
                   <div className="font-semibold text-orange-600">{day.foodSaved}kg</div>
-                  <div className="text-gray-500">Food Saved</div>
+                  <div className="text-gray-500 dark:text-slate-400">Food Saved</div>
                 </div>
               </div>
             </div>
@@ -283,17 +283,17 @@ export default function ReportsPage() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="glass-card p-6 rounded-xl"
         >
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Top NGOs</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Top NGOs</h2>
           <div className="space-y-4">
             {analytics.topPerformers.ngos.map((ngo, index) => (
-              <div key={ngo.name} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div key={ngo.name} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-900 rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold text-sm">
                     {index + 1}
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">{ngo.name}</h3>
-                    <p className="text-sm text-gray-500">{ngo.donations} donations received</p>
+                    <h3 className="font-medium text-gray-900 dark:text-white">{ngo.name}</h3>
+                    <p className="text-sm text-gray-500 dark:text-slate-400">{ngo.donations} donations received</p>
                   </div>
                 </div>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -312,17 +312,17 @@ export default function ReportsPage() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="glass-card p-6 rounded-xl"
         >
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Top Restaurants</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Top Restaurants</h2>
           <div className="space-y-4">
             {analytics.topPerformers.restaurants.map((restaurant, index) => (
-              <div key={restaurant.name} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div key={restaurant.name} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-900 rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">
                     {index + 1}
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">{restaurant.name}</h3>
-                    <p className="text-sm text-gray-500">{restaurant.donations} donations made</p>
+                    <h3 className="font-medium text-gray-900 dark:text-white">{restaurant.name}</h3>
+                    <p className="text-sm text-gray-500 dark:text-slate-400">{restaurant.donations} donations made</p>
                   </div>
                 </div>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${

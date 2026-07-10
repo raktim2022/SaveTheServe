@@ -10,8 +10,8 @@ import { formatDateTime } from '@/utils/formatDate';
 export default function PickupRequests({ requests, onApprove, onReject, onComplete }) {
   if (!requests || requests.length === 0) {
     return (
-      <div className="text-center py-12 bg-white rounded-lg shadow">
-        <p className="text-gray-500">No pickup requests.</p>
+      <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-lg shadow">
+        <p className="text-gray-500 dark:text-slate-400">No pickup requests.</p>
       </div>
     );
   }
@@ -19,11 +19,11 @@ export default function PickupRequests({ requests, onApprove, onReject, onComple
   return (
     <div className="space-y-4">
       {requests.map((request) => (
-        <div key={request.id} className="bg-white rounded-lg shadow p-6">
+        <div key={request.id} className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
           <div className="flex items-start justify-between mb-4">
             <div>
               <h3 className="text-lg font-semibold">{request.food?.name}</h3>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-slate-300">
                 Requested by: {request.ngo?.name}
               </p>
             </div>
@@ -32,13 +32,13 @@ export default function PickupRequests({ requests, onApprove, onReject, onComple
 
           <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
             <div>
-              <span className="text-gray-600">Quantity:</span>
+              <span className="text-gray-600 dark:text-slate-300">Quantity:</span>
               <span className="ml-2 font-medium">
                 {request.requestedQuantity} {request.food?.unit}
               </span>
             </div>
             <div>
-              <span className="text-gray-600">Pickup Time:</span>
+              <span className="text-gray-600 dark:text-slate-300">Pickup Time:</span>
               <span className="ml-2 font-medium">
                 {formatDateTime(request.pickupTime)}
               </span>
@@ -46,8 +46,8 @@ export default function PickupRequests({ requests, onApprove, onReject, onComple
           </div>
 
           {request.notes && (
-            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-700">
+            <div className="mb-4 p-3 bg-gray-50 dark:bg-slate-900 rounded-lg">
+              <p className="text-sm text-gray-700 dark:text-slate-200">
                 <span className="font-medium">Notes:</span> {request.notes}
               </p>
             </div>

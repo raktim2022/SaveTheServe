@@ -102,7 +102,7 @@ export default function QrScanner({ onScan, onClose }) {
           }
           onClose();
         }}
-        className="w-full border border-gray-300 text-gray-700 rounded-lg py-2 text-sm font-medium hover:bg-gray-50 transition-colors"
+        className="w-full border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-200 rounded-lg py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-700 dark:bg-slate-900 transition-colors"
       >
         Cancel Scan
       </button>

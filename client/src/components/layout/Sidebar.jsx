@@ -15,7 +15,8 @@ import {
   Heart,
   ChefHat,
   Shield,
-  Handshake
+  Handshake,
+  X
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import NotificationBell from './NotificationBell';
@@ -24,7 +25,7 @@ import clsx from 'clsx';
 /**
  * Sidebar component
  */
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   const pathname = usePathname();
   const { user } = useAuth();
 
@@ -88,23 +89,30 @@ export default function Sidebar() {
   const menuItems = getMenuItems();
 
   return (
-    <motion.aside 
-      className="w-64 bg-white/95 backdrop-blur-sm border-r border-slate-100 shadow-lg fixed h-full flex flex-col z-20"
-      initial={{ x: -64 }}
-      animate={{ x: 0 }}
-      transition={{ duration: 0.3 }}
+    <aside 
+      className={clsx(
+        "w-64 bg-white/95 dark:bg-slate-800/95 dark:bg-slate-900/95 backdrop-blur-sm border-r border-slate-100 dark:border-slate-700 shadow-lg fixed h-full flex flex-col z-30 transition-transform duration-300 ease-in-out md:translate-x-0",
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      )}
     >
       {/* Logo Section */}
-      <div className="p-6 border-b border-slate-100">
-        <Link href="/" className="flex items-center gap-3 group">
+      <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-3 group" onClick={onClose}>
           <div className="h-10 w-10 rounded-xl bg-linear-to-br from-primary-600 to-secondary-500 text-white font-bold flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
             S
           </div>
           <div>
-            <p className="text-base font-semibold text-slate-900 leading-tight">SaveTheServe</p>
-            <p className="text-xs text-slate-500 leading-tight">Dashboard</p>
+            <p className="text-base font-semibold text-slate-900 dark:text-white leading-tight">SaveTheServe</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-tight">Dashboard</p>
           </div>
         </Link>
+        <button
+          onClick={onClose}
+          className="md:hidden p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          aria-label="Close sidebar"
+        >
+          <X className="h-5 w-5" />
+        </button>
       </div>
 
       {/* Navigation */}
@@ -118,20 +126,21 @@ export default function Sidebar() {
               key={item.href}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
             >
               <Link
                 href={item.href}
+                onClick={onClose}
                 className={clsx(
                   'flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group',
                   isActive
                     ? 'bg-primary-50 text-primary-700 shadow-sm'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 hover:text-slate-900 dark:text-white'
                 )}
               >
                 <Icon className={clsx(
                   'h-5 w-5 transition-colors',
-                  isActive ? 'text-primary-600' : 'text-slate-400 group-hover:text-slate-600'
+                  isActive ? 'text-primary-600' : 'text-slate-400 group-hover:text-slate-600 dark:text-slate-300'
                 )} />
                 <span>{item.label}</span>
               </Link>
@@ -143,10 +152,10 @@ export default function Sidebar() {
       {/* Notification Bell + User Profile */}
       {user && (
         <motion.div 
-          className="p-4 mb-8 border-t border-slate-100 bg-slate-50/50"
+          className="p-4 mb-8 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.5 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
         >
           {/* Notification bell row */}
           <div className="flex items-center justify-between mb-3">
@@ -159,7 +168,7 @@ export default function Sidebar() {
               {user.name?.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-900 truncate">{user.name}</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{user.name}</p>
               <div className="flex items-center space-x-1">
                 <div className={clsx(
                   'w-2 h-2 rounded-full',
@@ -168,13 +177,13 @@ export default function Sidebar() {
                   user.role === 'VOLUNTEER' ? 'bg-purple-500' :
                   'bg-purple-500'
                 )} />
-                <p className="text-xs text-slate-500 truncate">{user.role}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.role}</p>
               </div>
             </div>
           </div>
         </motion.div>
       )}
-    </motion.aside>
+    </aside>
   );
 }
 

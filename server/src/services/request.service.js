@@ -172,7 +172,11 @@ class RequestService {
               user: true
             }
           },
-          foodListing: true
+          foodListing: {
+            include: {
+              restaurant: true
+            }
+          }
         },
         orderBy: {
           createdAt: 'desc'
@@ -257,7 +261,7 @@ class RequestService {
           timestamp: new Date().toISOString(),
         });
 
-        return acceptedRequest;
+        return await FoodRequestModel.findById(requestId);
       }
 
       if (status === 'REJECTED') {
@@ -277,7 +281,7 @@ class RequestService {
             buildRequestStatusPayload(requestId, 'REJECTED', foodRequest.foodListingId));
         }
 
-        return rejectedRequest;
+        return await FoodRequestModel.findById(requestId);
       }
 
       if (status === 'COMPLETED') {
@@ -314,7 +318,7 @@ class RequestService {
           timestamp: new Date().toISOString(),
         });
 
-        return completedRequest;
+        return await FoodRequestModel.findById(requestId);
       }
 
       throw new Error('Invalid status update');
@@ -361,7 +365,7 @@ class RequestService {
           buildRequestStatusPayload(requestId, 'REJECTED', foodRequest.foodListingId));
       }
 
-      return rejectedRequest;
+      return await FoodRequestModel.findById(requestId);
     } catch (error) {
       throw error;
     }

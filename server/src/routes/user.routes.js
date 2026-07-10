@@ -1,6 +1,8 @@
 import express from 'express';
 import { UserModel, getPrismaClient } from '../models/index.js';
 import { authenticateToken } from '../middlewares/auth.middleware.js';
+import { initiateDonation, verifyPayment } from '../services/payment.service.js';
+
 
 const router = express.Router();
 
@@ -140,4 +142,80 @@ router.put('/:id', authenticateToken, async (req, res, next) => {
   }
 });
 
-export default router;
+
+// ── Payment / Donation Routes ──────────────────────────────────────────────────
+
+/**
+ * POST /api/users/payment/initiate
+ * Create a Razorpay order for donating to an NGO
+ * Body: { ngoId, amount }
+ */
+router.post('/payment/initiate', authenticateToken, async (req, res, next) => {
+  try {
+    const { ngoId, amount } = req.body;
+    const donorId = req.user.id;
+
+    if (!ngoId || !amount) {
+      return res.status(400).json({ success: false, message: 'ngoId and amount are required' });
+    }
+    if (typeof amount !== 'number' || amount < 1) {
+      return res.status(400).json({ success: false, message: 'Amount must be a positive number (in INR)' });
+    }
+
+    const orderData = await initiateDonation(donorId, parseInt(ngoId), amount);
+
+    res.json({ success: true, data: orderData });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/users/payment/verify
+ * Verify Razorpay payment signature and save record
+ * Body: { orderId, paymentId, signature, ngoId, amount }
+ */
+router.post('/payment/verify', authenticateToken, async (req, res, next) => {
+  try {
+    const { orderId, paymentId, signature, ngoId, amount } = req.body;
+    const donorId = req.user.id;
+
+    if (!orderId || !paymentId || !signature) {
+      return res.status(400).json({ success: false, message: 'orderId, paymentId, and signature are required' });
+    }
+
+    const result = await verifyPayment(orderId, paymentId, signature, donorId, parseInt(ngoId), amount);
+
+    res.json({ success: true, data: result, message: 'Payment verified successfully' });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/users/payment/history
+ * Get payment history for the authenticated donor
+ */
+router.get('/payment/history', authenticateToken, async (req, res, next) => {
+  try {
+    const prisma = getPrismaClient();
+    const donorId = req.user.id;
+
+    const payments = await prisma.payment.findMany({
+      where: { donorId },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+      include: {
+        ngo: {
+          select: { id: true, name: true },
+        },
+      },
+    });
+
+    res.json({ success: true, data: payments });
+  } catch (error) {
+    next(error);
+  }
+});
+
+export default router;

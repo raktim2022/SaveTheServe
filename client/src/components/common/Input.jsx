@@ -21,7 +21,7 @@ export default function Input({
   return (
     <div className={clsx('space-y-1', className)}>
       {label && (
-        <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+        <label htmlFor={name} className="block text-sm font-medium text-slate-700 dark:text-slate-200">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -36,18 +36,18 @@ export default function Input({
         disabled={disabled}
         required={required}
         className={clsx(
-          'w-full px-4 py-2 border rounded-lg transition',
+          'w-full px-4 py-2 border rounded-lg transition bg-white dark:bg-slate-800 text-slate-900 dark:text-white dark:bg-slate-900 dark:text-slate-100',
           'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
-          'disabled:bg-gray-100 disabled:cursor-not-allowed',
-          error ? 'border-red-500' : 'border-gray-300',
+          'disabled:bg-slate-100 dark:bg-slate-800 dark:disabled:bg-slate-800 disabled:cursor-not-allowed',
+          error ? 'border-red-500' : 'border-slate-300 dark:border-slate-700',
           inputClassName
         )}
         {...props}
       />
       {helpText && !error && (
-        <p className="text-sm text-gray-500">{helpText}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{helpText}</p>
       )}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
     </div>
   );
 }
@@ -72,7 +72,7 @@ export function Textarea({
   return (
     <div className={clsx('space-y-1', className)}>
       {label && (
-        <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+        <label htmlFor={name} className="block text-sm font-medium text-slate-700 dark:text-slate-200">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -87,15 +87,15 @@ export function Textarea({
         required={required}
         rows={rows}
         className={clsx(
-          'w-full px-4 py-2 border rounded-lg transition',
+          'w-full px-4 py-2 border rounded-lg transition bg-white dark:bg-slate-800 text-slate-900 dark:text-white dark:bg-slate-900 dark:text-slate-100',
           'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
-          'disabled:bg-gray-100 disabled:cursor-not-allowed',
-          error ? 'border-red-500' : 'border-gray-300',
+          'disabled:bg-slate-100 dark:bg-slate-800 dark:disabled:bg-slate-800 disabled:cursor-not-allowed',
+          error ? 'border-red-500' : 'border-slate-300 dark:border-slate-700',
           textareaClassName
         )}
         {...props}
       />
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
     </div>
   );
 }
@@ -120,7 +120,7 @@ export function Select({
   return (
     <div className={clsx('space-y-1', className)}>
       {label && (
-        <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+        <label htmlFor={name} className="block text-sm font-medium text-slate-700 dark:text-slate-200">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -133,10 +133,10 @@ export function Select({
         disabled={disabled}
         required={required}
         className={clsx(
-          'w-full px-4 py-2 border rounded-lg transition',
+          'w-full px-4 py-2 border rounded-lg transition bg-white dark:bg-slate-800 text-slate-900 dark:text-white dark:bg-slate-900 dark:text-slate-100',
           'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
-          'disabled:bg-gray-100 disabled:cursor-not-allowed',
-          error ? 'border-red-500' : 'border-gray-300',
+          'disabled:bg-slate-100 dark:bg-slate-800 dark:disabled:bg-slate-800 disabled:cursor-not-allowed',
+          error ? 'border-red-500' : 'border-slate-300 dark:border-slate-700',
           selectClassName
         )}
         {...props}
@@ -148,7 +148,7 @@ export function Select({
           </option>
         ))}
       </select>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
     </div>
   );
 }

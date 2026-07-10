@@ -15,19 +15,19 @@ export const createReviewSchema = Joi.object({
       'string.base': 'Comment must be a string',
       'string.max': 'Comment must not exceed 1000 characters'
     }),
-  restaurantId: Joi.number().integer().positive().optional()
+  restaurantId: Joi.number().integer().positive().optional().allow(null)
     .messages({
       'number.base': 'Restaurant ID must be a number',
       'number.integer': 'Restaurant ID must be an integer',
       'number.positive': 'Restaurant ID must be a positive number'
     }),
-  ngoId: Joi.number().integer().positive().optional()
+  ngoId: Joi.number().integer().positive().optional().allow(null)
     .messages({
       'number.base': 'NGO ID must be a number',
       'number.integer': 'NGO ID must be an integer',
       'number.positive': 'NGO ID must be a positive number'
     }),
-  foodRequestId: Joi.number().integer().positive().optional()
+  foodRequestId: Joi.number().integer().positive().optional().allow(null)
     .messages({
       'number.base': 'Food request ID must be a number',
       'number.integer': 'Food request ID must be an integer',

@@ -5,16 +5,17 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Heart, User, Mail, Phone, Building2, CheckCircle, AlertCircle, ChevronDown } from 'lucide-react';
 import Button from '@/components/common/Button';
+import ThemeSwitcher from '@/components/common/ThemeSwitcher';
 import { listNGOs, registerVolunteer } from '@/services/volunteer.service';
 
 const FIELD_CLASS =
-  'w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-white transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-gray-400';
+  'w-full px-3.5 py-2.5 text-sm border border-gray-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-gray-400';
 
 function Field({ label, required, error, children }) {
   return (
     <div className="space-y-1">
       {label && (
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-gray-700 dark:text-slate-200">
           {label}
           {required && <span className="text-red-500 ml-0.5">*</span>}
         </label>
@@ -83,13 +84,16 @@ export default function VolunteerRegisterPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <div className="auth-page min-h-screen bg-linear-to-br from-green-50 to-emerald-100 dark:from-slate-900 dark:to-slate-900 flex items-center justify-center p-4 relative">
+        <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6">
+          <ThemeSwitcher />
+        </div>
+        <div className="auth-card w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 text-center">
+          <div className="w-16 h-16 bg-green-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="h-8 w-8 text-green-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Application Submitted!</h2>
-          <p className="text-gray-500 mb-6 text-sm leading-relaxed">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Application Submitted!</h2>
+          <p className="text-gray-500 dark:text-slate-400 mb-6 text-sm leading-relaxed">
             Thank you for registering as a volunteer. We have sent you a confirmation email.
             The NGO will review your application and send your login credentials once verified.
           </p>
@@ -105,22 +109,25 @@ export default function VolunteerRegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
+    <div className="auth-page min-h-screen bg-linear-to-br from-green-50 to-emerald-100 dark:from-slate-900 dark:to-slate-900 flex items-center justify-center p-4 relative">
+      <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6">
+        <ThemeSwitcher />
+      </div>
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-green-600 to-emerald-500 rounded-2xl shadow-lg mb-4">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-linear-to-br from-green-600 to-emerald-500 rounded-2xl shadow-lg mb-4">
             <Heart className="h-7 w-7 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Become a Volunteer</h1>
-          <p className="text-gray-500 text-sm mt-1">Join an NGO and help reduce food waste</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Become a Volunteer</h1>
+          <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">Join an NGO and help reduce food waste</p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 space-y-5">
+        <div className="auth-card bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 space-y-5">
           {globalError && (
-            <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-xl p-3">
-              <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+            <div className="flex items-start gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-xl p-3">
+              <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
               <p className="text-sm text-red-700">{globalError}</p>
             </div>
           )}
@@ -198,9 +205,9 @@ export default function VolunteerRegisterPage() {
             </Button>
           </form>
 
-          <p className="text-center text-xs text-gray-400">
+          <p className="text-center text-xs text-gray-400 dark:text-slate-400">
             Already have an account?{' '}
-            <Link href="/login" className="text-green-600 font-medium hover:underline">
+            <Link href="/login" className="text-green-600 font-medium hover:underline dark:text-emerald-400">
               Sign in
             </Link>
           </p>

@@ -92,11 +92,11 @@ export default function OtpModal({ isOpen, maskedEmail, onVerify, onClose, onRes
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-7">
+      <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-7">
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+          className="absolute top-4 right-4 p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:bg-slate-800 transition-colors"
         >
           <X className="h-4 w-4" />
         </button>
@@ -106,10 +106,10 @@ export default function OtpModal({ isOpen, maskedEmail, onVerify, onClose, onRes
           <div className="h-14 w-14 rounded-2xl bg-green-50 flex items-center justify-center mb-4">
             <ShieldCheck className="h-7 w-7 text-green-600" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900">Verify Your Identity</h2>
-          <p className="text-sm text-gray-500 mt-1.5">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Verify Your Identity</h2>
+          <p className="text-sm text-gray-500 dark:text-slate-400 mt-1.5">
             We sent a 6-digit code to{' '}
-            <span className="font-medium text-gray-700">{maskedEmail}</span>
+            <span className="font-medium text-gray-700 dark:text-slate-200">{maskedEmail}</span>
           </p>
         </div>
 
@@ -128,7 +128,7 @@ export default function OtpModal({ isOpen, maskedEmail, onVerify, onClose, onRes
               className={`h-12 w-11 text-center text-lg font-bold border-2 rounded-xl transition-all focus:outline-none ${
                 d
                   ? 'border-green-500 bg-green-50 text-green-700'
-                  : 'border-gray-200 bg-gray-50 text-gray-900 focus:border-green-400 focus:bg-white'
+                  : 'border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white focus:border-green-400 focus:bg-white dark:bg-slate-800'
               }`}
             />
           ))}
@@ -141,7 +141,7 @@ export default function OtpModal({ isOpen, maskedEmail, onVerify, onClose, onRes
           ) : (
             <span className="text-sm text-gray-400">
               Expires in{' '}
-              <span className={`font-medium ${timeLeft < 60 ? 'text-red-500' : 'text-gray-600'}`}>
+              <span className={`font-medium ${timeLeft < 60 ? 'text-red-500' : 'text-gray-600 dark:text-slate-300'}`}>
                 {formatTime(timeLeft)}
               </span>
             </span>

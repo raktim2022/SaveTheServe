@@ -97,7 +97,7 @@ export default function AdminDashboard() {
       case 'alert':
         return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
       default:
-        return <CheckCircle className="h-5 w-5 text-gray-500" />;
+        return <CheckCircle className="h-5 w-5 text-gray-500 dark:text-slate-400" />;
     }
   };
 
@@ -124,8 +124,8 @@ export default function AdminDashboard() {
         transition={{ duration: 0.6 }}
       >
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600 mt-1">Platform overview and system statistics</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
+          <p className="text-gray-600 dark:text-slate-300 mt-1">Platform overview and system statistics</p>
         </div>
         <div className="flex items-center space-x-2">
           <Badge className="bg-green-100 text-green-800">
@@ -152,8 +152,8 @@ export default function AdminDashboard() {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-slate-300">{stat.title}</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{stat.value}</p>
               </div>
               <div className={`p-3 rounded-lg ${stat.bg}`}>
                 <div className={stat.color}>
@@ -173,16 +173,16 @@ export default function AdminDashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
         >
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Request Overview</h2>
+          <div className="p-6 border-b border-gray-200 dark:border-slate-700">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Request Overview</h2>
           </div>
           <div className="p-6 space-y-4">
             <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
               <div className="flex items-center space-x-3">
                 <CheckCircle className="h-8 w-8 text-green-500" />
                 <div>
-                  <p className="font-medium text-gray-900">Completed</p>
-                  <p className="text-sm text-gray-600">Successfully fulfilled</p>
+                  <p className="font-medium text-gray-900 dark:text-white">Completed</p>
+                  <p className="text-sm text-gray-600 dark:text-slate-300">Successfully fulfilled</p>
                 </div>
               </div>
               <span className="text-2xl font-bold text-green-600">{stats.completedRequests}</span>
@@ -192,8 +192,8 @@ export default function AdminDashboard() {
               <div className="flex items-center space-x-3">
                 <Clock className="h-8 w-8 text-yellow-500" />
                 <div>
-                  <p className="font-medium text-gray-900">Pending</p>
-                  <p className="text-sm text-gray-600">Awaiting response</p>
+                  <p className="font-medium text-gray-900 dark:text-white">Pending</p>
+                  <p className="text-sm text-gray-600 dark:text-slate-300">Awaiting response</p>
                 </div>
               </div>
               <span className="text-2xl font-bold text-yellow-600">{stats.pendingRequests}</span>
@@ -208,8 +208,8 @@ export default function AdminDashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
+          <div className="p-6 border-b border-gray-200 dark:border-slate-700">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Recent Activity</h2>
           </div>
           <div className="p-6">
             <div className="space-y-4">
@@ -225,8 +225,8 @@ export default function AdminDashboard() {
                     {getActivityIcon(activity.type)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-900">{activity.message}</p>
-                    <p className="text-xs text-gray-500">{activity.time}</p>
+                    <p className="text-sm text-gray-900 dark:text-white">{activity.message}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-400">{activity.time}</p>
                   </div>
                 </motion.div>
               ))}

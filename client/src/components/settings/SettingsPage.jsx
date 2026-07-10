@@ -124,8 +124,8 @@ export default function SettingsPage({ role }) {
     <div className="p-4 md:p-6 max-w-4xl mx-auto">
       {/* Page header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Account Settings</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Account Settings</h1>
+        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
           Manage your profile, security, and account verification.
         </p>
       </div>
@@ -149,7 +149,7 @@ export default function SettingsPage({ role }) {
       <div className="flex flex-col lg:flex-row gap-5">
         {/* Tab sidebar */}
         <nav className="lg:w-44 shrink-0">
-          <div className="bg-white border border-gray-200 rounded-2xl p-1.5 flex lg:flex-col gap-1">
+          <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl p-1.5 flex lg:flex-col gap-1">
             {TABS.map((tab) => {
               const Icon = tab.icon;
               const active = activeTab === tab.id;
@@ -161,7 +161,7 @@ export default function SettingsPage({ role }) {
                     ${
                       active
                         ? 'bg-green-600 text-white shadow-sm'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        : 'text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 dark:bg-slate-900 hover:text-gray-900 dark:text-white'
                     }`}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
@@ -173,7 +173,7 @@ export default function SettingsPage({ role }) {
         </nav>
 
         {/* Content panel */}
-        <div className="flex-1 bg-white border border-gray-200 rounded-2xl p-6 min-w-0">
+        <div className="flex-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl p-6 min-w-0">
           {activeTab === 'profile' && (
             <ProfileSection
               user={profile}

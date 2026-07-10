@@ -84,7 +84,7 @@ export default function ReviewForm({ restaurantId, ngoId, foodRequestId, onSubmi
             </svg>
           </button>
         ))}
-        <span className="ml-2 text-sm text-gray-600">
+        <span className="ml-2 text-sm text-gray-600 dark:text-slate-300">
           {rating > 0 ? `${rating} star${rating > 1 ? 's' : ''}` : 'Select rating'}
         </span>
       </div>
@@ -101,7 +101,7 @@ export default function ReviewForm({ restaurantId, ngoId, foodRequestId, onSubmi
 
       {/* Rating */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2">
           Rating *
         </label>
         {renderStars()}
@@ -112,7 +112,7 @@ export default function ReviewForm({ restaurantId, ngoId, foodRequestId, onSubmi
 
       {/* Comment */}
       <div>
-        <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="comment" className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2">
           Comment (optional)
         </label>
         <Textarea
@@ -124,7 +124,7 @@ export default function ReviewForm({ restaurantId, ngoId, foodRequestId, onSubmi
           rows={4}
           maxLength={1000}
         />
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
           {comment.length}/1000 characters
         </p>
       </div>

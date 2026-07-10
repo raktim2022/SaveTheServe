@@ -18,7 +18,7 @@ import {
 // ── Shared helpers ─────────────────────────────────────────────────────────────
 function Card({ children, className = '' }) {
   return (
-    <div className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-6 ${className}`}>
+    <div className={`bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-6 ${className}`}>
       {children}
     </div>
   );
@@ -65,26 +65,26 @@ function ChangePasswordTab() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5 max-w-md">
       <div>
-        <h3 className="text-base font-bold text-gray-900 mb-1">Change Password</h3>
-        <p className="text-sm text-gray-500">Update your account password at any time.</p>
+        <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">Change Password</h3>
+        <p className="text-sm text-gray-500 dark:text-slate-400">Update your account password at any time.</p>
       </div>
 
       {fields.map(({ id, label, placeholder }) => (
         <div key={id}>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">{label}</label>
           <div className="relative">
             <input
               type={show[id] ? 'text' : 'password'}
               value={form[id]}
               onChange={(e) => { setForm((f) => ({ ...f, [id]: e.target.value })); setError(''); }}
               placeholder={placeholder}
-              className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-xl pr-10 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+              className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-slate-700 rounded-xl pr-10 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
               required
             />
             <button
               type="button"
               onClick={() => toggle(id)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-300"
             >
               {show[id] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
@@ -160,8 +160,8 @@ function PhoneTab({ profile, onPhoneVerified }) {
     return (
       <div className="max-w-md space-y-5">
         <div>
-          <h3 className="text-base font-bold text-gray-900 mb-1">Phone Number</h3>
-          <p className="text-sm text-gray-500">Your phone is currently verified.</p>
+          <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">Phone Number</h3>
+          <p className="text-sm text-gray-500 dark:text-slate-400">Your phone is currently verified.</p>
         </div>
         <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl p-4">
           <CheckCircle className="h-5 w-5 text-green-600 shrink-0" />
@@ -184,8 +184,8 @@ function PhoneTab({ profile, onPhoneVerified }) {
   return (
     <div className="max-w-md space-y-5">
       <div>
-        <h3 className="text-base font-bold text-gray-900 mb-1">Phone Verification</h3>
-        <p className="text-sm text-gray-500">
+        <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">Phone Verification</h3>
+        <p className="text-sm text-gray-500 dark:text-slate-400">
           {profile?.phoneVerified ? 'Update your verified phone number.' : 'Verify your phone to activate your volunteer account.'}
         </p>
       </div>
@@ -193,13 +193,13 @@ function PhoneTab({ profile, onPhoneVerified }) {
       {(step === 'phone' || step === 'phone-edit') && (
         <form onSubmit={handleRequestOTP} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">Phone Number</label>
             <input
               type="tel"
               value={phone}
               onChange={(e) => { setPhone(e.target.value); setError(''); }}
               placeholder="+91 98765 43210"
-              className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
           {error && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="h-3.5 w-3.5" />{error}</p>}
@@ -216,7 +216,7 @@ function PhoneTab({ profile, onPhoneVerified }) {
 
       {step === 'otp' && (
         <form onSubmit={handleVerifyOTP} className="space-y-4">
-          <p className="text-sm text-gray-600">Enter the 6-digit code sent to <strong>{phone}</strong>:</p>
+          <p className="text-sm text-gray-600 dark:text-slate-300">Enter the 6-digit code sent to <strong>{phone}</strong>:</p>
           <input
             type="text"
             value={otp}
@@ -224,7 +224,7 @@ function PhoneTab({ profile, onPhoneVerified }) {
             placeholder="000000"
             maxLength={6}
             autoFocus
-            className="w-full px-3 py-2.5 text-2xl font-bold text-center tracking-widest border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-3 py-2.5 text-2xl font-bold text-center tracking-widest border border-gray-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
           {error && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="h-3.5 w-3.5" />{error}</p>}
           <button
@@ -235,7 +235,7 @@ function PhoneTab({ profile, onPhoneVerified }) {
             {loading ? 'Verifying…' : 'Verify OTP'}
           </button>
           <div className="flex items-center justify-between text-xs text-gray-400">
-            <button type="button" onClick={() => { setStep('phone'); setOtp(''); setError(''); }} className="hover:text-gray-600">
+            <button type="button" onClick={() => { setStep('phone'); setOtp(''); setError(''); }} className="hover:text-gray-600 dark:text-slate-300">
               Change number
             </button>
             {countdown > 0 ? (
@@ -272,14 +272,14 @@ function NGOInfoTab({ profile }) {
   return (
     <div className="max-w-md space-y-5">
       <div>
-        <h3 className="text-base font-bold text-gray-900 mb-1">NGO Information</h3>
-        <p className="text-sm text-gray-500">Details about the organisation you volunteer with.</p>
+        <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">NGO Information</h3>
+        <p className="text-sm text-gray-500 dark:text-slate-400">Details about the organisation you volunteer with.</p>
       </div>
-      <dl className="divide-y divide-gray-100 rounded-xl border border-gray-100 overflow-hidden">
+      <dl className="divide-y divide-gray-100 rounded-xl border border-gray-100 dark:border-slate-700 overflow-hidden">
         {rows.filter((r) => r.value).map(({ label, value }) => (
-          <div key={label} className="flex gap-4 px-4 py-3 bg-white">
-            <dt className="text-sm font-medium text-gray-500 w-36 shrink-0">{label}</dt>
-            <dd className="text-sm text-gray-900">{value}</dd>
+          <div key={label} className="flex gap-4 px-4 py-3 bg-white dark:bg-slate-800">
+            <dt className="text-sm font-medium text-gray-500 dark:text-slate-400 w-36 shrink-0">{label}</dt>
+            <dd className="text-sm text-gray-900 dark:text-white">{value}</dd>
           </div>
         ))}
       </dl>
@@ -324,12 +324,12 @@ export default function VolunteerSettingsPage() {
     <div className="max-w-2xl mx-auto p-4 md:p-8 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-500 text-sm mt-1">Manage your volunteer account</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
+        <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">Manage your volunteer account</p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
+      <div className="flex gap-1 bg-gray-100 dark:bg-slate-800 rounded-xl p-1">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -337,8 +337,8 @@ export default function VolunteerSettingsPage() {
             onClick={() => setActiveTab(id)}
             className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-lg transition-all ${
               activeTab === id
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm'
+                : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 dark:bg-slate-900'
             }`}
           >
             <Icon className="h-4 w-4" />

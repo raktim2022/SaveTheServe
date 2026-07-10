@@ -10,14 +10,14 @@ import { formatDateTime } from '@/utils/formatDate';
 export default function InventoryTable({ foods, onEdit, onDelete }) {
   if (!foods || foods.length === 0) {
     return (
-      <div className="text-center py-12 bg-white rounded-lg shadow">
-        <p className="text-gray-500">No food listings yet.</p>
+      <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-lg shadow">
+        <p className="text-gray-500 dark:text-slate-400">No food listings yet.</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
+    <div className="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
       <div className="overflow-x-auto">
         <table className="dashboard-table">
           <thead>

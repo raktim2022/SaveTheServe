@@ -14,7 +14,7 @@ function BarChart({ data, color = 'bg-green-500' }) {
     <div className="flex items-end gap-2 h-36 w-full">
       {data.map((d) => (
         <div key={d.label} className="flex-1 flex flex-col items-center gap-1">
-          <span className="text-xs text-gray-500 font-medium">{d.value || ''}</span>
+          <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">{d.value || ''}</span>
           <div
             className={`w-full rounded-t-md ${color} transition-all duration-700`}
             style={{ height: `${Math.round((d.value / max) * 100)}%`, minHeight: d.value ? '4px' : '0' }}
@@ -55,8 +55,8 @@ function DonutChart({ slices }) {
         {slices.map((s) => (
           <li key={s.label} className="flex items-center gap-2">
             <span className="inline-block w-3 h-3 rounded-full shrink-0" style={{ background: s.color }} />
-            <span className="text-gray-600">{s.label}</span>
-            <span className="ml-auto font-semibold text-gray-800">{s.value}</span>
+            <span className="text-gray-600 dark:text-slate-300">{s.label}</span>
+            <span className="ml-auto font-semibold text-gray-800 dark:text-slate-100">{s.value}</span>
           </li>
         ))}
       </ul>
@@ -125,31 +125,31 @@ export default function DonorImpactPage() {
   return (
     <div className="p-4 md:p-6 max-w-4xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Your Impact</h1>
-        <p className="text-gray-500 text-sm mt-1">See the difference your food donations are making</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Your Impact</h1>
+        <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">See the difference your food donations are making</p>
       </div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {statCards.map((c) => (
-          <div key={c.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+          <div key={c.label} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm p-4">
             <div className={`inline-flex p-2 rounded-lg ${c.bg} mb-3`}>
               <c.icon className={`h-5 w-5 ${c.color}`} />
             </div>
-            <p className="text-2xl font-bold text-gray-900">{c.value}</p>
-            <p className="text-xs text-gray-500 mt-0.5">{c.label}</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{c.value}</p>
+            <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{c.label}</p>
           </div>
         ))}
       </div>
 
       {/* Charts row */}
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-          <h2 className="font-semibold text-gray-800 mb-4">Listings Over Last 6 Months</h2>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm p-5">
+          <h2 className="font-semibold text-gray-800 dark:text-slate-100 mb-4">Listings Over Last 6 Months</h2>
           <BarChart data={barData} color="bg-green-500" />
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-          <h2 className="font-semibold text-gray-800 mb-4">Donations by Food Type</h2>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm p-5">
+          <h2 className="font-semibold text-gray-800 dark:text-slate-100 mb-4">Donations by Food Type</h2>
           {slices.length > 0 ? <DonutChart slices={slices} /> : (
             <p className="text-sm text-gray-400 text-center py-8">No data yet</p>
           )}

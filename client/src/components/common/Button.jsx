@@ -18,7 +18,7 @@ export default function Button({
   const baseStyles = [
     'relative inline-flex items-center justify-center font-semibold rounded-xl',
     'transition-all duration-200 ease-in-out',
-    'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+    'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950',
     'active:scale-[0.97]',
     'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
     'select-none tracking-wide',
@@ -26,34 +26,34 @@ export default function Button({
 
   const variants = {
     primary: [
-      'bg-green-600 text-white shadow-sm shadow-green-200',
-      'hover:bg-green-700 hover:shadow-md hover:shadow-green-200',
-      'focus-visible:ring-green-500',
+      'bg-emerald-600 text-white shadow-sm shadow-emerald-200 dark:shadow-emerald-950/20',
+      'hover:bg-emerald-700 hover:shadow-md hover:shadow-emerald-200 dark:hover:shadow-emerald-950/30',
+      'focus-visible:ring-emerald-500',
     ].join(' '),
     secondary: [
-      'bg-gray-800 text-white shadow-sm shadow-gray-200',
-      'hover:bg-gray-900 hover:shadow-md',
-      'focus-visible:ring-gray-600',
+      'bg-slate-800 text-white shadow-sm shadow-slate-200 dark:bg-slate-200 dark:text-slate-900 dark:text-white dark:shadow-slate-950/10',
+      'hover:bg-slate-900 hover:shadow-md dark:hover:bg-slate-100 dark:hover:bg-slate-700 dark:bg-slate-800',
+      'focus-visible:ring-slate-600',
     ].join(' '),
     danger: [
-      'bg-red-600 text-white shadow-sm shadow-red-200',
-      'hover:bg-red-700 hover:shadow-md hover:shadow-red-200',
+      'bg-red-600 text-white shadow-sm shadow-red-200 dark:shadow-red-950/20',
+      'hover:bg-red-700 hover:shadow-md hover:shadow-red-200 dark:hover:shadow-red-950/30',
       'focus-visible:ring-red-500',
     ].join(' '),
     success: [
-      'bg-emerald-500 text-white shadow-sm shadow-emerald-200',
-      'hover:bg-emerald-600 hover:shadow-md hover:shadow-emerald-200',
+      'bg-emerald-500 text-white shadow-sm shadow-emerald-200 dark:shadow-emerald-950/20',
+      'hover:bg-emerald-600 hover:shadow-md hover:shadow-emerald-200 dark:hover:shadow-emerald-950/30',
       'focus-visible:ring-emerald-500',
     ].join(' '),
     outline: [
-      'border border-gray-300 bg-white text-gray-700 shadow-sm',
-      'hover:bg-gray-50 hover:border-gray-400 hover:shadow',
-      'focus-visible:ring-gray-400',
+      'border border-slate-300 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200',
+      'hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-900 hover:border-slate-400 hover:shadow dark:hover:bg-slate-800 dark:hover:border-slate-600',
+      'focus-visible:ring-slate-400',
     ].join(' '),
     ghost: [
-      'bg-transparent text-gray-600',
-      'hover:bg-gray-100 hover:text-gray-900',
-      'focus-visible:ring-gray-400',
+      'bg-transparent text-slate-600 dark:text-slate-300',
+      'hover:bg-slate-100 dark:hover:bg-slate-700 dark:bg-slate-800 hover:text-slate-900 dark:text-white dark:hover:bg-slate-800 dark:hover:text-white',
+      'focus-visible:ring-slate-400',
     ].join(' '),
   };
 

@@ -6,13 +6,13 @@ import Button from '@/components/common/Button';
 import { changePassword } from '@/services/auth.service';
 
 const FC =
-  'w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-white transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-gray-400';
+  'w-full px-3.5 py-2.5 text-sm border border-gray-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-gray-400';
 
 function PasswordField({ label, name, value, onChange, hint }) {
   const [show, setShow] = useState(false);
   return (
     <div className="space-y-1.5">
-      <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+      <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-slate-200">
         <KeyRound className="h-3.5 w-3.5 text-gray-400" />
         {label}
       </label>
@@ -30,7 +30,7 @@ function PasswordField({ label, name, value, onChange, hint }) {
           type="button"
           onClick={() => setShow((s) => !s)}
           tabIndex={-1}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-300 transition-colors"
         >
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
@@ -133,7 +133,7 @@ export default function SecuritySection() {
         </div>
       )}
 
-      <div className="pt-2 border-t border-gray-100">
+      <div className="pt-2 border-t border-gray-100 dark:border-slate-700">
         <Button type="submit" loading={loading}>
           {!loading && 'Change Password →'}
         </Button>

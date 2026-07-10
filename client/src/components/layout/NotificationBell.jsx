@@ -38,7 +38,7 @@ export default function NotificationBell() {
     <div ref={panelRef} className="relative">
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="relative p-2 rounded-xl hover:bg-slate-100 transition-colors text-slate-500 hover:text-slate-700"
+        className="relative p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 dark:bg-slate-800 transition-colors text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200"
         aria-label="Notifications"
       >
         <Bell className="h-5 w-5" />
@@ -50,9 +50,9 @@ export default function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute bottom-12 left-0 z-50 w-80 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-            <span className="text-sm font-semibold text-slate-900">
+        <div className="absolute bottom-12 left-0 z-50 w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-700">
+            <span className="text-sm font-semibold text-slate-900 dark:text-white">
               Notifications
               {unreadCount > 0 && (
                 <span className="ml-2 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-red-100 text-red-600 text-[10px] font-bold">
@@ -89,20 +89,20 @@ export default function NotificationBell() {
                 <button
                   key={notification.id}
                   onClick={() => markRead(notification.id)}
-                  className={`w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-slate-50 transition-colors ${
+                  className={`w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-900 transition-colors ${
                     !notification.read ? 'bg-green-50/50' : ''
                   }`}
                 >
-                  <span className="h-6 w-6 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold shrink-0 mt-0.5 flex items-center justify-center">
+                  <span className="h-6 w-6 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-bold shrink-0 mt-0.5 flex items-center justify-center">
                     {TYPE_ICONS[notification.type] ?? 'N'}
                   </span>
                   <div className="flex-1 min-w-0">
                     {notification.title && (
-                      <p className="text-xs font-semibold text-slate-800 leading-snug line-clamp-1">
+                      <p className="text-xs font-semibold text-slate-800 dark:text-slate-100 leading-snug line-clamp-1">
                         {notification.title}
                       </p>
                     )}
-                    <p className="text-xs text-slate-700 leading-snug line-clamp-2">{notification.message}</p>
+                    <p className="text-xs text-slate-700 dark:text-slate-200 leading-snug line-clamp-2">{notification.message}</p>
                     <p className="text-[10px] text-slate-400 mt-0.5">{timeAgo(notification.timestamp)}</p>
                   </div>
                   {!notification.read && (

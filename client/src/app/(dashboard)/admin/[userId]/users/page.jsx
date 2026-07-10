@@ -176,8 +176,8 @@ export default function UsersPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600 mt-1">Manage registered users, NGOs, and restaurants</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">User Management</h1>
+          <p className="text-gray-600 dark:text-slate-300 mt-1">Manage registered users, NGOs, and restaurants</p>
         </div>
         <Button>
           <Users className="h-4 w-4 mr-2" />
@@ -201,7 +201,7 @@ export default function UsersPage() {
               placeholder="Search by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
           </div>
 
@@ -209,7 +209,7 @@ export default function UsersPage() {
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
             <option value="ALL">All Roles</option>
             <option value="NGO">NGOs</option>
@@ -221,7 +221,7 @@ export default function UsersPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
             <option value="ALL">All Status</option>
             <option value="ACTIVE">Active</option>
@@ -238,37 +238,37 @@ export default function UsersPage() {
         transition={{ duration: 0.6, delay: 0.1 }}
         className="glass-card rounded-xl overflow-hidden"
       >
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-          <h2 className="text-xl font-semibold text-gray-900">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
             Users ({filteredUsers.length})
           </h2>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                   Role
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                   Contact
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                   Last Login
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
               {filteredUsers.map((user, index) => {
                 const RoleIcon = getRoleIcon(user.role);
                 return (
@@ -277,7 +277,7 @@ export default function UsersPage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="hover:bg-gray-50 transition-colors"
+                    className="hover:bg-gray-50 dark:hover:bg-slate-700 dark:bg-slate-900 transition-colors"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -285,8 +285,8 @@ export default function UsersPage() {
                           {user.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                          <div className="text-sm text-gray-500">{user.email}</div>
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</div>
+                          <div className="text-sm text-gray-500 dark:text-slate-400">{user.email}</div>
                         </div>
                       </div>
                     </td>
@@ -303,7 +303,7 @@ export default function UsersPage() {
                         {user.status}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-slate-400">
                       <div className="space-y-1">
                         <div className="flex items-center">
                           <Mail className="h-3 w-3 mr-1" />
@@ -317,7 +317,7 @@ export default function UsersPage() {
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-slate-400">
                       {formatDate(user.lastLoginAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -359,8 +359,8 @@ export default function UsersPage() {
         {filteredUsers.length === 0 && (
           <div className="text-center py-12">
             <Users className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Users Found</h3>
-            <p className="text-gray-600">No users match your current filters.</p>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Users Found</h3>
+            <p className="text-gray-600 dark:text-slate-300">No users match your current filters.</p>
           </div>
         )}
       </motion.div>

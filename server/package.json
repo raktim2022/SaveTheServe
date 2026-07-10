@@ -10,7 +10,6 @@
     "test": "set NODE_ENV=test && set DATABASE_URL=postgresql://postgres:Raktim05@@localhost:5432/savetheserve && node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit",
     "test:watch": "set NODE_ENV=test && set DATABASE_URL=postgresql://postgres:Raktim05@@localhost:5432/SaveTheServe_Test && node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "test:coverage": "set NODE_ENV=test && set DATABASE_URL=postgresql://postgres:Raktim05@@localhost:5432/SaveTheServe_Test && node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
-    "test:docker": "docker-compose -f docker-compose.test.yml run --rm api npm test",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",

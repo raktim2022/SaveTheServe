@@ -15,10 +15,11 @@ import {
 } from '@/services/volunteer.service';
 import { getMyVolunteerPickups } from '@/services/request.service';
 import { formatDate } from '@/utils/formatDate';
+// import { useLiveTracking } from '@/hooks/useLiveTracking';
 
 function Card({ children, className = '' }) {
   return (
-    <div className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-6 ${className}`}>
+    <div className={`bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-6 ${className}`}>
       {children}
     </div>
   );
@@ -26,9 +27,9 @@ function Card({ children, className = '' }) {
 
 function SectionHeader({ icon: Icon, title, subtitle, color = 'green' }) {
   const colors = {
-    green: 'bg-green-100 text-green-600',
-    yellow: 'bg-yellow-100 text-yellow-600',
-    purple: 'bg-purple-100 text-purple-600',
+    green: 'bg-green-100 dark:bg-emerald-900/30 text-green-600 dark:text-emerald-400',
+    yellow: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400',
+    purple: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
   };
   return (
     <div className="flex items-center gap-3 mb-5">
@@ -36,8 +37,8 @@ function SectionHeader({ icon: Icon, title, subtitle, color = 'green' }) {
         <Icon className="h-5 w-5" />
       </div>
       <div>
-        <h3 className="text-base font-bold text-gray-900">{title}</h3>
-        {subtitle && <p className="text-xs text-gray-500">{subtitle}</p>}
+        <h3 className="text-base font-bold text-gray-900 dark:text-white">{title}</h3>
+        {subtitle && <p className="text-xs text-gray-500 dark:text-slate-400">{subtitle}</p>}
       </div>
     </div>
   );
@@ -79,17 +80,17 @@ function ChangePasswordSection({ onPasswordChanged }) {
     <form onSubmit={handleSubmit} className="space-y-4">
       {fields.map(({ id, label, placeholder }) => (
         <div key={id}>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">{label}</label>
           <div className="relative">
             <input
               type={show[id] ? 'text' : 'password'}
               value={form[id]}
               onChange={(e) => { setForm((f) => ({ ...f, [id]: e.target.value })); setError(''); }}
               placeholder={placeholder}
-              className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-xl pr-10 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+              className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-slate-700 rounded-xl pr-10 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
               required
             />
-            <button type="button" onClick={() => toggle(id)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <button type="button" onClick={() => toggle(id)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-300">
               {show[id] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
@@ -97,7 +98,7 @@ function ChangePasswordSection({ onPasswordChanged }) {
       ))}
 
       {error && (
-        <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl p-2.5 text-sm text-red-700">
+        <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-xl p-2.5 text-sm text-red-700 dark:text-red-400">
           <AlertCircle className="h-4 w-4 flex-shrink-0" /> {error}
         </div>
       )}
@@ -167,13 +168,13 @@ function PhoneVerificationSection({ volunteerPhone, onPhoneVerified }) {
       {step === 'phone' ? (
         <form onSubmit={handleRequestOTP} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">Phone Number</label>
             <input
               type="tel"
               value={phone}
               onChange={(e) => { setPhone(e.target.value); setError(''); }}
               placeholder="+91 98765 43210"
-              className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
           {error && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="h-3.5 w-3.5" />{error}</p>}
@@ -186,14 +187,14 @@ function PhoneVerificationSection({ volunteerPhone, onPhoneVerified }) {
         </form>
       ) : (
         <form onSubmit={handleVerifyOTP} className="space-y-4">
-          <p className="text-sm text-gray-600">Enter the 6-digit code sent to <strong>{phone}</strong>:</p>
+          <p className="text-sm text-gray-600 dark:text-slate-300">Enter the 6-digit code sent to <strong>{phone}</strong>:</p>
           <input
             type="text"
             value={otp}
             onChange={(e) => { setOtp(e.target.value.replace(/\D/g, '').slice(0, 6)); setError(''); }}
             placeholder="000000"
             maxLength={6}
-            className="w-full px-3 py-2.5 text-2xl font-bold text-center tracking-widest border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-3 py-2.5 text-2xl font-bold text-center tracking-widest border border-gray-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
           {error && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="h-3.5 w-3.5" />{error}</p>}
           <button type="submit" disabled={loading || otp.length < 6} className="w-full py-2.5 text-sm font-semibold text-white bg-purple-600 hover:bg-purple-700 rounded-xl transition-colors disabled:opacity-60">
@@ -203,7 +204,7 @@ function PhoneVerificationSection({ volunteerPhone, onPhoneVerified }) {
             <button
               type="button"
               onClick={() => { setStep('phone'); setOtp(''); setError(''); }}
-              className="hover:text-gray-600"
+              className="hover:text-gray-600 dark:text-slate-300"
             >
               Change number
             </button>
@@ -234,10 +235,10 @@ function PerformanceSection({ pickups }) {
   const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   const stats = [
-    { label: 'Total Assigned', value: total, icon: Truck, color: 'text-teal-600', bg: 'bg-teal-50' },
-    { label: 'Completed', value: completed, icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50' },
-    { label: 'In Progress', value: active, icon: Star, color: 'text-yellow-600', bg: 'bg-yellow-50' },
-    { label: 'Success Rate', value: `${rate}%`, icon: TrendingUp, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { label: 'Total Assigned', value: total, icon: Truck, color: 'text-teal-600 dark:text-teal-400', bg: 'bg-teal-50 dark:bg-teal-900/20' },
+    { label: 'Completed', value: completed, icon: CheckCircle, color: 'text-green-600 dark:text-emerald-400', bg: 'bg-green-50 dark:bg-emerald-900/20' },
+    { label: 'In Progress', value: active, icon: Star, color: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-50 dark:bg-yellow-900/20' },
+    { label: 'Success Rate', value: `${rate}%`, icon: TrendingUp, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20' },
   ];
 
   return (
@@ -245,13 +246,13 @@ function PerformanceSection({ pickups }) {
       {/* Stat cards */}
       <div className="grid grid-cols-2 gap-3">
         {stats.map(({ label, value, icon: Icon, color, bg }) => (
-          <div key={label} className={`rounded-xl border border-gray-100 p-4 flex items-center gap-3 ${bg}`}>
-            <div className={`h-9 w-9 rounded-lg bg-white flex items-center justify-center shadow-sm shrink-0`}>
+          <div key={label} className={`rounded-xl border border-gray-100 dark:border-slate-700 p-4 flex items-center gap-3 ${bg}`}>
+            <div className={`h-9 w-9 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm shrink-0`}>
               <Icon className={`h-4 w-4 ${color}`} />
             </div>
             <div>
-              <p className="text-lg font-bold text-gray-900">{value}</p>
-              <p className="text-xs text-gray-500 leading-tight">{label}</p>
+              <p className="text-lg font-bold text-gray-900 dark:text-white">{value}</p>
+              <p className="text-xs text-gray-500 dark:text-slate-400 leading-tight">{label}</p>
             </div>
           </div>
         ))}
@@ -260,11 +261,11 @@ function PerformanceSection({ pickups }) {
       {/* Progress bar */}
       {total > 0 && (
         <div>
-          <div className="flex justify-between text-xs text-gray-500 mb-1.5">
+          <div className="flex justify-between text-xs text-gray-500 dark:text-slate-400 mb-1.5">
             <span>Completion progress</span>
-            <span className="font-medium text-gray-700">{completed} / {total} pickups</span>
+            <span className="font-medium text-gray-700 dark:text-slate-200">{completed} / {total} pickups</span>
           </div>
-          <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+          <div className="w-full h-2.5 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
             <div
               className="h-full bg-linear-to-r from-green-500 to-emerald-400 rounded-full transition-all duration-700"
               style={{ width: `${rate}%` }}
@@ -282,9 +283,9 @@ function PerformanceSection({ pickups }) {
 
       {/* Badge */}
       {rate === 100 && total >= 5 && (
-        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl p-3">
+        <div className="flex items-center gap-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl p-3">
           <Award className="h-5 w-5 text-amber-500 shrink-0" />
-          <p className="text-sm text-amber-800 font-medium">Perfect record! 🎉 {total} pickups, 100% completion.</p>
+          <p className="text-sm text-amber-800 dark:text-amber-400 font-medium">Perfect record! 🎉 {total} pickups, 100% completion.</p>
         </div>
       )}
     </div>
@@ -300,6 +301,15 @@ export default function VolunteerDashboard() {
   const [loading, setLoading] = useState(true);
   const [pickups, setPickups] = useState([]);
   const [pickupsLoading, setPickupsLoading] = useState(false);
+  const [activeTrackingId, setActiveTrackingId] = useState(null);
+
+  /* Commented out tracking hook for safe deployment
+  useLiveTracking({
+    requestId: activeTrackingId,
+    isVolunteer: true,
+    enabled: !!activeTrackingId
+  });
+  */
 
   useEffect(() => {
     getMyVolunteerProfile()
@@ -377,7 +387,7 @@ export default function VolunteerDashboard() {
   return (
     <div className="max-w-2xl mx-auto p-4 md:p-8 space-y-6">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-green-600 to-emerald-500 rounded-2xl p-6 text-white">
+      <div className="bg-gradient-to-r from-green-600 to-emerald-500 dark:from-emerald-900 dark:to-emerald-800 rounded-2xl p-6 text-white">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 bg-white/20 rounded-xl flex items-center justify-center">
@@ -420,9 +430,9 @@ export default function VolunteerDashboard() {
 
       {/* Step indicators */}
       {(mustChangePassword || !phoneVerified) && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <p className="text-sm font-semibold text-amber-800 mb-2">⚠️ Complete your account setup:</p>
-          <ol className="space-y-1 text-sm text-amber-700 list-decimal list-inside">
+        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl p-4">
+          <p className="text-sm font-semibold text-amber-800 dark:text-amber-400 mb-2">⚠️ Complete your account setup:</p>
+          <ol className="space-y-1 text-sm text-amber-700 dark:text-amber-300 list-decimal list-inside">
             {mustChangePassword && <li>Change your temporary password</li>}
             {!phoneVerified && <li>Verify your phone number</li>}
           </ol>
@@ -452,8 +462,8 @@ export default function VolunteerDashboard() {
         <Card>
           <SectionHeader icon={Building2} title="Your NGO" subtitle="Organisation you are volunteering with" color="green" />
           <dl className="space-y-2 text-sm">
-            <div className="flex gap-2"><dt className="font-medium text-gray-600 w-24">Name</dt><dd className="text-gray-900">{profile.ngo.ngoName}</dd></div>
-            <div className="flex gap-2"><dt className="font-medium text-gray-600 w-24">Address</dt><dd className="text-gray-900">{profile.ngo.address}</dd></div>
+            <div className="flex gap-2"><dt className="font-medium text-gray-600 dark:text-slate-300 w-24">Name</dt><dd className="text-gray-900 dark:text-white">{profile.ngo.ngoName}</dd></div>
+            <div className="flex gap-2"><dt className="font-medium text-gray-600 dark:text-slate-300 w-24">Address</dt><dd className="text-gray-900 dark:text-white">{profile.ngo.address}</dd></div>
           </dl>
         </Card>
       )}
@@ -488,29 +498,29 @@ export default function VolunteerDashboard() {
                 return (
                   <div
                     key={req.id}
-                    className={`rounded-xl border p-4 ${isComplete ? 'bg-gray-50 border-gray-200' : 'bg-teal-50 border-teal-200'}`}
+                    className={`rounded-xl border p-4 ${isComplete ? 'bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-700' : 'bg-teal-50 dark:bg-teal-900/20 border-teal-200 dark:border-teal-800/50'}`}
                   >
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div>
-                        <p className="font-semibold text-gray-900 text-sm">{foodName}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm">{foodName}</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
                           🏪 {donorName}{donorAddress ? ` — ${donorAddress}` : ''}
                         </p>
                         {req.pickupTime && (
-                          <p className="text-xs text-gray-500">🕐 {formatDate(req.pickupTime)}</p>
+                          <p className="text-xs text-gray-500 dark:text-slate-400">🕐 {formatDate(req.pickupTime)}</p>
                         )}
                       </div>
                       <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                        isComplete ? 'bg-blue-100 text-blue-700' : 'bg-teal-100 text-teal-700'
+                        isComplete ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' : 'bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400'
                       }`}>
                         {isComplete ? 'Completed' : 'Assigned'}
                       </span>
                     </div>
 
                     {!isComplete && (
-                      <div className="mt-3 bg-white rounded-lg border border-teal-200 p-3">
-                        <p className="text-xs font-semibold text-gray-700 mb-2">Your Verification Details</p>
-                        <p className="text-xs text-gray-500 mb-1">
+                      <div className="mt-3 bg-white dark:bg-slate-800 rounded-lg border border-teal-200 dark:border-teal-800/50 p-3">
+                        <p className="text-xs font-semibold text-gray-700 dark:text-slate-200 mb-2">Your Verification Details</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 mb-1">
                           Show this OTP or QR code to the donor at time of pickup:
                         </p>
                         <p className="text-2xl font-bold tracking-widest text-teal-700 text-center py-2">
@@ -519,6 +529,19 @@ export default function VolunteerDashboard() {
                         <p className="text-xs text-gray-400 text-center">
                           Also check your email for the full QR code image.
                         </p>
+                        
+                        {/* Commented out tracking button for safe deployment
+                        <button
+                          onClick={() => setActiveTrackingId(activeTrackingId === req.id ? null : req.id)}
+                          className={`w-full text-xs font-semibold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 ${
+                            activeTrackingId === req.id
+                              ? 'bg-red-100 hover:bg-red-200 text-red-700 border border-red-200'
+                              : 'bg-teal-600 hover:bg-teal-700 text-white'
+                          }`}
+                        >
+                          {activeTrackingId === req.id ? '🛑 Stop Sharing Location' : '📡 Start Sharing Location (In Transit)'}
+                        </button>
+                        */}
                       </div>
                     )}
                   </div>

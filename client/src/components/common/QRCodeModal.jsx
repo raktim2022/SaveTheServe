@@ -39,17 +39,17 @@ export default function QRCodeModal({ open, onClose, otp, qrToken, foodName, don
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
+      <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-slate-700">
           <div className="flex items-center gap-2">
             <QrCode className="h-5 w-5 text-green-600" />
-            <h2 className="font-semibold text-gray-900">Pickup Verification</h2>
+            <h2 className="font-semibold text-gray-900 dark:text-white">Pickup Verification</h2>
           </div>
           <button
             onClick={onClose}
             aria-label="Close modal"
-            className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100"
+            className="text-gray-400 hover:text-gray-600 dark:text-slate-300 transition-colors p-1 rounded-lg hover:bg-gray-100 dark:bg-slate-800"
           >
             <X className="h-5 w-5" />
           </button>
@@ -59,8 +59,8 @@ export default function QRCodeModal({ open, onClose, otp, qrToken, foodName, don
         <div className="px-5 py-6 space-y-6">
           {(foodName || donorName) && (
             <div className="text-center">
-              {foodName && <p className="font-semibold text-gray-900">{foodName}</p>}
-              {donorName && <p className="text-sm text-gray-500">from {donorName}</p>}
+              {foodName && <p className="font-semibold text-gray-900 dark:text-white">{foodName}</p>}
+              {donorName && <p className="text-sm text-gray-500 dark:text-slate-400">from {donorName}</p>}
             </div>
           )}
 
@@ -72,14 +72,14 @@ export default function QRCodeModal({ open, onClose, otp, qrToken, foodName, don
               alt="Pickup QR Code"
               width={200}
               height={200}
-              className="rounded-xl border border-gray-200 shadow-sm"
+              className="rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm"
               onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
           </div>
 
           {/* 6-digit OTP */}
           <div className="space-y-2">
-            <p className="text-xs text-center text-gray-500 font-medium uppercase tracking-wide">
+            <p className="text-xs text-center text-gray-500 dark:text-slate-400 font-medium uppercase tracking-wide">
               6-digit Pickup Code
             </p>
             <div className="flex justify-center gap-2">

@@ -2,6 +2,7 @@
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import { config } from '../config/env.config.js';
+// import { handleTrackingSockets } from './tracking.socket.js';
 
 let io = null;
 
@@ -55,6 +56,9 @@ export function initializeSocket(httpServer) {
     if (socket.userRole) {
       socket.join(`role:${socket.userRole}`);
     }
+
+    // Register live tracking sockets
+    // handleTrackingSockets(socket, io);
 
     // Handle disconnection
     socket.on('disconnect', (reason) => {

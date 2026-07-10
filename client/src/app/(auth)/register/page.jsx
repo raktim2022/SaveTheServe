@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import Image from 'next/image';
@@ -9,18 +9,19 @@ import { Eye, EyeOff, CheckCircle, AlertCircle, MapPin, Utensils, Users, Globe, 
 import Button from '@/components/common/Button';
 import { useAuth } from '@/hooks/useAuth';
 import { useGeoLocation } from '@/hooks/useGeoLocation';
+import ThemeSwitcher from '@/components/common/ThemeSwitcher';
 import { register as registerService, loginWithGoogle } from '@/services/auth.service';
 import '@/styles/auth.css';
 import { motion } from 'framer-motion';
 
 const FIELD_CLASS =
-  'w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-white transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-gray-400';
+  'w-full px-3.5 py-2.5 text-sm border border-gray-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-gray-400';
 
 function Field({ label, required, hint, error, children }) {
   return (
     <div className="space-y-1">
       {label && (
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-gray-700 dark:text-slate-200">
           {label}
           {required && <span className="text-red-500 ml-0.5">*</span>}
         </label>
@@ -151,9 +152,12 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="auth-page min-h-screen bg-gray-50 dark:bg-slate-900 flex relative">
+      <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6">
+        <ThemeSwitcher />
+      </div>
       {/* Left panel — branding */}
-      <div className="hidden lg:flex lg:w-2/5 bg-gradient-to-br from-green-600 to-emerald-700 flex-col justify-between p-10 text-white">
+      <div className="hidden lg:flex lg:w-2/5 bg-linear-to-br from-green-600 to-emerald-700 flex-col justify-between p-10 text-white">
         <div>
           <Image
             src="/images/logo.svg"
@@ -208,8 +212,8 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <h2 className="text-2xl font-bold text-gray-900 mb-1">Create your account</h2>
-          <p className="text-sm text-gray-500 mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Create your account</h2>
+          <p className="text-sm text-gray-500 dark:text-slate-400 mb-8">
             Fill in the details below to get started. Takes less than 2 minutes.
           </p>
           {/* Google Sign-Up Button */}
@@ -224,7 +228,7 @@ export default function RegisterPage() {
               disabled={loading || googleLoading}
               loading={googleLoading}
               variant="secondary"
-              className="w-full mb-4 flex items-center justify-center gap-2 border-2 border-gray-300"
+              className="w-full mb-4 flex items-center justify-center gap-2 border-2 border-gray-300 dark:border-slate-600"
             >
               <Chrome className="h-5 w-5" />
               Sign up with Google
@@ -234,10 +238,10 @@ export default function RegisterPage() {
           {/* Divider */}
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
+              <div className="w-full border-t border-gray-200 dark:border-slate-700"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+              <span className="px-2 bg-white dark:bg-slate-900 text-gray-500 dark:text-slate-400">Or continue with email</span>
             </div>
           </div>
 
@@ -263,17 +267,17 @@ export default function RegisterPage() {
                 onClick={() => { setRole(opt.value); setError(''); }}
                 className={`text-left p-4 rounded-xl border-2 transition-all duration-150 ${
                   role === opt.value
-                    ? 'border-green-500 bg-green-50'
-                    : 'border-gray-200 bg-white hover:border-gray-300'
+                    ? 'border-green-500 bg-green-50 dark:bg-emerald-900/30 dark:border-emerald-500'
+                    : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-gray-300 dark:border-slate-600'
                 }`}
               >
                 <span className={`block mb-2 ${role === opt.value ? 'text-green-600' : 'text-gray-400'}`}>
                   {opt.icon}
                 </span>
-                <p className={`text-sm font-semibold ${role === opt.value ? 'text-green-700' : 'text-gray-800'}`}>
+                <p className={`text-sm font-semibold ${role === opt.value ? 'text-green-700' : 'text-gray-800 dark:text-slate-100'}`}>
                   {opt.title}
                 </p>
-                <p className="text-xs text-gray-500 mt-0.5 leading-snug">{opt.desc}</p>
+                <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 leading-snug">{opt.desc}</p>
               </button>
             ))}
           </div>
@@ -281,7 +285,7 @@ export default function RegisterPage() {
           {/* Volunteer CTA */}
           <Link
             href="/volunteer-register"
-            className="flex items-center justify-between w-full mb-8 p-4 rounded-xl border-2 border-dashed border-teal-200 bg-teal-50 hover:border-teal-400 hover:bg-teal-100 transition-all duration-150 group"
+            className="flex items-center justify-between w-full mb-8 p-4 rounded-xl border-2 border-dashed border-teal-200 dark:border-teal-800/50 bg-teal-50 dark:bg-teal-900/20 hover:border-teal-400 dark:hover:border-teal-700 hover:bg-teal-100 dark:hover:bg-teal-900/40 transition-all duration-150 group"
           >
             <div className="flex items-center gap-3">
               <span className="text-teal-500 group-hover:text-teal-700">
@@ -296,7 +300,7 @@ export default function RegisterPage() {
           </Link>
 
           {error && (
-            <div className="flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl mb-6">
+            <div className="flex items-start gap-2.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 text-red-700 dark:text-red-400 text-sm px-4 py-3 rounded-xl mb-6">
               <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
               <span>{error}</span>
             </div>
@@ -435,18 +439,18 @@ export default function RegisterPage() {
                 {/* GPS panel */}
                 <div className={`rounded-xl border p-4 transition-colors ${
                   location
-                    ? 'bg-green-50 border-green-200'
+                    ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800/50'
                     : locationError
-                    ? 'bg-red-50 border-red-200'
-                    : 'bg-blue-50 border-blue-200'
+                    ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800/50'
+                    : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800/50'
                 }`}>
                   <div className="flex items-start gap-3">
                     <MapPin className={`h-4 w-4 mt-0.5 shrink-0 ${
                       location ? 'text-green-600' : locationError ? 'text-red-500' : 'text-blue-600'
                     }`} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-800 mb-0.5">GPS Location</p>
-                      <p className="text-xs text-gray-500 mb-3">
+                      <p className="text-sm font-medium text-gray-800 dark:text-slate-100 mb-0.5">GPS Location</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 mb-3">
                         Required to match you with nearby{' '}
                         {isNgo ? 'food donors' : 'NGOs'}.
                       </p>
@@ -462,7 +466,7 @@ export default function RegisterPage() {
                             <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                             {locationError}
                           </div>
-                          <ul className="text-xs text-gray-500 list-disc list-inside space-y-0.5 pl-1">
+                          <ul className="text-xs text-gray-500 dark:text-slate-400 list-disc list-inside space-y-0.5 pl-1">
                             <li>Click the lock icon in your browser's address bar</li>
                             <li>Set Location to "Allow"</li>
                           </ul>
@@ -480,7 +484,7 @@ export default function RegisterPage() {
                           type="button"
                           onClick={refetchLocation}
                           disabled={locationLoading}
-                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-700 bg-white border border-blue-300 px-3 py-1.5 rounded-lg hover:bg-blue-50 disabled:opacity-50 transition-colors"
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-700 bg-white dark:bg-slate-800 border border-blue-300 px-3 py-1.5 rounded-lg hover:bg-blue-50 disabled:opacity-50 transition-colors"
                         >
                           {locationLoading ? (
                             <>
@@ -528,7 +532,7 @@ export default function RegisterPage() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-300 transition-colors"
                       tabIndex={-1}
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -550,7 +554,7 @@ export default function RegisterPage() {
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-300 transition-colors"
                       tabIndex={-1}
                     >
                       {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

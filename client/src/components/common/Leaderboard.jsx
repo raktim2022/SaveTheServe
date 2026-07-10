@@ -67,32 +67,32 @@ export default function Leaderboard({ limit = 10 }) {
 
   return (
     <div className="space-y-8">
-      <h2 className="text-3xl font-bold text-gray-900 text-center">
+      <h2 className="text-3xl font-bold text-gray-900 dark:text-white text-center">
         🏆 Community Leaderboard
       </h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Top Restaurants */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm p-6">
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
             <span>🏪</span>
             Top Restaurants
           </h3>
           <div className="space-y-3">
             {leaderboard.topRestaurants?.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">No data available</p>
+              <p className="text-gray-500 dark:text-slate-400 text-center py-4">No data available</p>
             ) : (
               leaderboard.topRestaurants?.map((restaurant, index) => (
                 <div 
                   key={restaurant.id}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 dark:bg-slate-900 transition-colors"
                 >
                   <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 text-green-700 font-bold flex items-center justify-center">
                     {index + 1}
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-medium text-gray-900">{restaurant.shopName}</h4>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <h4 className="font-medium text-gray-900 dark:text-white">{restaurant.shopName}</h4>
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300">
                       <span>{restaurant.totalDonations.toFixed(1)} kg donated</span>
                       <span>•</span>
                       <span>{restaurant.completedRequests} donations</span>
@@ -100,7 +100,7 @@ export default function Leaderboard({ limit = 10 }) {
                     {restaurant.reviewStats && restaurant.reviewStats.totalReviews > 0 && (
                       <div className="flex items-center gap-1 text-sm">
                         {renderStars(restaurant.reviewStats.averageRating)}
-                        <span className="ml-1 text-gray-600">
+                        <span className="ml-1 text-gray-600 dark:text-slate-300">
                           ({restaurant.reviewStats.averageRating.toFixed(1)})
                         </span>
                       </div>
@@ -113,26 +113,26 @@ export default function Leaderboard({ limit = 10 }) {
         </div>
 
         {/* Top NGOs */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm p-6">
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
             <span>🏢</span>
             Top NGOs
           </h3>
           <div className="space-y-3">
             {leaderboard.topNGOs?.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">No data available</p>
+              <p className="text-gray-500 dark:text-slate-400 text-center py-4">No data available</p>
             ) : (
               leaderboard.topNGOs?.map((ngo, index) => (
                 <div 
                   key={ngo.id}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 dark:bg-slate-900 transition-colors"
                 >
                   <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center">
                     {index + 1}
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-medium text-gray-900">{ngo.ngoName}</h4>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <h4 className="font-medium text-gray-900 dark:text-white">{ngo.ngoName}</h4>
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300">
                       <span>{ngo.totalFoodReceived.toFixed(1)} kg received</span>
                       <span>•</span>
                       <span>~{ngo.estimatedPeopleFed} people fed</span>
@@ -140,7 +140,7 @@ export default function Leaderboard({ limit = 10 }) {
                     {ngo.reviewStats && ngo.reviewStats.totalReviews > 0 && (
                       <div className="flex items-center gap-1 text-sm">
                         {renderStars(ngo.reviewStats.averageRating)}
-                        <span className="ml-1 text-gray-600">
+                        <span className="ml-1 text-gray-600 dark:text-slate-300">
                           ({ngo.reviewStats.averageRating.toFixed(1)})
                         </span>
                       </div>

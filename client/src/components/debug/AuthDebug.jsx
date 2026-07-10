@@ -9,7 +9,7 @@ export default function AuthDebug() {
   const userData = getUser();
 
   return (
-    <div className="fixed bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg border text-xs max-w-sm">
+    <div className="fixed bottom-4 right-4 bg-white dark:bg-slate-800 p-4 rounded-lg shadow-lg border text-xs max-w-sm">
       <h3 className="font-bold mb-2">Auth Debug</h3>
       <div className="space-y-1">
         <div>Loading: {loading ? 'Yes' : 'No'}</div>

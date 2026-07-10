@@ -5,14 +5,14 @@ import { User, Building2, Store, Save } from 'lucide-react';
 import Button from '@/components/common/Button';
 
 const FC =
-  'w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-white transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-gray-400';
+  'w-full px-3.5 py-2.5 text-sm border border-gray-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-gray-400';
 
 const SHOP_TYPES = ['Restaurant', 'Bakery', 'Cafe', 'Catering', 'Hotel', 'Other'];
 
 function FieldGroup({ label, children }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{label}</label>
+      <label className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">{label}</label>
       {children}
     </div>
   );
@@ -75,12 +75,12 @@ export default function ProfileSection({ user, roleProfile, role, onSave, saving
   return (
     <form onSubmit={handleSubmit} className="space-y-7">
       {/* Header */}
-      <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
+      <div className="flex items-center gap-3 pb-4 border-b border-gray-100 dark:border-slate-700">
         <div className="h-9 w-9 rounded-xl bg-green-50 flex items-center justify-center">
           <User className="h-5 w-5 text-green-600" />
         </div>
         <div>
-          <h2 className="text-base font-semibold text-gray-900">Profile Information</h2>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">Profile Information</h2>
           <p className="text-xs text-gray-400">An OTP will be sent to verify any changes.</p>
         </div>
       </div>
@@ -146,7 +146,7 @@ export default function ProfileSection({ user, roleProfile, role, onSave, saving
       )}
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+      <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-slate-700">
         <p className="text-xs text-gray-400">You&apos;ll receive a verification code before changes are saved.</p>
         <Button type="submit" loading={saving} disabled={saving} className="flex items-center gap-2">
           <Save className="h-4 w-4" />

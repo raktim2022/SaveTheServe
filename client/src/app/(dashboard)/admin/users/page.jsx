@@ -75,7 +75,7 @@ export default function AdminUsersPage() {
     <div>
       <div className="dashboard-header">
         <h1 className="dashboard-title">User Management</h1>
-        <p className="text-gray-600">Manage all platform users</p>
+        <p className="text-gray-600 dark:text-slate-300">Manage all platform users</p>
       </div>
 
       <UserTable

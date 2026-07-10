@@ -136,9 +136,9 @@ export default function CompleteProfilePage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
         <div className="animate-spin">
-          <div className="h-8 w-8 border-4 border-gray-200 border-t-green-600 rounded-full" />
+          <div className="h-8 w-8 border-4 border-gray-200 dark:border-slate-700 border-t-green-600 rounded-full" />
         </div>
       </div>
     );
@@ -156,16 +156,16 @@ export default function CompleteProfilePage() {
           <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
             <Building2 className="h-8 w-8 text-green-600" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Complete Your Business Profile
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-slate-300">
             Help us verify your business details to get started
           </p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-8">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8">
           {/* Error Alert */}
           {errors.submit && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
@@ -189,7 +189,7 @@ export default function CompleteProfilePage() {
 
             {/* Business Type */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-200">
                 Business Type <span className="text-red-500">*</span>
               </label>
               <select
@@ -200,8 +200,8 @@ export default function CompleteProfilePage() {
                 className={clsx(
                   'w-full px-4 py-2 border rounded-lg transition',
                   'focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent',
-                  'disabled:bg-gray-100 disabled:cursor-not-allowed',
-                  errors.shopType ? 'border-red-500' : 'border-gray-300'
+                  'disabled:bg-gray-100 dark:bg-slate-800 disabled:cursor-not-allowed',
+                  errors.shopType ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'
                 )}
               >
                 <option value="">Select a business type</option>
@@ -283,7 +283,7 @@ export default function CompleteProfilePage() {
         </div>
 
         {/* Disclaimer */}
-        <p className="text-center text-xs text-gray-500 mt-6">
+        <p className="text-center text-xs text-gray-500 dark:text-slate-400 mt-6">
           You can update these details anytime in your settings
         </p>
       </div>

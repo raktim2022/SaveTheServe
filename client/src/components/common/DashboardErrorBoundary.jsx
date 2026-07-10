@@ -47,7 +47,7 @@ class DashboardErrorBoundary extends Component {
             </motion.div>
 
             <motion.h2 
-              className="text-2xl font-bold text-gray-900 mb-4"
+              className="text-2xl font-bold text-gray-900 dark:text-white mb-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
@@ -56,7 +56,7 @@ class DashboardErrorBoundary extends Component {
             </motion.h2>
 
             <motion.p 
-              className="text-gray-600 mb-6"
+              className="text-gray-600 dark:text-slate-300 mb-6"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -94,8 +94,8 @@ class DashboardErrorBoundary extends Component {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
               >
-                <summary className="text-sm text-gray-500 cursor-pointer">Error Details (Dev)</summary>
-                <pre className="mt-2 text-xs bg-gray-100 p-3 rounded overflow-x-auto text-red-600">
+                <summary className="text-sm text-gray-500 dark:text-slate-400 cursor-pointer">Error Details (Dev)</summary>
+                <pre className="mt-2 text-xs bg-gray-100 dark:bg-slate-800 p-3 rounded overflow-x-auto text-red-600">
                   {this.state.error.toString()}
                 </pre>
               </motion.details>

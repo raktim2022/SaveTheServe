@@ -1,4 +1,5 @@
 import { Manrope } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import Providers from './providers';
 
@@ -45,7 +46,6 @@ export const metadata = {
     apple: '/apple-touch-icon.png',
   },
   manifest: '/site.webmanifest',
-  themeColor: '#16a34a',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -56,10 +56,26 @@ export const metadata = {
   },
 };
 
+export const viewport = {
+  themeColor: '#16a34a',
+};
+
 export default function RootLayout({ children }) {
   return (
     <html suppressHydrationWarning lang="en" className="h-full">
-      <body suppressHydrationWarning className={`${manrope.className} bg-background text-slate-900 antialiased`}>        
+      <head>
+        <Script id="theme-init" strategy="beforeInteractive">{`(() => {
+          try {
+            const saved = localStorage.getItem('theme-preference') || 'system';
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const resolved = saved === 'system' ? (systemDark ? 'dark' : 'light') : saved;
+            document.documentElement.classList.toggle('dark', resolved === 'dark');
+            document.documentElement.dataset.theme = resolved;
+            document.documentElement.style.colorScheme = resolved;
+          } catch (error) {}
+        })();`}</Script>
+      </head>
+      <body suppressHydrationWarning className={`${manrope.className} antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

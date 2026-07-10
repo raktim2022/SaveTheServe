@@ -24,7 +24,7 @@ function StatusBadge({ verified, label }) {
 
 function Card({ iconBg, icon: Icon, iconColor, children }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-5">
+    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl p-5">
       <div className="flex items-start gap-4">
         <div className={`w-9 h-9 ${iconBg} rounded-xl flex items-center justify-center shrink-0`}>
           <Icon className={`h-4 w-4 ${iconColor}`} />
@@ -69,10 +69,10 @@ export default function VerificationSection({ user }) {
       {/* Email card */}
       <Card icon={Mail} iconBg="bg-blue-50" iconColor="text-blue-600">
         <div className="flex items-center gap-2 mb-1 flex-wrap">
-          <p className="font-semibold text-gray-900 text-sm">Email Address</p>
+          <p className="font-semibold text-gray-900 dark:text-white text-sm">Email Address</p>
           <StatusBadge verified={user.isVerified} />
         </div>
-        <p className="text-sm text-gray-500 mb-3 break-all">{user.email}</p>
+        <p className="text-sm text-gray-500 dark:text-slate-400 mb-3 break-all">{user.email}</p>
 
         {user.isVerified ? (
           <p className="text-xs text-gray-400">
@@ -112,32 +112,32 @@ export default function VerificationSection({ user }) {
       {/* Phone card */}
       <Card icon={Phone} iconBg="bg-purple-50" iconColor="text-purple-600">
         <div className="flex items-center gap-2 mb-1 flex-wrap">
-          <p className="font-semibold text-gray-900 text-sm">Phone Number</p>
+          <p className="font-semibold text-gray-900 dark:text-white text-sm">Phone Number</p>
           {user.phone ? (
             <span className="inline-flex items-center gap-1 text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-full">
               <CheckCircle className="h-3 w-3" />
               Registered
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1 text-xs font-medium bg-gray-100 text-gray-500 border border-gray-200 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1 text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-400 border border-gray-200 dark:border-slate-700 px-2.5 py-1 rounded-full">
               Not added
             </span>
           )}
         </div>
         {user.phone ? (
-          <p className="text-sm text-gray-500">{user.phone}</p>
+          <p className="text-sm text-gray-500 dark:text-slate-400">{user.phone}</p>
         ) : (
           <p className="text-xs text-gray-400 leading-relaxed">
-            Add your phone number in the <strong className="text-gray-600">Profile</strong> tab.
+            Add your phone number in the <strong className="text-gray-600 dark:text-slate-300">Profile</strong> tab.
             It helps donors and NGOs coordinate pickups efficiently.
           </p>
         )}
       </Card>
 
       {/* Account created */}
-      <div className="bg-gray-50 rounded-xl px-4 py-3 text-xs text-gray-400">
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-xl px-4 py-3 text-xs text-gray-400">
         Member since{' '}
-        <span className="font-medium text-gray-600">
+        <span className="font-medium text-gray-600 dark:text-slate-300">
           {user.createdAt
             ? new Date(user.createdAt).toLocaleDateString('en-US', {
                 month: 'long',

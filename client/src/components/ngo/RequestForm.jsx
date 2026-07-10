@@ -72,7 +72,7 @@ export default function RequestForm({ food, onSubmit, onCancel }) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <h3 className="text-lg font-semibold mb-2">{food.name}</h3>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-gray-600 dark:text-slate-300">
           Available: {food.quantity} {food.unit}
         </p>
       </div>

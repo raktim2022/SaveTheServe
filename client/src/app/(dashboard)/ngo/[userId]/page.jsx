@@ -13,6 +13,9 @@ import { useRealTimeRequests } from '@/hooks/useRealTimeRequests';
 import { formatDate } from '@/utils/formatDate';
 import { FOOD_CATEGORIES, getDynamicRoutes } from '@/utils/constants';
 import VolunteerManagement from '@/components/ngo/VolunteerManagement';
+import ReviewList from '@/components/common/ReviewList';
+import { getRestaurantReviews } from '@/services/review.service';
+import toast from 'react-hot-toast';
 
 function getCategoryLabel(value) {
   return FOOD_CATEGORIES.find((c) => c.value === value)?.label || value || 'Other';
@@ -36,6 +39,7 @@ export default function NGODashboard() {
 
   // Request modal state
   const [requestModal, setRequestModal] = useState(null); // { listing }
+  const [viewReviewsModal, setViewReviewsModal] = useState(null); // { restaurantId, name, reviews: [], averageRating: 0, totalReviews: 0, loading: false }
   const [pickupTime, setPickupTime] = useState('');
   const [requestLoading, setRequestLoading] = useState(false);
   const [requestMsg, setRequestMsg] = useState('');
@@ -43,6 +47,24 @@ export default function NGODashboard() {
   const [activeTab, setActiveTab] = useState('food'); // 'food' | 'volunteers'
 
   const routes = getDynamicRoutes(userId);
+
+  const handleViewRestaurantReviews = async (restaurantId, shopName) => {
+    setViewReviewsModal({ restaurantId, name: shopName, reviews: [], loading: true });
+    try {
+      const res = await getRestaurantReviews(restaurantId);
+      setViewReviewsModal({
+        restaurantId,
+        name: shopName,
+        reviews: res.data?.reviews || res.reviews || [],
+        averageRating: res.data?.averageRating ?? res.averageRating ?? 0,
+        totalReviews: res.data?.totalReviews ?? res.totalReviews ?? 0,
+        loading: false
+      });
+    } catch (err) {
+      toast.error(err.message || 'Failed to fetch reviews');
+      setViewReviewsModal(null);
+    }
+  };
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -161,10 +183,10 @@ export default function NGODashboard() {
     <div className="p-4 md:p-6 max-w-5xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Welcome, {user?.name || 'NGO'} 🤝
         </h1>
-        <p className="text-gray-500 text-sm mt-1">Browse available food donations from restaurants</p>
+        <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">Browse available food donations from restaurants</p>
       </div>
 
       {error && (
@@ -175,20 +197,20 @@ export default function NGODashboard() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Available Now</p>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+          <p className="text-xs text-gray-500 dark:text-slate-400">Available Now</p>
           <p className="text-3xl font-bold text-green-600">{stats.available}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-          <p className="text-xs text-gray-500">My Requests</p>
-          <p className="text-3xl font-bold text-gray-900">{stats.myTotal}</p>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+          <p className="text-xs text-gray-500 dark:text-slate-400">My Requests</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.myTotal}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Pending</p>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+          <p className="text-xs text-gray-500 dark:text-slate-400">Pending</p>
           <p className="text-3xl font-bold text-yellow-600">{stats.myPending}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Accepted</p>
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+          <p className="text-xs text-gray-500 dark:text-slate-400">Accepted</p>
           <p className="text-3xl font-bold text-blue-600">{stats.myAccepted}</p>
         </div>
       </div>
@@ -197,15 +219,15 @@ export default function NGODashboard() {
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <Link
           href={routes.NGO_REQUESTS}
-          className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          className="bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 dark:bg-slate-900 text-gray-700 dark:text-slate-200 border border-gray-200 dark:border-slate-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
         >
           My Requests →
         </Link>
-        <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
+        <div className="flex gap-1 bg-gray-100 dark:bg-slate-800 rounded-xl p-1">
           <button
             onClick={() => setActiveTab('food')}
             className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-              activeTab === 'food' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              activeTab === 'food' ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-200'
             }`}
           >
             🍱 Food Listings
@@ -213,7 +235,7 @@ export default function NGODashboard() {
           <button
             onClick={() => setActiveTab('volunteers')}
             className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-              activeTab === 'volunteers' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              activeTab === 'volunteers' ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-200'
             }`}
           >
             👥 Volunteers
@@ -236,12 +258,12 @@ export default function NGODashboard() {
           placeholder="Search food..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+          className="flex-1 border border-gray-300 dark:border-slate-600 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
         />
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+          className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
         >
           <option value="all">All Categories</option>
           {FOOD_CATEGORIES.map((c) => (
@@ -254,7 +276,7 @@ export default function NGODashboard() {
       {filtered.length === 0 ? (
         <div className="text-center py-16">
           <div className="text-5xl mb-4">🔍</div>
-          <p className="text-gray-500">No available food listings found</p>
+          <p className="text-gray-500 dark:text-slate-400">No available food listings found</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -264,7 +286,7 @@ export default function NGODashboard() {
             return (
               <div
                 key={listing.id}
-                className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+                className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
               >
                 {listing.imageUrl ? (
                   <div className="h-40 overflow-hidden">
@@ -281,7 +303,7 @@ export default function NGODashboard() {
                 )}
                 <div className="p-4">
                   <div className="flex items-start justify-between gap-2 mb-1">
-                    <h3 className="font-semibold text-gray-900 truncate">{listing.foodName}</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-white truncate">{listing.foodName}</h3>
                     {expiringSoon && (
                       <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full flex-shrink-0">
                         Expiring!
@@ -289,9 +311,9 @@ export default function NGODashboard() {
                     )}
                   </div>
                   {listing.description && (
-                    <p className="text-xs text-gray-500 mb-2 line-clamp-2">{listing.description}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 mb-2 line-clamp-2">{listing.description}</p>
                   )}
-                  <div className="flex flex-wrap gap-2 text-xs text-gray-600 mb-3">
+                  <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-slate-300 mb-3">
                     <span>📦 {listing.quantity} {listing.unit || 'units'}</span>
                     {listing.category && <span>🏷️ {getCategoryLabel(listing.category)}</span>}
                     <span className={expiringSoon ? 'text-red-600 font-medium' : ''}>
@@ -299,10 +321,16 @@ export default function NGODashboard() {
                     </span>
                   </div>
                   {listing.restaurant?.shopName && (
-                    <p className="text-xs text-gray-400 mb-3">
-                      🏪 {listing.restaurant.shopName}
-                      {listing.restaurant?.user?.phone && ` · ${listing.restaurant.user.phone}`}
-                    </p>
+                    <div className="text-xs text-gray-400 mb-3 flex items-center gap-1.5 flex-wrap">
+                      <span>🏪 {listing.restaurant.shopName}</span>
+                      <button
+                        onClick={() => handleViewRestaurantReviews(listing.restaurant.id, listing.restaurant.shopName)}
+                        className="text-green-600 hover:underline hover:text-green-700 font-medium cursor-pointer"
+                      >
+                        ⭐ View Reviews
+                      </button>
+                      {listing.restaurant?.user?.phone && <span>· 📞 {listing.restaurant.user.phone}</span>}
+                    </div>
                   )}
                   {listing.pickupInstructions && (
                     <p className="text-xs text-gray-400 mb-3 italic">
@@ -335,9 +363,9 @@ export default function NGODashboard() {
       {/* Request Modal */}
       {requestModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md p-6">
             <h2 className="text-lg font-semibold mb-1">Request Donation</h2>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-gray-500 dark:text-slate-400 mb-4">
               <strong>{requestModal.listing.foodName}</strong> — {requestModal.listing.quantity} {requestModal.listing.unit || 'units'}
             </p>
 
@@ -348,7 +376,7 @@ export default function NGODashboard() {
             ) : (
               <form onSubmit={handleRequestSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">
                     Preferred Pickup Time *
                   </label>
                   <input
@@ -357,7 +385,7 @@ export default function NGODashboard() {
                     onChange={(e) => setPickupTime(e.target.value)}
                     min={new Date(Date.now() + 30 * 60000).toISOString().slice(0, 16)}
                     max={requestModal.listing.expiryTime ? new Date(requestModal.listing.expiryTime).toISOString().slice(0, 16) : undefined}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                    className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
                     required
                   />
                 </div>
@@ -383,6 +411,32 @@ export default function NGODashboard() {
         </div>
       )}
       </>)}
+      {/* View Reviews Modal */}
+      {viewReviewsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg p-6 max-h-[85vh] overflow-y-auto">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                  Reviews for {viewReviewsModal.name}
+                </h3>
+              </div>
+              <button
+                onClick={() => setViewReviewsModal(null)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 text-lg font-bold"
+              >
+                ✕
+              </button>
+            </div>
+            <ReviewList
+              reviews={viewReviewsModal.reviews}
+              averageRating={viewReviewsModal.averageRating}
+              totalReviews={viewReviewsModal.totalReviews}
+              loading={viewReviewsModal.loading}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

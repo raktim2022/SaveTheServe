@@ -7,6 +7,7 @@ import { Mail, ArrowRight, RefreshCw, CheckCircle, XCircle } from 'lucide-react'
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import BackButton from '@/components/common/BackButton';
+import ThemeSwitcher from '@/components/common/ThemeSwitcher';
 import { verifyEmailCode, resendVerification } from '@/services/auth.service';
 import '@/styles/auth.css';
 
@@ -100,7 +101,10 @@ export default function EmailVerificationPage() {
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth-page auth-container relative">
+      <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6">
+        <ThemeSwitcher />
+      </div>
       <BackButton href="/register" label="Back to Registration" />
       
       <motion.div 
@@ -122,7 +126,7 @@ export default function EmailVerificationPage() {
           <h1 className="auth-title">Verify Your Email</h1>
           <p className="auth-subtitle">
             We've sent a verification code to<br />
-            <span className="font-medium text-gray-900">{email}</span>
+            <span className="font-medium text-gray-900 dark:text-white">{email}</span>
           </p>
         </motion.div>
 
@@ -133,7 +137,7 @@ export default function EmailVerificationPage() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
           >
-            <XCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+            <XCircle className="w-4 h-4 mr-2 shrink-0" />
             {error}
           </motion.div>
         )}
@@ -145,7 +149,7 @@ export default function EmailVerificationPage() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
           >
-            <CheckCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+            <CheckCircle className="w-4 h-4 mr-2 shrink-0" />
             {success}
           </motion.div>
         )}
@@ -187,7 +191,7 @@ export default function EmailVerificationPage() {
         </motion.form>
 
         <div className="text-center mt-6">
-          <p className="text-sm text-gray-600 mb-3">
+          <p className="text-sm text-gray-600 dark:text-slate-300 mb-3 dark:text-slate-400">
             Didn't receive the code?
           </p>
           
@@ -211,8 +215,8 @@ export default function EmailVerificationPage() {
           </Button>
         </div>
 
-        <div className="text-center mt-6 pt-6 border-t border-gray-100">
-          <p className="text-xs text-gray-500">
+        <div className="text-center mt-6 pt-6 border-t border-gray-100 dark:border-slate-700">
+          <p className="text-xs text-gray-500 dark:text-slate-400">
             Having trouble? Check your spam folder or{' '}
             <button 
               type="button"
