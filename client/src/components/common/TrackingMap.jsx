@@ -26,7 +26,7 @@ export default function TrackingMap({
   const mapRef = useRef(null);
   const markersRef = useRef({ volunteer: null, restaurant: null, ngo: null });
 
-  const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || 'pk.eyJ1IjoicmFrdGltMDUiLCJhIjoiY21yZXZrYjRsMHB0dzJ5c2RjMXNnZmE2ZSJ9.m9jqZYgXxWttVBREi91YHw';
+  const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
   // Inject Mapbox GL JS and CSS dynamically
   useEffect(() => {
