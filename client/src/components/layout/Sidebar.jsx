@@ -236,7 +236,7 @@ export default function Sidebar({ isOpen = false, onClose = () => {} }) {
         {/* Notification Bell + User Profile */}
         {user && (
           <motion.div
-            className="mb-8 border-t border-slate-100 bg-slate-50/50 p-4 dark:border-slate-700 dark:bg-slate-800/50"
+            className="border-t border-slate-100 bg-slate-50/50 p-4 pb-safe dark:border-slate-700 dark:bg-slate-800/50"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.5 }}
@@ -246,7 +246,7 @@ export default function Sidebar({ isOpen = false, onClose = () => {} }) {
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                 Alerts
               </span>
-              <NotificationBell />
+              <NotificationBell inSidebar={true} />
             </div>
             {/* User info */}
             <div className="flex items-center gap-3">
