@@ -123,7 +123,7 @@ export default function DonorImpactPage() {
   ];
 
   return (
-    <div className="p-4 md:p-6 max-w-4xl mx-auto space-y-8">
+    <div className="mx-auto max-w-5xl space-y-8 px-3 py-4 sm:px-6 lg:px-8">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Your Impact</h1>
         <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">See the difference your food donations are making</p>
@@ -132,7 +132,7 @@ export default function DonorImpactPage() {
       {/* Stat cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {statCards.map((c) => (
-          <div key={c.label} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm p-4">
+          <div key={c.label} className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
             <div className={`inline-flex p-2 rounded-lg ${c.bg} mb-3`}>
               <c.icon className={`h-5 w-5 ${c.color}`} />
             </div>

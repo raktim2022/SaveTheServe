@@ -21,7 +21,6 @@ export function SocketProvider({ children }) {
     // Only connect when a user is authenticated
     if (!user) {
       if (socket) {
-        console.log('[Socket] 🔌 Disconnecting - no user');
         socket.disconnect();
         setSocket(null);
         setConnected(false);
@@ -31,11 +30,8 @@ export function SocketProvider({ children }) {
 
     const token = getToken();
     if (!token) {
-      console.warn('[Socket] ⚠️ No token available');
       return;
     }
-
-    console.log(`[Socket] 🔄 Connecting to ${SOCKET_URL}...`);
     
     const s = io(SOCKET_URL, {
       auth: { token },
@@ -48,25 +44,21 @@ export function SocketProvider({ children }) {
     });
 
     s.on('connect', () => {
-      console.info(`[Socket] ✅ Connected  id=${s.id}  user=${user?.id}  role=${user?.role}`);
       setConnected(true);
     });
 
-    s.on('disconnect', (reason) => {
-      console.warn(`[Socket] ⚠️ Disconnected  reason=${reason}`);
+    s.on('disconnect', () => {
       setConnected(false);
     });
 
     s.on('connect_error', (err) => {
-      console.error(`[Socket] ❌ Connection error: ${err.message}`);
-      console.error('[Socket] Error details:', err);
+      console.error(`[Socket] Connection error: ${err.message}`);
       setConnected(false);
     });
 
     setSocket(s);
 
     return () => {
-      console.log('[Socket] 🔌 Cleanup - disconnecting');
       s.disconnect();
       setSocket(null);
       setConnected(false);

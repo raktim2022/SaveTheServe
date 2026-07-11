@@ -158,7 +158,6 @@ export default function UsersPage() {
 
   const handleUserAction = async (userId, action) => {
     try {
-      console.log(`Action: ${action} on user: ${userId}`);
       // Implement actual API calls here
       alert(`${action} action triggered for user ${userId}`);
     } catch (error) {

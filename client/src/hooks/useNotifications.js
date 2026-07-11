@@ -63,7 +63,6 @@ export function useNotifications() {
     if (!socket) return;
 
     const onFoodNew = (payload) => {
-      console.log("[Notification] food:new", payload);
       push({
         type: "food:new",
         message: payload.message,
@@ -77,7 +76,6 @@ export function useNotifications() {
     };
 
     const onFoodStatusChanged = (payload) => {
-      console.log("[Notification] food:status_changed", payload);
       const status = payload.data?.status;
       push({
         type: "food:status_changed",
@@ -88,7 +86,6 @@ export function useNotifications() {
     };
 
     const onRequestNew = (payload) => {
-      console.log("[Notification] request:new", payload);
       push({
         type: "request:new",
         message: payload.message,
@@ -102,7 +99,6 @@ export function useNotifications() {
     };
 
     const onRequestStatusChanged = (payload) => {
-      console.log("[Notification] request:status_changed", payload);
       const { status } = payload.data || {};
       const message = payload.message || `Request status updated to ${status}`;
       push({
@@ -129,7 +125,6 @@ export function useNotifications() {
     };
 
     const onGeneric = (payload) => {
-      console.log("[Notification] notification:new", payload);
       push({
         id: payload.notificationId,
         type: payload.type || "notification",
@@ -140,12 +135,6 @@ export function useNotifications() {
       });
       if (payload.message) toast(payload.message, { icon: "🔔" });
     };
-
-    console.log(socket);
-
-    console.log(
-      "[Notification] Registering socket listeners  socketId=" + socket.id,
-    );
 
     socket.on("food:new", onFoodNew);
     socket.on("food:status_changed", onFoodStatusChanged);

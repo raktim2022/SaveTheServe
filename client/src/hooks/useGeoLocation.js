@@ -30,7 +30,6 @@ export const useGeoLocation = (options = {}) => {
       
       // If high accuracy failed and we haven't retried yet, try with lower accuracy
       if (err.code === 3 && retryCount === 0) { // TIMEOUT
-        console.log('Retrying with lower accuracy...');
         return fetchLocation(1);
       }
       

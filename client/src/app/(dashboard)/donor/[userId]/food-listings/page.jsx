@@ -173,9 +173,9 @@ export default function FoodListingsPage() {
     return <Loader fullScreen text="Loading your food listings..." />;
 
   return (
-    <div className="p-4 md:p-6 max-w-5xl mx-auto">
+    <div className="mx-auto max-w-5xl px-3 py-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Food Listings</h1>
           <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">
@@ -211,7 +211,7 @@ export default function FoodListingsPage() {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6 border-b border-gray-200 dark:border-slate-700">
+      <div className="mb-6 flex gap-2 border-b border-gray-200 dark:border-slate-700">
         <button
           className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
             activeTab === "listings"
@@ -241,8 +241,8 @@ export default function FoodListingsPage() {
 
       {/* Add / Edit Form Modal */}
       {(showForm || editListing) && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-[24px] border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-700 dark:bg-slate-800">
             <h2 className="text-lg font-semibold mb-4">
               {editListing ? "Edit Food Listing" : "Add New Food Listing"}
             </h2>
@@ -276,12 +276,12 @@ export default function FoodListingsPage() {
               {listings.map((listing) => (
                 <div
                   key={listing.id}
-                  className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col sm:flex-row"
+                  className="flex flex-col overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm sm:flex-row dark:border-slate-700 dark:bg-slate-800"
                 >
-                  {listing.imageUrl ? (
+                  {listing.imageUrl || listing.image || listing.images?.[0] ? (
                     <div className="sm:w-40 h-40 sm:h-auto flex-shrink-0">
                       <img
-                        src={listing.imageUrl}
+                        src={listing.imageUrl || listing.image || listing.images?.[0]}
                         alt={listing.foodName}
                         className="w-full h-full object-cover"
                       />

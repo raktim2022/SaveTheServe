@@ -111,7 +111,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-sm text-emerald-200">Email Us</p>
-                      <p className="font-semibold">support@savetheserve.org</p>
+                      <p className="font-semibold">savetheserve.ngo@gmail.com</p>
                     </div>
                   </div>
 
@@ -131,7 +131,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-sm text-emerald-200">Headquarters</p>
-                      <p className="font-semibold">Mumbai, India</p>
+                      <p className="font-semibold">Kolkata, India</p>
                     </div>
                   </div>
                 </div>

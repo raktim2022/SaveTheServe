@@ -163,7 +163,7 @@ function PhoneTab({ profile, onPhoneVerified }) {
           <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">Phone Number</h3>
           <p className="text-sm text-gray-500 dark:text-slate-400">Your phone is currently verified.</p>
         </div>
-        <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl p-4">
+        <div className="flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
           <CheckCircle className="h-5 w-5 text-green-600 shrink-0" />
           <div>
             <p className="text-sm font-semibold text-green-800">{profile.phone || 'Phone verified'}</p>
@@ -275,7 +275,7 @@ function NGOInfoTab({ profile }) {
         <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">NGO Information</h3>
         <p className="text-sm text-gray-500 dark:text-slate-400">Details about the organisation you volunteer with.</p>
       </div>
-      <dl className="divide-y divide-gray-100 rounded-xl border border-gray-100 dark:border-slate-700 overflow-hidden">
+      <dl className="overflow-hidden rounded-xl border border-gray-100 divide-y divide-gray-100 dark:border-slate-700 dark:divide-slate-700">
         {rows.filter((r) => r.value).map(({ label, value }) => (
           <div key={label} className="flex gap-4 px-4 py-3 bg-white dark:bg-slate-800">
             <dt className="text-sm font-medium text-gray-500 dark:text-slate-400 w-36 shrink-0">{label}</dt>
@@ -321,7 +321,7 @@ export default function VolunteerSettingsPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-4 md:p-8 space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6 px-3 py-4 sm:px-6 lg:px-8">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
@@ -329,7 +329,7 @@ export default function VolunteerSettingsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 dark:bg-slate-800 rounded-xl p-1">
+      <div className="flex gap-1 rounded-2xl border border-slate-200 bg-slate-100/80 p-1 shadow-sm dark:border-slate-700 dark:bg-slate-900/70">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -337,8 +337,8 @@ export default function VolunteerSettingsPage() {
             onClick={() => setActiveTab(id)}
             className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-lg transition-all ${
               activeTab === id
-                ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 dark:bg-slate-900'
+                ? 'bg-white text-gray-900 shadow-sm dark:bg-slate-800 dark:text-white'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:text-slate-400 dark:hover:bg-slate-700'
             }`}
           >
             <Icon className="h-4 w-4" />

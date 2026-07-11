@@ -73,8 +73,8 @@ export const createFood = async (foodData) => {
         await axios.post(`/food/${created.data.id}/image`, form, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-      } catch (imgErr) {
-        console.warn('Image upload failed:', imgErr.message);
+      } catch {
+        // Image upload is non-critical; continue without it
       }
     }
 

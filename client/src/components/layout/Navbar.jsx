@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+// import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { Menu, X, ArrowRight, Sun, Moon, Monitor, ChevronDown } from 'lucide-react';
@@ -47,8 +49,8 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-sm flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:shadow-emerald-500/40 group-hover:scale-105 transition-all duration-300">
-              S
+            <div className="relative h-10 w-10 overflow-hidden rounded-xl bg-white dark:bg-slate-900 shadow-lg shadow-emerald-500/10 group-hover:scale-105 transition-transform duration-300">
+              <Image src="/logo2.ico" alt="SaveTheServe" fill className="object-fill h-10 w-10" />
             </div>
             <span className="text-lg font-extrabold text-slate-900 dark:text-white tracking-tight hidden sm:block">
               SaveTheServe
@@ -159,88 +161,35 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {open && (
-        <div className="lg:hidden border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:bg-slate-900 shadow-lg">
-          <div className="px-4 py-4 space-y-4">
-            
-            {/* User Profile Summary Card */}
-            {user && (
-              <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold flex items-center justify-center shadow-sm">
-                  {user.name?.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white leading-tight">{user.name}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 capitalize mt-0.5">{user.role?.toLowerCase()}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Links */}
-            <div className="space-y-1">
-              {links.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="block px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                  onClick={() => setOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-
-            {/* Theme switcher for mobile users */}
-            {/* <div className="border-t border-slate-100 dark:border-slate-800 pt-4">
-              <p className="px-3.5 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Theme Preference</p>
-              <div className="grid grid-cols-3 gap-2 px-1">
-                {themeOptions.map((option) => {
-                  const Icon = option.icon;
-                  const isActive = theme === option.value;
-                  return (
-                    <button
-                      key={option.value}
-                      onClick={() => { setTheme(option.value); }}
-                      className={`flex flex-col items-center gap-1 py-2 px-1 rounded-xl border text-xs font-medium transition-all ${
-                        isActive
-                          ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
-                          : 'text-slate-600 dark:text-slate-300 bg-transparent border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
-                      }`}
-                    >
-                      <Icon className="h-4 w-4" />
-                      <span>{option.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div> */}
-
-            {/* Auth Actions */}
-            <div className="border-t border-slate-100 dark:border-slate-800 pt-4 flex flex-col gap-2">
+        <div className="lg:hidden border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:bg-slate-900">
+          <div className="px-4 py-4 space-y-1">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="block px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 transition-colors"
+                onClick={() => setOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <div className="border-t border-slate-200 dark:border-slate-700 pt-3 mt-3 flex flex-col gap-2">
               {user ? (
                 <>
-                  <Link 
-                    href={user.role === 'ADMIN' ? `/admin/${user.id}` : user.role === 'RESTAURANT' ? `/donor/${user.id}` : `/ngo/${user.id}`} 
-                    className="block text-center px-4 py-3 rounded-xl text-sm font-bold bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100/50 dark:hover:bg-emerald-900/30 transition-colors"
-                    onClick={() => setOpen(false)}
-                  >
-                    Go to Dashboard
+                  <Link href={user.role === 'ADMIN' ? `/admin/${user.id}` : user.role === 'RESTAURANT' ? `/donor/${user.id}` : `/ngo/${user.id}`} className="block px-3 py-2.5 rounded-lg text-sm font-semibold text-emerald-700 dark:text-emerald-400" onClick={() => setOpen(false)}>
+                    Dashboard
                   </Link>
-                  <button 
-                    onClick={() => { logout(); setOpen(false); }} 
-                    className="w-full text-center px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors"
-                  >
+                  <button onClick={() => { logout(); setOpen(false); }} className="text-left px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 transition-colors">
                     Logout
                   </button>
                 </>
               ) : (
                 <>
-                  <Link href="/login" className="block text-center px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors" onClick={() => setOpen(false)}>
+                  <Link href="/login" className="block px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200" onClick={() => setOpen(false)}>
                     Sign in
                   </Link>
                   <Link href="/register" onClick={() => setOpen(false)}>
-                    <button className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/10 transition-colors">
-                      Get started
-                    </button>
+                    <button className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm">Get started</button>
                   </Link>
                 </>
               )}

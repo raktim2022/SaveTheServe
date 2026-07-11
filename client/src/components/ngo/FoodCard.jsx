@@ -13,9 +13,9 @@ export default function FoodCard({ food, onRequest }) {
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow hover:shadow-lg transition p-4">
       {/* Image */}
       <div className="relative h-48 mb-4 rounded-lg overflow-hidden bg-gray-200">
-        {food.images && food.images[0] ? (
+        {food.imageUrl || food.image || food.images?.[0] ? (
           <Image
-            src={food.images[0]}
+            src={food.imageUrl || food.image || food.images?.[0]}
             alt={food.name}
             fill
             className="object-cover"

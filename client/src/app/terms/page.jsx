@@ -65,7 +65,7 @@ export default function TermsPage() {
         </p>
         <p>
           <strong>Email:</strong> legal@savetheserve.org<br />
-          <strong>Address:</strong> Mumbai, India
+          <strong>Address:</strong> Kolkata, India
         </p>
       </LegalPageLayout>
     </>

@@ -68,7 +68,7 @@ export default function NgoDonateDashboard() {
   if (loading) return <Loader fullScreen text="Loading donation data..." />;
 
   return (
-    <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-8">
+    <div className="mx-auto max-w-6xl space-y-8 px-3 py-4 sm:px-6 lg:px-8">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Donations Dashboard</h1>
@@ -76,10 +76,10 @@ export default function NgoDonateDashboard() {
       </div>
 
       {/* Share Link Banner */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-green-600 to-emerald-500 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6"
+        className="flex flex-col items-center justify-between gap-6 rounded-[28px] bg-gradient-to-br from-emerald-700 via-green-600 to-teal-500 p-6 text-white shadow-xl md:flex-row"
       >
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
@@ -89,7 +89,7 @@ export default function NgoDonateDashboard() {
           <p className="text-green-50 mb-4 text-sm md:text-base">
             Share this link on your website, social media, or with partners to receive secure online donations via Razorpay.
           </p>
-          <div className="flex items-center gap-2 bg-black/20 p-2 rounded-xl backdrop-blur-sm w-full max-w-xl">
+          <div className="flex w-full max-w-xl items-center gap-2 rounded-xl bg-black/20 p-2 backdrop-blur-sm">
             <code className="flex-1 text-sm text-white px-2 truncate select-all">{donateLink}</code>
             <button 
               onClick={copyToClipboard}
@@ -143,7 +143,7 @@ export default function NgoDonateDashboard() {
       </div>
 
       {/* Recent Donations Table */}
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
+      <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
         <div className="p-6 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">Recent Donations</h3>
         </div>

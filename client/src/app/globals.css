@@ -120,7 +120,12 @@ h1, h2, h3, h4, h5, h6 {
   background-color: var(--background);
 }
 
-/* .dashboard-main layout is handled by src/styles/dashboard.css */
+.dashboard-main {
+  flex: 1;
+  margin-left: 16rem; /* 64 * 0.25rem = 16rem for w-64 sidebar */
+  padding: 2rem;
+  overflow-y: auto;
+}
 
 /* Animation classes */
 .fade-in {
@@ -148,17 +153,6 @@ h1, h2, h3, h4, h5, h6 {
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes themeSwitcherPopup {
-  from {
-    opacity: 0;
-    transform: translateY(8px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 

@@ -112,7 +112,7 @@ export default function NGOHistoryPage() {
   const impact = getImpactLevel(stats.mealsRescued);
 
   return (
-    <div className="space-y-8">
+    <div className="mx-auto max-w-6xl space-y-8 px-3 py-4 sm:px-6 lg:px-8">
       {/* Header */}
       <motion.div 
         className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 justify-between"
@@ -142,8 +142,8 @@ export default function NGOHistoryPage() {
       </motion.div>
 
       {/* Impact Badge */}
-      <motion.div 
-        className="glass-card p-6 rounded-xl"
+      <motion.div
+        className="rounded-[24px] border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800/90"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
@@ -163,8 +163,8 @@ export default function NGOHistoryPage() {
       </motion.div>
 
       {/* Stats Grid */}
-      <motion.div 
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+      <motion.div
+        className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
@@ -177,7 +177,7 @@ export default function NGOHistoryPage() {
         ].map((stat, index) => (
           <motion.div
             key={stat.title}
-            className="glass-card p-6 rounded-xl"
+            className="rounded-[24px] border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800/90"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
@@ -197,8 +197,8 @@ export default function NGOHistoryPage() {
       </motion.div>
 
       {/* History Timeline */}
-      <motion.div 
-        className="glass-card rounded-xl"
+      <motion.div
+        className="rounded-[24px] border border-slate-200 bg-white/90 shadow-sm dark:border-slate-700 dark:bg-slate-800/90"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.4 }}
@@ -220,7 +220,7 @@ export default function NGOHistoryPage() {
               {requests.map((request, index) => (
                 <motion.div
                   key={request.id}
-                  className="flex items-start space-x-4 p-4 rounded-lg border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 dark:bg-slate-900 transition-colors"
+                  className="flex items-start space-x-4 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900/70 dark:hover:bg-slate-700"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}

@@ -36,7 +36,7 @@ export function useLiveTracking({ requestId, isVolunteer = false, enabled = fals
         return;
       }
 
-      loggerDebug(`[Tracking Hook] Starting location stream for request ${requestId}`);
+
 
       watchIdRef.current = navigator.geolocation.watchPosition(
         (position) => {
@@ -93,15 +93,10 @@ export function useLiveTracking({ requestId, isVolunteer = false, enabled = fals
         }
         socket.emit('tracking:leave', { requestId });
       }
-      loggerDebug(`[Tracking Hook] Cleaned up tracking room for request ${requestId}`);
     };
   }, [socket, requestId, isVolunteer, enabled]);
 
   return { coordinates, error };
 }
 
-function loggerDebug(msg) {
-  if (process.env.NODE_ENV !== 'production') {
-    console.log(msg);
-  }
-}
+

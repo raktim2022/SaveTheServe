@@ -2095,7 +2095,7 @@ Need help?
 - 📖 [Documentation](DEPLOYMENT.md)
 - 🐛 [Report Issues](https://github.com/[YOUR_ORG]/savetheserve/issues)
 - 💬 [Discussions](https://github.com/[YOUR_ORG]/savetheserve/discussions)
-- 📧 Email: [support@savetheserve.org](mailto:support@savetheserve.org)
+- 📧 Email: [savetheserve.ngo@gmail.com](mailto:savetheserve.ngo@gmail.com)
 
 ---
 

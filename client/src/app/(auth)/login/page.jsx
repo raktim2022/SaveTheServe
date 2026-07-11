@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -104,8 +105,14 @@ export default function LoginPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
           >
-            <div className="w-16 h-16 bg-linear-to-br from-green-600 to-emerald-600 rounded-xl mx-auto mb-4 flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-xl">S</span>
+            <div className="mx-auto mb-4 w-20 text-center">
+              <Image
+                src="/logo1.png"
+                alt="SaveTheServe"
+                width={80}
+                height={80}
+                className="mx-auto h-20 w-auto"
+              />
             </div>
             <h1 className="auth-title mb-2">Welcome Back</h1>
             <p className="auth-subtitle text-sm">Sign in to your SaveTheServe account</p>
@@ -185,7 +192,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-200"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-slate-400 hover:text-gray-700"
                   disabled={loading}
                 >
                   {showPassword ? (
@@ -218,7 +225,7 @@ export default function LoginPage() {
           </form>
 
           {/* Footer */}
-          <p className="text-center text-sm text-gray-600 dark:text-slate-300 mt-6 dark:text-slate-400">
+          <p className="text-center text-sm text-gray-600 dark:text-slate-300 mt-6">
             Don't have an account?{' '}
             <Link href="/register" className="text-green-600 hover:text-green-700 font-semibold dark:text-emerald-400 dark:hover:text-emerald-300">
               Sign up

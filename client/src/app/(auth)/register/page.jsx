@@ -160,11 +160,11 @@ export default function RegisterPage() {
       <div className="hidden lg:flex lg:w-2/5 bg-linear-to-br from-green-600 to-emerald-700 flex-col justify-between p-10 text-white">
         <div>
           <Image
-            src="/images/logo.svg"
+            src="/logo1.png"
             alt="SaveTheServe"
             width={160}
             height={48}
-            className="h-10 w-auto brightness-0 invert mb-8"
+            className="h-10 w-auto mb-8"
           />
           <h1 className="text-3xl font-bold leading-tight mb-3">
             Join the movement to end food waste
@@ -200,7 +200,7 @@ export default function RegisterPage() {
           {/* Mobile logo */}
           <div className="lg:hidden mb-6 text-center">
             <Image
-              src="/images/logo.svg"
+              src="/logo1.png"
               alt="SaveTheServe"
               width={160}
               height={48}
@@ -268,7 +268,7 @@ export default function RegisterPage() {
                 className={`text-left p-4 rounded-xl border-2 transition-all duration-150 ${
                   role === opt.value
                     ? 'border-green-500 bg-green-50 dark:bg-emerald-900/30 dark:border-emerald-500'
-                    : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-gray-300 dark:border-slate-600'
+                    : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-gray-300'
                 }`}
               >
                 <span className={`block mb-2 ${role === opt.value ? 'text-green-600' : 'text-gray-400'}`}>

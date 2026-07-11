@@ -272,17 +272,17 @@ export default function SetupProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-green-50 to-blue-50 py-12 px-4">
+    <div className="min-h-screen bg-linear-to-br from-green-50 via-white to-blue-50 py-12 px-4 transition-colors dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
-            <Building2 className="h-8 w-8 text-green-600" />
+          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+            <Building2 className="h-8 w-8 text-green-600 dark:text-green-400" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             {step === 1 ? "Choose Your Role" : "Complete Your Profile"}
           </h1>
-          <p className="text-gray-600 dark:text-slate-300">
+          <p className="text-gray-600 dark:text-slate-400">
             {step === 1
               ? "Tell us who you are to get started"
               : "Fill in the details to set up your account"}
@@ -316,8 +316,8 @@ export default function SetupProfilePage() {
                   className={clsx(
                     "p-6 rounded-xl border-2 transition text-left",
                     selectedRole === role.id
-                      ? "border-green-600 bg-green-50"
-                      : "border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-green-300",
+                      ? "border-green-600 bg-green-50 shadow-sm dark:border-green-500 dark:bg-green-950/40"
+                      : "border-gray-200 bg-white hover:border-green-300 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-green-500 dark:hover:bg-slate-700/80",
                   )}
                 >
                   <div className="text-3xl mb-3">{role.icon}</div>
@@ -346,11 +346,11 @@ export default function SetupProfilePage() {
 
         {/* Step 2: Profile Details */}
         {step === 2 && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8">
+          <div className="rounded-2xl bg-white p-8 shadow-lg transition-colors dark:bg-slate-800">
             {errors.submit && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
-                <p className="text-red-800 text-sm">{errors.submit}</p>
+              <div className="mb-6 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950/40">
+                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
+                <p className="text-sm text-red-800 dark:text-red-200">{errors.submit}</p>
               </div>
             )}
 
@@ -379,9 +379,7 @@ export default function SetupProfilePage() {
                       onChange={handleChange}
                       disabled={loading}
                       className={clsx(
-                        "w-full px-4 py-2 border rounded-lg transition",
-                        "focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent",
-                        "disabled:bg-gray-100 dark:bg-slate-800 disabled:cursor-not-allowed",
+                        "w-full rounded-lg border px-4 py-2 text-gray-900 transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 disabled:cursor-not-allowed disabled:bg-gray-100 dark:bg-slate-800 dark:text-slate-100 dark:disabled:bg-slate-700",
                         errors.shopType ? "border-red-500" : "border-gray-300 dark:border-slate-600",
                       )}
                     >
@@ -422,7 +420,7 @@ export default function SetupProfilePage() {
                     name="ngoId"
                     value={formData.ngoId}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border rounded-lg"
+                    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                   >
                     <option value="">Choose NGO...</option>
 
@@ -474,8 +472,8 @@ export default function SetupProfilePage() {
               />
 
               {/* Info Box */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-900">
+              <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/30">
+                <p className="text-sm text-blue-900 dark:text-blue-200">
                   <strong>Note:</strong> You can update these details anytime in
                   your settings.
                 </p>

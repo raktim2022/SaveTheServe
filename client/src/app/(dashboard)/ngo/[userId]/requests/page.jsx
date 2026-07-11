@@ -186,41 +186,42 @@ export default function NGORequestsPage() {
   if (loading) return <Loader fullScreen text="Loading your requests..." />;
 
   return (
-    <div className="p-4 md:p-6 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Requests</h1>
-          <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">Track your food donation requests</p>
+    <div className="mx-auto max-w-5xl px-3 py-4 sm:px-6 lg:px-8">
+      <section className="mb-6 rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800/90 sm:p-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Requests</h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">Track your food donation requests</p>
+          </div>
+          <Link
+            href={routes.NGO_DASHBOARD}
+            className="text-sm font-medium text-green-600 hover:text-green-800"
+          >
+            ← Browse Food
+          </Link>
         </div>
-        <Link
-          href={routes.NGO_DASHBOARD}
-          className="text-sm text-green-600 hover:text-green-800 font-medium"
-        >
-          ← Browse Food
-        </Link>
-      </div>
+      </section>
 
       {/* Feedback */}
       {actionMsg && (
-        <div className="mb-4 p-3 rounded-lg bg-green-50 border border-green-200 text-green-800 text-sm">
+        <div className="mb-4 rounded-2xl border border-green-200 bg-green-50 p-3 text-sm text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-300">
           {actionMsg}
         </div>
       )}
       {actionError && (
-        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm">
+        <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300">
           {actionError}
         </div>
       )}
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+        <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300">
           {error}
         </div>
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6">
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm text-center">
+      <div className="mb-6 grid grid-cols-3 gap-2 sm:gap-4">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm dark:border-slate-700 dark:bg-slate-800">
           <p className="text-xs text-gray-500 dark:text-slate-400">Total</p>
           <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{requests.length}</p>
         </div>
@@ -235,7 +236,7 @@ export default function NGORequestsPage() {
       </div>
 
       {/* Filter */}
-      <div className="overflow-x-auto pb-1 mb-6">
+      <div className="mb-6 overflow-x-auto pb-1">
         <div className="flex flex-nowrap gap-2">
           {['all', 'PENDING', 'ACCEPTED', 'REJECTED', 'COMPLETED'].map((s) => (
             <button
@@ -255,7 +256,7 @@ export default function NGORequestsPage() {
 
       {/* Requests List */}
       {filtered.length === 0 ? (
-        <div className="text-center py-16">
+        <div className="rounded-3xl border border-dashed border-slate-300 bg-white/70 py-16 text-center shadow-sm dark:border-slate-600 dark:bg-slate-900/60">
           <div className="text-5xl mb-4">📬</div>
           <h3 className="text-lg font-medium text-gray-700 dark:text-slate-200">
             {statusFilter === 'all' ? 'No requests yet' : `No ${STATUS_LABELS[statusFilter]?.toLowerCase()} requests`}
@@ -273,19 +274,19 @@ export default function NGORequestsPage() {
           {filtered.map((req) => (
             <div
               key={req.id}
-              className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden"
+              className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800"
             >
               <div className="p-4">
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex gap-3 items-center">
-                    {req.foodListing?.imageUrl ? (
+                    {req.foodListing?.imageUrl || req.foodListing?.image || req.foodListing?.images?.[0] ? (
                       <img
-                        src={req.foodListing.imageUrl}
+                        src={req.foodListing?.imageUrl || req.foodListing?.image || req.foodListing?.images?.[0]}
                         alt={req.foodListing.foodName}
-                        className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg object-cover flex-shrink-0"
+                        className="h-12 w-12 rounded-lg object-cover shrink-0 sm:h-14 sm:w-14"
                       />
                     ) : (
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-2xl flex-shrink-0">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 text-2xl shrink-0 dark:bg-slate-800 sm:h-14 sm:w-14">
                         🍽️
                       </div>
                     )}
@@ -299,7 +300,7 @@ export default function NGORequestsPage() {
                       </p>
                     </div>
                   </div>
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full flex-shrink-0 ${STATUS_COLORS[req.status] || 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300'}`}>
+                  <span className={`rounded-full px-2 py-1 text-xs font-medium shrink-0 ${STATUS_COLORS[req.status] || 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300'}`}>
                     {STATUS_LABELS[req.status] || req.status}
                   </span>
                 </div>
@@ -330,7 +331,7 @@ export default function NGORequestsPage() {
 
                 {/* Status-specific info */}
                 {req.status === 'ACCEPTED' && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
+                  <div className="mb-3 rounded-lg border border-green-200 bg-green-50 p-3 dark:border-green-800 dark:bg-green-900/20">
                     <p className="text-sm text-green-800 font-medium">✓ Your request was accepted!</p>
                     {req.assignedVolunteer ? (
                       <div className="flex items-center justify-between gap-2 mt-1 flex-wrap">

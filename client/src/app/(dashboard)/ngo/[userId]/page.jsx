@@ -180,68 +180,84 @@ export default function NGODashboard() {
   if (loading) return <Loader fullScreen text="Loading available food..." />;
 
   return (
-    <div className="p-4 md:p-6 max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Welcome, {user?.name || 'NGO'} 🤝
-        </h1>
-        <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">Browse available food donations from restaurants</p>
-      </div>
+    <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6 lg:px-8">
+      <section className="overflow-hidden rounded-[28px] border border-emerald-100 bg-linear-to-br from-emerald-700 via-green-600 to-lime-500 p-5 text-white shadow-xl sm:p-7 lg:p-8">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl">
+            <div className="mb-3 inline-flex items-center rounded-full border border-white/25 bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-emerald-50">
+              NGO operations hub
+            </div>
+            <h1 className="text-2xl font-semibold sm:text-3xl">
+              Welcome, {user?.name || 'NGO'} 🤝
+            </h1>
+            <p className="mt-2 text-sm text-emerald-50/90 sm:text-base">
+              Coordinate pickups, review incoming requests, and connect with volunteers from one calm dashboard.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
+            <p className="text-sm font-medium text-emerald-50">Available now</p>
+            <p className="text-2xl font-semibold">{stats.available} listings</p>
+          </div>
+        </div>
+      </section>
 
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+        <div className="mb-4 mt-6 rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
           {error}
         </div>
       )}
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
-          <p className="text-xs text-gray-500 dark:text-slate-400">Available Now</p>
-          <p className="text-3xl font-bold text-green-600">{stats.available}</p>
+      <section className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="rounded-2xl border border-emerald-100 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <p className="text-xs uppercase tracking-[0.24em] text-gray-500 dark:text-slate-400">Available Now</p>
+          <p className="mt-2 text-3xl font-semibold text-emerald-600">{stats.available}</p>
         </div>
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
-          <p className="text-xs text-gray-500 dark:text-slate-400">My Requests</p>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.myTotal}</p>
+        <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <p className="text-xs uppercase tracking-[0.24em] text-gray-500 dark:text-slate-400">My Requests</p>
+          <p className="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{stats.myTotal}</p>
         </div>
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
-          <p className="text-xs text-gray-500 dark:text-slate-400">Pending</p>
-          <p className="text-3xl font-bold text-yellow-600">{stats.myPending}</p>
+        <div className="rounded-2xl border border-amber-100 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <p className="text-xs uppercase tracking-[0.24em] text-gray-500 dark:text-slate-400">Pending</p>
+          <p className="mt-2 text-3xl font-semibold text-amber-600">{stats.myPending}</p>
         </div>
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
-          <p className="text-xs text-gray-500 dark:text-slate-400">Accepted</p>
-          <p className="text-3xl font-bold text-blue-600">{stats.myAccepted}</p>
+        <div className="rounded-2xl border border-blue-100 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <p className="text-xs uppercase tracking-[0.24em] text-gray-500 dark:text-slate-400">Accepted</p>
+          <p className="mt-2 text-3xl font-semibold text-blue-600">{stats.myAccepted}</p>
         </div>
-      </div>
+      </section>
 
-      {/* Quick link to requests + Tab switcher */}
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <Link
-          href={routes.NGO_REQUESTS}
-          className="bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 dark:bg-slate-900 text-gray-700 dark:text-slate-200 border border-gray-200 dark:border-slate-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-        >
-          My Requests →
-        </Link>
-        <div className="flex gap-1 bg-gray-100 dark:bg-slate-800 rounded-xl p-1">
-          <button
-            onClick={() => setActiveTab('food')}
-            className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-              activeTab === 'food' ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-200'
-            }`}
-          >
-            🍱 Food Listings
-          </button>
-          <button
-            onClick={() => setActiveTab('volunteers')}
-            className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-              activeTab === 'volunteers' ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-200'
-            }`}
-          >
-            👥 Volunteers
-          </button>
+      <section className="mt-6 flex flex-col gap-4 rounded-3xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/70 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p className="text-sm font-semibold text-slate-900 dark:text-white">Keep the flow moving</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Review requests and manage volunteer support from a clean, focused workspace.</p>
         </div>
-      </div>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href={routes.NGO_REQUESTS}
+            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+          >
+            My Requests →
+          </Link>
+          <div className="flex gap-1 rounded-2xl bg-slate-100 p-1 dark:bg-slate-800">
+            <button
+              onClick={() => setActiveTab('food')}
+              className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === 'food' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'
+              }`}
+            >
+              🍱 Food Listings
+            </button>
+            <button
+              onClick={() => setActiveTab('volunteers')}
+              className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === 'volunteers' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'
+              }`}
+            >
+              👥 Volunteers
+            </button>
+          </div>
+        </div>
+      </section>
 
       {/* Volunteers Tab */}
       {activeTab === 'volunteers' && (
@@ -274,30 +290,30 @@ export default function NGODashboard() {
 
       {/* Food Listings Grid */}
       {filtered.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="text-5xl mb-4">🔍</div>
+        <div className="rounded-3xl border border-dashed border-slate-300 bg-white/70 py-16 text-center shadow-sm dark:border-slate-600 dark:bg-slate-900/60">
+          <div className="mb-4 text-5xl">🔍</div>
           <p className="text-gray-500 dark:text-slate-400">No available food listings found</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((listing) => {
             const requested = alreadyRequested(listing.id);
             const expiringSoon = isExpiringSoon(listing.expiryTime);
             return (
               <div
                 key={listing.id}
-                className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+                className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-700 dark:bg-slate-800"
               >
-                {listing.imageUrl ? (
+                {listing.imageUrl || listing.image || listing.images?.[0] ? (
                   <div className="h-40 overflow-hidden">
                     <img
-                      src={listing.imageUrl}
+                      src={listing.imageUrl || listing.image || listing.images?.[0]}
                       alt={listing.foodName}
                       className="w-full h-full object-cover"
                     />
                   </div>
                 ) : (
-                  <div className="h-32 bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center text-4xl">
+                  <div className="h-32 bg-linear-to-br from-green-50 to-green-100 flex items-center justify-center text-4xl">
                     🍽️
                   </div>
                 )}
@@ -305,7 +321,7 @@ export default function NGODashboard() {
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <h3 className="font-semibold text-gray-900 dark:text-white truncate">{listing.foodName}</h3>
                     {expiringSoon && (
-                      <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full flex-shrink-0">
+                      <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full shrink-0">
                         Expiring!
                       </span>
                     )}

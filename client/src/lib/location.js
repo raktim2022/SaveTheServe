@@ -50,8 +50,7 @@ export class LocationService {
     try {
       const permission = await navigator.permissions.query({ name: 'geolocation' });
       return permission.state;
-    } catch (error) {
-      console.warn('Permission API not supported');
+    } catch {
       // Fallback: try to get location directly
       try {
         await this.getCurrentLocation();
@@ -82,8 +81,7 @@ export class LocationService {
       }
       
       throw new Error('No address found for coordinates');
-    } catch (error) {
-      console.warn('Reverse geocoding failed:', error);
+    } catch {
       return {
         address: `${latitude}, ${longitude}`,
         city: '',
