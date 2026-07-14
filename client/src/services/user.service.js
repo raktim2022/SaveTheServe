@@ -10,7 +10,7 @@ import axios from '@/lib/axios';
  * @returns {Promise<Object>} Users with pagination
  */
 export const getUsers = async (params = {}) => {
-  const response = await axios.get('/users', { params });
+  const response = await axios.get('/admin/users/all', { params });
   return response.data;
 };
 
@@ -51,7 +51,7 @@ export const deleteUser = async (id) => {
  * @returns {Promise<Object>} Updated user
  */
 export const verifyUser = async (id) => {
-  const response = await axios.patch(`/users/${id}/verify`);
+  const response = await axios.patch(`/admin/users/${id}/verify`); // Backend may need this implemented, but let's correct the route format.
   return response.data;
 };
 
@@ -60,8 +60,8 @@ export const verifyUser = async (id) => {
  * @param {string} id - User ID
  * @returns {Promise<Object>} Updated user
  */
-export const suspendUser = async (id) => {
-  const response = await axios.patch(`/users/${id}/suspend`);
+export const suspendUser = async (id, reason) => {
+  const response = await axios.patch(`/admin/users/${id}/suspend`, { reason });
   return response.data;
 };
 
@@ -71,7 +71,7 @@ export const suspendUser = async (id) => {
  * @returns {Promise<Object>} Updated user
  */
 export const activateUser = async (id) => {
-  const response = await axios.patch(`/users/${id}/activate`);
+  const response = await axios.patch(`/admin/users/${id}/reactivate`);
   return response.data;
 };
 
@@ -100,7 +100,7 @@ export const getRestaurants = async (params = {}) => {
  * @returns {Promise<Object>} User statistics
  */
 export const getUserStats = async () => {
-  const response = await axios.get('/users/stats');
+  const response = await axios.get('/admin/users/stats');
   return response.data;
 };
 

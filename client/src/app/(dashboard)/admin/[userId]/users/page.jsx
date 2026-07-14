@@ -1,13 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Users, Search, Filter, MoreVertical, Shield, Heart, ChefHat, Mail, Phone, Calendar, CheckCircle, XCircle, Edit } from 'lucide-react';
+import {
+  Users, Search, Shield, Heart, ChefHat, Mail, Phone,
+  CheckCircle, XCircle, RotateCcw, AlertCircle
+} from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import Loader from '@/components/common/Loader';
 import Badge from '@/components/common/Badge';
 import Button from '@/components/common/Button';
+import { getUsers, suspendUser, activateUser, getUserStats } from '@/services/user.service';
 
 export default function UsersPage() {
   const { user } = useAuth();
@@ -16,159 +20,125 @@ export default function UsersPage() {
   const userId = params?.userId;
 
   const [users, setUsers] = useState([]);
+  const [stats, setStats] = useState({ total: 0, ngos: 0, restaurants: 0, admins: 0 });
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL');
-  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
 
-  // Validate user access to this page
   useEffect(() => {
     if (user && userId) {
-      // Check if the user ID matches the logged-in user and user is ADMIN
       if (user.id.toString() !== userId.toString() || user.role !== 'ADMIN') {
         router.push('/login');
         return;
       }
-    }
-  }, [user, userId, router]);
-
-  useEffect(() => {
-    if (user && userId) {
-      fetchUsers();
+      fetchAll();
     }
   }, [user, userId]);
 
-  const fetchUsers = async () => {
+  const fetchAll = async () => {
     try {
       setLoading(true);
-      // Mock data for now - replace with actual API call
-      const mockUsers = [
-        {
-          id: 1,
-          name: 'Green Hearts Foundation',
-          email: 'contact@greenhearts.org',
-          role: 'NGO',
-          status: 'ACTIVE',
-          phone: '+1-555-0123',
-          organizationName: 'Green Hearts Foundation',
-          createdAt: '2024-01-15T10:00:00Z',
-          lastLoginAt: '2024-12-22T14:30:00Z'
-        },
-        {
-          id: 2,
-          name: 'Downtown Bistro',
-          email: 'manager@downtownbistro.com',
-          role: 'RESTAURANT',
-          status: 'ACTIVE',
-          phone: '+1-555-0456',
-          businessName: 'Downtown Bistro',
-          createdAt: '2024-02-01T09:15:00Z',
-          lastLoginAt: '2024-12-22T12:45:00Z'
-        },
-        {
-          id: 3,
-          name: 'Food Angels',
-          email: 'info@foodangels.org',
-          role: 'NGO',
-          status: 'PENDING',
-          phone: '+1-555-0789',
-          organizationName: 'Food Angels',
-          createdAt: '2024-12-20T16:20:00Z',
-          lastLoginAt: null
-        },
-        {
-          id: 4,
-          name: 'Corner Cafe',
-          email: 'owner@cornercafe.com',
-          role: 'RESTAURANT',
-          status: 'SUSPENDED',
-          phone: '+1-555-0321',
-          businessName: 'Corner Cafe',
-          createdAt: '2024-03-10T11:30:00Z',
-          lastLoginAt: '2024-12-15T18:20:00Z'
-        }
-      ];
-      setUsers(mockUsers);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      setUsers([]);
+      const [usersRes, statsRes] = await Promise.all([
+        getUsers().catch(() => ({ data: [] })),
+        getUserStats().catch(() => ({})),
+      ]);
+
+      const usersData = usersRes?.data?.users || usersRes?.data || usersRes || [];
+      const statsData = statsRes?.data || statsRes || {};
+
+      setUsers(Array.isArray(usersData) ? usersData : []);
+      setStats({
+        total: statsData.total ?? usersData.length ?? 0,
+        ngos: statsData.ngos ?? 0,
+        restaurants: statsData.restaurants ?? 0,
+        admins: statsData.admins ?? 0,
+      });
+    } catch (err) {
+      setError('Failed to load users. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleSuspend = async (targetUserId) => {
+    const reason = window.prompt('Please enter a reason for suspension:');
+    if (!reason) return; // User cancelled or entered empty string
+    
+    if (reason.length < 10) {
+      setError('Reason must be at least 10 characters long.');
+      return;
+    }
+
+    try {
+      setActionLoading(targetUserId);
+      setError('');
+      await suspendUser(targetUserId, reason);
+      setSuccessMsg('User suspended successfully.');
+      setTimeout(() => setSuccessMsg(''), 3000);
+      await fetchAll();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to suspend user.');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleReactivate = async (targetUserId) => {
+    try {
+      setActionLoading(targetUserId);
+      setError('');
+      await activateUser(targetUserId);
+      setSuccessMsg('User reactivated successfully.');
+      setTimeout(() => setSuccessMsg(''), 3000);
+      await fetchAll();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to reactivate user.');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const getRoleIcon = (role) => {
     switch (role) {
-      case 'NGO':
-        return Heart;
-      case 'RESTAURANT':
-        return ChefHat;
-      case 'ADMIN':
-        return Shield;
-      default:
-        return Users;
+      case 'NGO': return Heart;
+      case 'RESTAURANT': return ChefHat;
+      case 'ADMIN': return Shield;
+      default: return Users;
     }
   };
 
-  const getRoleColor = (role) => {
+  const getRoleBadgeVariant = (role) => {
     switch (role) {
-      case 'NGO':
-        return 'success';
-      case 'RESTAURANT':
-        return 'primary';
-      case 'ADMIN':
-        return 'warning';
-      default:
-        return 'secondary';
+      case 'NGO': return 'success';
+      case 'RESTAURANT': return 'primary';
+      case 'ADMIN': return 'warning';
+      default: return 'secondary';
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'success';
-      case 'PENDING':
-        return 'warning';
-      case 'SUSPENDED':
-        return 'danger';
-      default:
-        return 'secondary';
-    }
+  const getStatusBadgeVariant = (isVerified) => {
+    return isVerified ? 'success' : 'warning';
   };
 
   const formatDate = (dateString) => {
     if (!dateString) return 'Never';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      year: 'numeric', month: 'short', day: 'numeric',
     });
   };
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = roleFilter === 'ALL' || user.role === roleFilter;
-    const matchesStatus = statusFilter === 'ALL' || user.status === statusFilter;
-    
-    return matchesSearch && matchesRole && matchesStatus;
+  const filteredUsers = users.filter((u) => {
+    const matchesSearch =
+      u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = roleFilter === 'ALL' || u.role === roleFilter;
+    return matchesSearch && matchesRole;
   });
 
-  const handleUserAction = async (userId, action) => {
-    try {
-      // Implement actual API calls here
-      alert(`${action} action triggered for user ${userId}`);
-    } catch (error) {
-      console.error('Error performing user action:', error);
-      alert('Failed to perform action');
-    }
-  };
-
-  if (loading) {
-    return <Loader fullScreen text="Loading users..." />;
-  }
+  if (loading) return <Loader fullScreen text="Loading users..." />;
 
   return (
     <div className="space-y-6 p-6">
@@ -176,69 +146,86 @@ export default function UsersPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">User Management</h1>
-          <p className="text-gray-600 dark:text-slate-300 mt-1">Manage registered users, NGOs, and restaurants</p>
+          <p className="text-gray-600 dark:text-slate-300 mt-1">Manage all registered platform users</p>
         </div>
-        <Button>
-          <Users className="h-4 w-4 mr-2" />
-          Add User
-        </Button>
+        <button
+          onClick={fetchAll}
+          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
+        >
+          <RotateCcw className="h-4 w-4" />
+          Refresh
+        </button>
       </div>
+
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: 'Total Users', value: stats.total, color: 'text-blue-600', bg: 'bg-blue-50' },
+          { label: 'NGOs', value: stats.ngos, color: 'text-green-600', bg: 'bg-green-50' },
+          { label: 'Restaurants', value: stats.restaurants, color: 'text-purple-600', bg: 'bg-purple-50' },
+          { label: 'Admins', value: stats.admins, color: 'text-amber-600', bg: 'bg-amber-50' },
+        ].map((s) => (
+          <div key={s.label} className={`glass-card p-4 rounded-xl ${s.bg}`}>
+            <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+            <p className="text-sm text-gray-600 dark:text-slate-300">{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Alerts */}
+      {error && (
+        <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          {error}
+        </div>
+      )}
+      {successMsg && (
+        <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl">
+          <CheckCircle className="h-4 w-4 shrink-0" />
+          {successMsg}
+        </div>
+      )}
 
       {/* Filters */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="glass-card p-6 rounded-xl"
+        className="glass-card p-4 rounded-xl"
       >
         <div className="flex flex-col md:flex-row gap-4">
-          {/* Search */}
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
             <input
               type="text"
               placeholder="Search by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
           </div>
-
-          {/* Role Filter */}
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="px-4 py-2 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500"
           >
             <option value="ALL">All Roles</option>
             <option value="NGO">NGOs</option>
             <option value="RESTAURANT">Restaurants</option>
             <option value="ADMIN">Admins</option>
-          </select>
-
-          {/* Status Filter */}
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-          >
-            <option value="ALL">All Status</option>
-            <option value="ACTIVE">Active</option>
-            <option value="PENDING">Pending</option>
-            <option value="SUSPENDED">Suspended</option>
+            <option value="VOLUNTEER">Volunteers</option>
           </select>
         </div>
       </motion.div>
 
-      {/* Users Table */}
+      {/* Table */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
+        transition={{ delay: 0.1 }}
         className="glass-card rounded-xl overflow-hidden"
       >
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 flex justify-between items-center">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             Users ({filteredUsers.length})
           </h2>
         </div>
@@ -247,104 +234,76 @@ export default function UsersPage() {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                  User
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                  Role
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                  Contact
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                  Last Login
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                  Actions
-                </th>
+                {['User', 'Role', 'Verified', 'Contact', 'Joined', 'Actions'].map((h) => (
+                  <th key={h} className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">{h}</th>
+                ))}
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
-              {filteredUsers.map((user, index) => {
-                const RoleIcon = getRoleIcon(user.role);
+            <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
+              {filteredUsers.map((u, index) => {
+                const RoleIcon = getRoleIcon(u.role);
+                const isSuspending = actionLoading === u.id;
                 return (
                   <motion.tr
-                    key={user.id}
+                    key={u.id}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="hover:bg-gray-50 dark:hover:bg-slate-700 dark:bg-slate-900 transition-colors"
+                    transition={{ delay: index * 0.05 }}
+                    className="hover:bg-gray-50 dark:hover:bg-slate-800 dark:bg-slate-900 transition-colors"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-600 to-secondary-500 text-white flex items-center justify-center font-bold">
-                          {user.name.charAt(0).toUpperCase()}
+                      <div className="flex items-center gap-3">
+                        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary-600 to-secondary-500 text-white flex items-center justify-center font-bold text-sm shrink-0">
+                          {u.name?.charAt(0).toUpperCase()}
                         </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</div>
-                          <div className="text-sm text-gray-500 dark:text-slate-400">{user.email}</div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">{u.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-slate-400">{u.email}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <RoleIcon className="h-4 w-4 mr-2" />
-                        <Badge variant={getRoleColor(user.role)}>
-                          {user.role}
-                        </Badge>
+                      <div className="flex items-center gap-2">
+                        <RoleIcon className="h-4 w-4 text-gray-400" />
+                        <Badge variant={getRoleBadgeVariant(u.role)}>{u.role}</Badge>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <Badge variant={getStatusColor(user.status)}>
-                        {user.status}
+                      <Badge variant={getStatusBadgeVariant(u.isVerified)}>
+                        {u.isVerified ? 'Verified' : 'Unverified'}
                       </Badge>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-slate-400">
                       <div className="space-y-1">
-                        <div className="flex items-center">
-                          <Mail className="h-3 w-3 mr-1" />
-                          {user.email}
-                        </div>
-                        {user.phone && (
-                          <div className="flex items-center">
-                            <Phone className="h-3 w-3 mr-1" />
-                            {user.phone}
-                          </div>
-                        )}
+                        <div className="flex items-center gap-1"><Mail className="h-3 w-3" />{u.email}</div>
+                        {u.phone && <div className="flex items-center gap-1"><Phone className="h-3 w-3" />{u.phone}</div>}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-slate-400">
-                      {formatDate(user.lastLoginAt)}
+                      {formatDate(u.createdAt)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center space-x-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleUserAction(user.id, 'edit')}
-                        >
-                          <Edit className="h-3 w-3" />
-                        </Button>
-                        {user.status === 'PENDING' && (
-                          <Button
-                            size="sm"
-                            onClick={() => handleUserAction(user.id, 'approve')}
-                          >
-                            <CheckCircle className="h-3 w-3" />
-                          </Button>
-                        )}
-                        {user.status === 'ACTIVE' && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleUserAction(user.id, 'suspend')}
-                            className="text-red-600 border-red-200 hover:bg-red-50"
-                          >
-                            <XCircle className="h-3 w-3" />
-                          </Button>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        {u.role !== 'ADMIN' && (
+                          u.isVerified ? (
+                            <button
+                              disabled={isSuspending}
+                              onClick={() => handleSuspend(u.id)}
+                              className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
+                            >
+                              <XCircle className="h-3 w-3" />
+                              {isSuspending ? '...' : 'Suspend'}
+                            </button>
+                          ) : (
+                            <button
+                              disabled={isSuspending}
+                              onClick={() => handleReactivate(u.id)}
+                              className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-green-600 border border-green-200 rounded-lg hover:bg-green-50 transition-colors disabled:opacity-50"
+                            >
+                              <CheckCircle className="h-3 w-3" />
+                              {isSuspending ? '...' : 'Reactivate'}
+                            </button>
+                          )
                         )}
                       </div>
                     </td>
@@ -353,15 +312,13 @@ export default function UsersPage() {
               })}
             </tbody>
           </table>
+          {filteredUsers.length === 0 && (
+            <div className="text-center py-16">
+              <Users className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500 dark:text-slate-400">No users match your filters.</p>
+            </div>
+          )}
         </div>
-
-        {filteredUsers.length === 0 && (
-          <div className="text-center py-12">
-            <Users className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Users Found</h3>
-            <p className="text-gray-600 dark:text-slate-300">No users match your current filters.</p>
-          </div>
-        )}
       </motion.div>
     </div>
   );

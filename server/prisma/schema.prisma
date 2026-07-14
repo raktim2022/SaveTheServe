@@ -21,6 +21,12 @@ model User {
   isVerified              Boolean        @default(false)
   verificationToken       String?
   verificationTokenExpiry DateTime?
+  isActive                Boolean        @default(true)
+  suspendedBy             Int?
+  suspendedAt             DateTime?
+  suspensionReason        String?
+  reactivatedBy           Int?
+  reactivatedAt           DateTime?
   admin                   Admin?
   ngo                     NGO?
   notifications           Notification[]

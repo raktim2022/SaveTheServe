@@ -44,7 +44,13 @@ export default function DashboardLayout({ children }) {
         return;
       }
 
-      if (currentPath === '/setup-profile' || currentPath === '/complete-profile' || currentPath === '/volunteer/pending') {
+      if (currentPath === '/setup-profile' || currentPath === '/complete-profile' || currentPath.startsWith('/volunteer/pending')) {
+        return;
+      }
+
+      // Volunteer guard: redirect unverified volunteers to pending page
+      if (user.role === 'VOLUNTEER' && user.phoneVerified === false && !currentPath.startsWith('/volunteer/pending')) {
+        router.push('/volunteer/pending');
         return;
       }
 

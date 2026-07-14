@@ -7,7 +7,7 @@ import { listNGOs, registerVolunteer } from "@/services/volunteer.service";
 import Input, { Textarea } from "@/components/common/Input";
 import Button from "@/components/common/Button";
 import { updateUser } from "@/services/user.service";
-import { Building2, Users, AlertCircle } from "lucide-react";
+import { Building2, AlertCircle, MapPin, Loader2 } from "lucide-react";
 import clsx from "clsx";
 
 const ROLES = [
@@ -46,7 +46,7 @@ export default function SetupProfilePage() {
   const router = useRouter();
   const { user, loading: authLoading, updateUser: updateAuthUser } = useAuth();
 
-  const [step, setStep] = useState(1); // Step 1: Role Selection, Step 2: Profile Details
+  const [step, setStep] = useState(1);
   const [selectedRole, setSelectedRole] = useState(null);
   const [formData, setFormData] = useState({
     shopName: "",
@@ -56,11 +56,14 @@ export default function SetupProfilePage() {
     address: "",
     phone: "",
     description: "",
+    latitude: null,
+    longitude: null,
   });
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [ngos, setNgos] = useState([]);
+  const [locationStatus, setLocationStatus] = useState("idle"); // idle | requesting | granted | denied
 
   useEffect(() => {
     listNGOs()
@@ -68,41 +71,42 @@ export default function SetupProfilePage() {
       .catch(() => setNgos([]));
   }, []);
 
-  // Redirect if already set up or not authenticated
+  // Redirect if not authenticated
   useEffect(() => {
-    if (!authLoading) {
-      if (!user) {
-        router.push("/login");
-      } else if (user.role && user.role !== "RESTAURANT") {
-        // Already has a proper role (not temp default)
-        const getDashboardRoute = (user) => {
-          switch (user.role) {
-            case "RESTAURANT":
-              return `/donor/${user.id}`;
-
-            case "NGO":
-              return `/ngo/${user.id}`;
-
-            case "VOLUNTEER":
-              return `/volunteer/${user.id}`;
-
-            case "ADMIN":
-              return "/admin";
-
-            default:
-              return "/";
-          }
-        };
-
-        router.push(
-          getDashboardRoute({
-            ...user,
-            role: selectedRole,
-          }),
-        );
-      }
+    if (!authLoading && !user) {
+      router.push("/login");
     }
   }, [user, authLoading, router]);
+
+  // Auto-request location when user picks NGO or RESTAURANT
+  useEffect(() => {
+    if (selectedRole === "NGO" || selectedRole === "RESTAURANT") {
+      requestLocation();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRole]);
+
+  const requestLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationStatus("denied");
+      return;
+    }
+    setLocationStatus("requesting");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setFormData((prev) => ({
+          ...prev,
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        }));
+        setLocationStatus("granted");
+      },
+      () => {
+        setLocationStatus("denied");
+      },
+      { timeout: 10000, maximumAge: 0 }
+    );
+  };
 
   const handleRoleSelect = (roleId) => {
     setSelectedRole(roleId);
@@ -110,7 +114,10 @@ export default function SetupProfilePage() {
       ...prev,
       shopName: "",
       ngoName: "",
+      latitude: null,
+      longitude: null,
     }));
+    setLocationStatus("idle");
     setErrors({});
   };
 
@@ -138,7 +145,7 @@ export default function SetupProfilePage() {
       newErrors.phone = "Invalid phone number";
     }
 
-    if (!formData.address.trim()) {
+    if (selectedRole !== "VOLUNTEER" && !formData.address.trim()) {
       newErrors.address = "Address is required";
     }
 
@@ -183,14 +190,18 @@ export default function SetupProfilePage() {
         phone: formData.phone,
       };
 
-      // Add role-specific fields
+      // Add role-specific fields with location
       if (selectedRole === "RESTAURANT") {
         updatePayload.shopName = formData.shopName;
         updatePayload.shopType = formData.shopType;
         updatePayload.address = formData.address;
+        if (formData.latitude !== null) updatePayload.latitude = formData.latitude;
+        if (formData.longitude !== null) updatePayload.longitude = formData.longitude;
       } else if (selectedRole === "NGO") {
         updatePayload.ngoName = formData.ngoName;
         updatePayload.address = formData.address;
+        if (formData.latitude !== null) updatePayload.latitude = formData.latitude;
+        if (formData.longitude !== null) updatePayload.longitude = formData.longitude;
       }
 
       if (formData.description) {
@@ -355,6 +366,49 @@ export default function SetupProfilePage() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Location Status Banner (for NGO and Restaurant only) */}
+              {(selectedRole === "NGO" || selectedRole === "RESTAURANT") && (
+                <div
+                  className={clsx(
+                    "flex items-center gap-3 rounded-xl border p-4 text-sm",
+                    locationStatus === "granted"
+                      ? "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/30 text-green-800 dark:text-green-200"
+                      : locationStatus === "denied"
+                      ? "border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30 text-amber-800 dark:text-amber-200"
+                      : "border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/30 text-blue-800 dark:text-blue-200"
+                  )}
+                >
+                  {locationStatus === "requesting" ? (
+                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" />
+                  ) : (
+                    <MapPin className="h-4 w-4 shrink-0" />
+                  )}
+                  <div className="flex-1">
+                    {locationStatus === "granted" && (
+                      <span>📍 Location captured: <strong>{formData.latitude?.toFixed(5)}, {formData.longitude?.toFixed(5)}</strong></span>
+                    )}
+                    {locationStatus === "requesting" && (
+                      <span>Requesting your location for better food matching…</span>
+                    )}
+                    {locationStatus === "denied" && (
+                      <span>Location access denied. Your profile will be saved without coordinates. You can update it in settings.</span>
+                    )}
+                    {locationStatus === "idle" && (
+                      <span>We&apos;ll use your location to match food donations nearby.</span>
+                    )}
+                  </div>
+                  {locationStatus === "denied" && (
+                    <button
+                      type="button"
+                      onClick={requestLocation}
+                      className="text-xs font-medium underline text-amber-700 dark:text-amber-300 shrink-0"
+                    >
+                      Retry
+                    </button>
+                  )}
+                </div>
+              )}
+
               {/* Role-Specific Fields */}
               {selectedRole === "RESTAURANT" && (
                 <>
@@ -450,17 +504,19 @@ export default function SetupProfilePage() {
                 disabled={loading}
               />
 
-              <Input
-                label="Address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                placeholder="Enter your full address"
-                error={errors.address}
-                required
-                disabled={loading}
-              />
-
+              {/* Address — hidden for volunteers */}
+              {selectedRole !== "VOLUNTEER" && (
+                <Input
+                  label="Address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="Enter your full address"
+                  error={errors.address}
+                  required
+                  disabled={loading}
+                />
+              )}
               <Textarea
                 label="Description (Optional)"
                 name="description"

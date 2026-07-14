@@ -10,8 +10,6 @@ import { USER_ROLES } from '@/utils/constants';
 import Loader from '@/components/common/Loader';
 import Badge from '@/components/common/Badge';
 import { getUserStats } from '@/services/user.service';
-import { getFoodStats } from '@/services/food.service';
-import { getRequestStats } from '@/services/request.service';
 import { getAdminAnalytics } from '@/services/analytics.service';
 
 export default function AdminDashboard() {
@@ -49,32 +47,43 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      // Try real analytics first, fall back to individual service calls
+      // Fetch real analytics and individual stats in parallel
       let analyticsData = null;
+      let userStatsData = {};
       try {
-        const res = await getAdminAnalytics();
-        analyticsData = res?.data || res;
+        const [analyticsRes, userStatsRes] = await Promise.all([
+          getAdminAnalytics(),
+          getUserStats(),
+        ]);
+        analyticsData = analyticsRes?.data || analyticsRes;
+        // userStats response is wrapped: { success, data: { total, ngos, restaurants, admins } }
+        userStatsData = userStatsRes?.data?.data || userStatsRes?.data || userStatsRes || {};
       } catch { /* fall through */ }
 
-      const [userStats, foodStats, requestStats] = await Promise.all([
-        getUserStats().catch(() => ({})),
-        getFoodStats().catch(() => ({})),
-        getRequestStats().catch(() => ({})),
-      ]);
+      // totalUsers = NGOs + Restaurants + Admins + Volunteers (from user stats)
+      const totalFromStats = (userStatsData.ngos ?? 0) + (userStatsData.restaurants ?? 0) + (userStatsData.admins ?? 0);
 
       setStats({
-        totalUsers: analyticsData?.totalUsers ?? userStats.total ?? 0,
-        totalNGOs: analyticsData?.totalNGOs ?? userStats.ngos ?? 0,
-        totalRestaurants: analyticsData?.totalRestaurants ?? userStats.restaurants ?? 0,
-        totalFood: analyticsData?.totalFoodListings ?? foodStats.total ?? 0,
-        totalRequests: analyticsData?.totalRequests ?? requestStats.total ?? 0,
-        completedRequests: analyticsData?.completedRequests ?? requestStats.completed ?? 0,
-        pendingRequests: analyticsData?.pendingRequests ?? requestStats.pending ?? 0,
-        mealsRescued: analyticsData?.totalMealsRescued ?? foodStats.mealsRescued ?? 0,
+        totalUsers: analyticsData?.platformStats?.totalUsers ?? userStatsData.total ?? totalFromStats,
+        totalNGOs: analyticsData?.platformStats?.totalNGOs ?? userStatsData.ngos ?? 0,
+        totalRestaurants: analyticsData?.platformStats?.totalRestaurants ?? userStatsData.restaurants ?? 0,
+        totalFood: analyticsData?.platformStats?.totalFoodListings ?? 0,
+        totalRequests: analyticsData?.platformStats?.totalRequests ?? 0,
+        completedRequests: analyticsData?.platformStats?.completedRequests ?? 0,
+        pendingRequests: analyticsData?.platformStats?.pendingRequests ?? 0,
+        mealsRescued: analyticsData?.impactStats?.totalFoodDonated ?? 0,
       });
 
       // Build activity feed from analytics recent activity or fall back to placeholders
-      const recent = analyticsData?.recentActivity || [];
+      let recent = [];
+      if (analyticsData?.recentActivity) {
+        recent = [
+          { id: 1, type: 'food', message: `${analyticsData.recentActivity.listingsLast30Days} new food listings in the last 30 days`, time: 'Last 30 days', status: 'success' },
+          { id: 2, type: 'request', message: `${analyticsData.recentActivity.completionsLast30Days} requests completed in the last 30 days`, time: 'Last 30 days', status: 'success' },
+          { id: 3, type: 'user', message: `${analyticsData.recentActivity.reviewsLast30Days} reviews submitted recently`, time: 'Last 30 days', status: 'info' }
+        ];
+      }
+
       setRecentActivity(recent.length > 0 ? recent : [
         { id: 1, type: 'user', message: 'Platform is live and accepting registrations', time: 'now', status: 'info' },
         { id: 2, type: 'request', message: 'Real-time stats will appear as activity occurs', time: 'pending', status: 'info' },

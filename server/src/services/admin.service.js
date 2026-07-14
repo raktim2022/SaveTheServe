@@ -130,8 +130,8 @@ class AdminService {
    */
   async getUserStats() {
     try {
-      const totalUsers = await UserModel.count();
-      const verifiedUsers = await UserModel.count({ is_verified: true });
+      const totalUsers = await UserModel.count({ role: { not: 'ADMIN' } });
+      const verifiedUsers = await UserModel.count({ isVerified: true, role: { not: 'ADMIN' } });
       const ngoCount = await UserModel.count({ role: 'NGO' });
       const restaurantCount = await UserModel.count({ role: 'RESTAURANT' });
       const adminCount = await UserModel.count({ role: 'ADMIN' });
@@ -154,12 +154,10 @@ class AdminService {
    */
   async getAllUsers(page = 1, limit = 10, filters = {}) {
     try {
-      const offset = (page - 1) * limit;
-      const users = await UserModel.findMany({
-        offset,
-        limit,
-        ...filters
-      });
+      if (!filters.role) {
+        filters.role = { not: 'ADMIN' };
+      }
+      const users = await UserModel.findAll(page, limit, filters);
 
       const total = await UserModel.count(filters);
       

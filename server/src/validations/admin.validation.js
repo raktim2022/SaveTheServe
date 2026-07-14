@@ -105,12 +105,12 @@ export const changePasswordSchema = Joi.object({
     })
 });
 
-// UUID parameter validation
-export const uuidParamSchema = Joi.object({
-  id: Joi.string().uuid().required()
+// ID parameter validation
+export const idParamSchema = Joi.object({
+  id: Joi.number().integer().required()
     .messages({
-      'string.empty': 'ID is required',
-      'string.guid': 'ID must be a valid UUID',
+      'number.base': 'ID must be a number',
+      'number.integer': 'ID must be an integer',
       'any.required': 'ID is required'
     })
 });

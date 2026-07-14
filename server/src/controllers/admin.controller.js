@@ -6,7 +6,7 @@ import {
   approvalDecisionSchema,
   suspendUserSchema,
   changePasswordSchema,
-  uuidParamSchema,
+  idParamSchema,
   paginationSchema
 } from '../validations/admin.validation.js';
 import { responseHelper } from '../helpers/response.helper.js';
@@ -54,7 +54,7 @@ class AdminController {
    */
   async getAdminById(req, res) {
     try {
-      const { error, value } = uuidParamSchema.validate(req.params);
+      const { error, value } = idParamSchema.validate(req.params);
       if (error) {
         return responseHelper.validationError(res, error.details[0].message);
       }
@@ -91,7 +91,7 @@ class AdminController {
    */
   async updateAdmin(req, res) {
     try {
-      const { error: paramError, value: paramValue } = uuidParamSchema.validate(req.params);
+      const { error: paramError, value: paramValue } = idParamSchema.validate(req.params);
       if (paramError) {
         return responseHelper.validationError(res, paramError.details[0].message);
       }
@@ -117,7 +117,7 @@ class AdminController {
    */
   async deleteAdmin(req, res) {
     try {
-      const { error, value } = uuidParamSchema.validate(req.params);
+      const { error, value } = idParamSchema.validate(req.params);
       if (error) {
         return responseHelper.validationError(res, error.details[0].message);
       }
@@ -169,7 +169,7 @@ class AdminController {
    */
   async approveNGO(req, res) {
     try {
-      const { error, value } = uuidParamSchema.validate(req.params);
+      const { error, value } = idParamSchema.validate(req.params);
       if (error) {
         return responseHelper.validationError(res, error.details[0].message);
       }
@@ -193,7 +193,7 @@ class AdminController {
    */
   async rejectNGO(req, res) {
     try {
-      const { error: paramError, value: paramValue } = uuidParamSchema.validate(req.params);
+      const { error: paramError, value: paramValue } = idParamSchema.validate(req.params);
       if (paramError) {
         return responseHelper.validationError(res, paramError.details[0].message);
       }
@@ -222,7 +222,7 @@ class AdminController {
    */
   async approveRestaurant(req, res) {
     try {
-      const { error, value } = uuidParamSchema.validate(req.params);
+      const { error, value } = idParamSchema.validate(req.params);
       if (error) {
         return responseHelper.validationError(res, error.details[0].message);
       }
@@ -246,7 +246,7 @@ class AdminController {
    */
   async rejectRestaurant(req, res) {
     try {
-      const { error: paramError, value: paramValue } = uuidParamSchema.validate(req.params);
+      const { error: paramError, value: paramValue } = idParamSchema.validate(req.params);
       if (paramError) {
         return responseHelper.validationError(res, paramError.details[0].message);
       }
@@ -301,7 +301,7 @@ class AdminController {
    */
   async suspendUser(req, res) {
     try {
-      const { error: paramError, value: paramValue } = uuidParamSchema.validate(req.params);
+      const { error: paramError, value: paramValue } = idParamSchema.validate(req.params);
       if (paramError) {
         return responseHelper.validationError(res, paramError.details[0].message);
       }
@@ -330,7 +330,7 @@ class AdminController {
    */
   async reactivateUser(req, res) {
     try {
-      const { error, value } = uuidParamSchema.validate(req.params);
+      const { error, value } = idParamSchema.validate(req.params);
       if (error) {
         return responseHelper.validationError(res, error.details[0].message);
       }
@@ -354,7 +354,7 @@ class AdminController {
    */
   async changeUserPassword(req, res) {
     try {
-      const { error: paramError, value: paramValue } = uuidParamSchema.validate(req.params);
+      const { error: paramError, value: paramValue } = idParamSchema.validate(req.params);
       if (paramError) {
         return responseHelper.validationError(res, paramError.details[0].message);
       }
